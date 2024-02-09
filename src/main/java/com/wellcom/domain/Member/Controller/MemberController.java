@@ -20,10 +20,4 @@ public class MemberController {
         memberService.signUp(memberSignUpDto);
         return "회원가입 성공";
     }
-
-    @GetMapping("/doTest")
-    @ResponseBody
-    public String dododo(Principal principal){
-        return principal.getName();
-    }
 }
