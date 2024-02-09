@@ -1,10 +1,24 @@
 package com.wellcom.domain.Desk;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+
+@Getter
 @Entity
+@NoArgsConstructor
 public class Desk {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private int seats;
+
+    @Column(nullable = false)
+    private String hasTV;
+
+    @Column(nullable = false)
+    private String isUsable;
 }
