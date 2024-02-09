@@ -1,0 +1,9 @@
+package com.wellcom.domain.Reservation.Repository;
+
+import com.wellcom.domain.Reservation.Reservation;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+}
