@@ -2,6 +2,8 @@ package com.wellcom.global.jwt.service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wellcom.domain.Member.Repository.MemberRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +13,10 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -41,6 +46,7 @@ private Long accessTokenExpirationPeriod;
     private static final String ROLE_CLAIM = "role";
     private static final String BEARER = "Bearer ";
 
+    private final ObjectMapper objectMapper;
     private final MemberRepository memberRepository;
 
     public String createAccessToken(String email, String role) {
@@ -61,18 +67,35 @@ private Long accessTokenExpirationPeriod;
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
-    public void sendAccessToken(HttpServletResponse response, String accessToken) {
+    public void sendAccessToken(HttpServletResponse response, String accessToken) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
 
-        response.setHeader(accessHeader, accessToken);
+        Map<String, String> token = new HashMap<>();
+        token.put(accessHeader, accessToken);
+
+        String result = objectMapper.writeValueAsString(token);
+        response.getWriter().write(result);
+
+//        response.setHeader(accessHeader, accessToken);
         log.info("재발급된 Access Token : {}", accessToken);
     }
 
-    public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
+    public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
 
-        setAccessTokenHeader(response, accessToken);
-        setRefreshTokenHeader(response, refreshToken);
+        Map<String, String> token = new HashMap<>();
+        token.put(accessHeader, accessToken);
+        token.put(refreshHeader, refreshToken);
+
+        String result = objectMapper.writeValueAsString(token);
+        response.getWriter().write(result);
+
+//        setAccessTokenHeader(response, accessToken);
+//        setRefreshTokenHeader(response, refreshToken);
         log.info("Access Token, Refresh Token 헤더 설정 완료");
     }
 

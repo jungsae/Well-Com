@@ -1,13 +1,13 @@
-<script setup>
-
-</script>
-
 <template>
   <div>
-    hello world login
+    login
   </div>
 </template>
 
-<style scoped>
+<style>
 
 </style>
+
+<script>
+
+</script>

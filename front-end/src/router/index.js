@@ -4,13 +4,18 @@ const routes = [
     {
         path: '/',
         name: 'home',
-        component: ()=>import('@/components/HomeComponent.vue'),
+        component: ()=>import('@/components/HelloWorld.vue'),
     },
     {
         path: '/login',
         name: 'Login',
         component: ()=>import('@/components/LoginComponent.vue'),
     },
+    {
+        path: '/test-modal',
+        name: 'ModalTest',
+        component: ()=>import('@/components/ParentComponent.vue'),
+    }
 ]
 
 const router = createRouter({
