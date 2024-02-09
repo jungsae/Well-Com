@@ -144,3 +144,7 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,intellij+all
+
+### 서버 설정 파일 ###
+/src/main/resources/application-jwt.yml
+/src/main/resources/application-oauth.yml
