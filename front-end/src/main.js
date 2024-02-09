@@ -1,16 +1,12 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from '@/router/index.js'
-import axios from 'axios';
+import router from './router'
+import vuetify from './plugins/vuetify'
+import { loadFonts } from './plugins/webfontloader'
 
-const app = createApp(App);
-axios.interceptors.response.use(response => response, error => {
-    if(error.response && error.response.status === 401){
-        localStorage.clear();
-        window.location.href = "/login";
-    }
-    return Promise.reject(error);
-})
-app.config.globalProperties.$axios = axios
-app.use(router);
-app.mount('#app');
+loadFonts()
+
+createApp(App)
+  .use(router)
+  .use(vuetify)
+  .mount('#app')
