@@ -52,15 +52,15 @@ public class SecurityConfig {
                 .and()
 
                 // permit 처리 방법 두 가지 중 url 정해지는 것 보고 선택
-//                .authorizeRequests()
-//                .antMatchers("/user/**").authenticated()
-//                .antMatchers("/admin/**").hasAuthority("ADMIN")
-//                .anyRequest().permitAll()
                 .authorizeRequests()
+                .antMatchers("/user/**").authenticated()
+                .antMatchers("/admin/**").hasAuthority("ADMIN")
+                .anyRequest().permitAll()
+/*                .authorizeRequests()
                 .antMatchers("/","/css/**","/images/**","/js/**","/favicon.ico").permitAll()
                 .antMatchers("/**").permitAll()
                 .antMatchers("/admin/**").hasAuthority("ADMIN")
-                .anyRequest().authenticated()
+                .anyRequest().authenticated()*/
                 .and()
 
                 //== 소셜 로그인 설정 ==//

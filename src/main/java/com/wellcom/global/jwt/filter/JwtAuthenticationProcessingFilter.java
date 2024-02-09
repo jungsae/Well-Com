@@ -58,8 +58,12 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         memberRepository.findByRefreshToken(refreshToken)
                 .ifPresent(member -> {
                     String reIssuedRefreshToken = reIssueRefreshToken(member);
-                    jwtService.sendAccessAndRefreshToken(response, jwtService.createAccessToken(member.getEmail(), member.getRole().name()),
-                            reIssuedRefreshToken);
+                    try {
+                        jwtService.sendAccessAndRefreshToken(response, jwtService.createAccessToken(member.getEmail(), member.getRole().name()),
+                                reIssuedRefreshToken);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 });
     }
 
