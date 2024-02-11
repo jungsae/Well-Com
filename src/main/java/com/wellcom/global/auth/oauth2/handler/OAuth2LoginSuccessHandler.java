@@ -35,7 +35,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), Role.GUEST.name());
                 response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
                 //ToDo: 소셜 로그인 시 회원가입 리다이렉트할 화면 url 설정 필요
-                response.sendRedirect("/sign-up");
+                response.sendRedirect("http://localhost:8081/sign-up");
 
                 jwtService.sendAccessAndRefreshToken(response, accessToken, null);
                 Member findMember = memberRepository.findByEmail(oAuth2User.getEmail())

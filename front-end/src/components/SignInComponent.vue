@@ -114,9 +114,7 @@ export default {
     },
     async signInWithGoogle() {
       try {
-        await axios.get('http://localhost:8080/oauth2/authorization/google');
-
-        // window.location.href = response.data.redirectUrl;
+        window.location.href = 'http://localhost:8080/oauth2/authorization/google';
       } catch (error) {
         console.error('OAuth 플로우 시작 중 오류 발생:', error);
       }
