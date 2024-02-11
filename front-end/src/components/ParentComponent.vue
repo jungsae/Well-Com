@@ -1,26 +1,25 @@
 <template>
   <div>
-    <v-btn color="accent" large @click.stop="signIn = true">Sign in</v-btn>
-    <v-btn color="accent" large @click.stop="signUp = true">Sign up</v-btn>
-    <SignInComponent v-model="signIn"></SignInComponent>
-    <SignUpComponent v-model="signUp"></SignUpComponent>
+    <v-btn color="accent" large @click.stop="dialog = true">Sign in</v-btn>
+    <v-btn color="accent" large @click.stop="dialog = true">Sign up</v-btn>
+    <SignInComponent v-model="dialog" value></SignInComponent>
+<!--    <SignUpComponent v-model="dialog" value></SignUpComponent>-->
   </div>
 </template>
 
 <script>
 import SignInComponent from '@/components/SignInComponent.vue';
-import SignUpComponent from "@/components/SignUpComponent.vue";
+// import SignUpComponent from "@/components/SignUpComponent.vue";
 
 export default {
   data() {
     return {
-      signIn: false,
-      signUp: false,
+      dialog: false,
     };
   },
   components: {
     SignInComponent,
-    SignUpComponent
+    // SignUpComponent
   },
 };
 </script>
