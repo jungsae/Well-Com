@@ -1,4 +1,3 @@
-/*
 package com.wellcom.domain.common;
 
 import com.wellcom.domain.Member.Member;
@@ -31,4 +30,3 @@ public class InitialDataLoader implements CommandLineRunner {
         }
     }
 }
-*/
