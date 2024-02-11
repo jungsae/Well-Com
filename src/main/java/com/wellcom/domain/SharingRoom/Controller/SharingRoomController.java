@@ -4,17 +4,15 @@ import com.wellcom.domain.SharingRoom.Dto.SharingRoomCreateReqDto;
 import com.wellcom.domain.SharingRoom.Dto.SharingRoomCreateResDto;
 import com.wellcom.domain.SharingRoom.Service.SharingRoomService;
 import com.wellcom.domain.SharingRoom.SharingRoom;
-import com.wellcom.domain.common.CommonResponse;
+import com.wellcom.global.common.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController

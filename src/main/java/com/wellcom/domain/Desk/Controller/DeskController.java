@@ -5,7 +5,7 @@ import com.wellcom.domain.Desk.Dto.DeskCreateReqDto;
 import com.wellcom.domain.Desk.Dto.DeskResDto;
 import com.wellcom.domain.Desk.Service.DeskService;
 import com.wellcom.domain.Desk.Status;
-import com.wellcom.domain.common.CommonResponse;
+import com.wellcom.global.common.CommonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
