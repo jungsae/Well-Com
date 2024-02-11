@@ -1,6 +1,7 @@
 package com.wellcom.domain.common;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,7 +20,12 @@ public class ExceptionHandlerClass {
     }
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> IllegalArgHandler(IllegalArgumentException e){
-        log.error("EntityNotFoundException message : " + e.getMessage());
+        log.error("IllegalArgumentException message : " + e.getMessage());
         return ErrorResponseDto.makeMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+    @ExceptionHandler(DataIntegrityViolationException.class) //JPA Column이 Unique인 값에 중복으로 넣을때 나오는 에러
+    public ResponseEntity<Map<String, Object>> DataIntegrityViolationException(DataIntegrityViolationException e){
+        log.error("DataIntegrityViolationException message : " + e.getMessage());
+        return ErrorResponseDto.makeMessage(HttpStatus.CONFLICT, e.getMessage());
     }
 }
