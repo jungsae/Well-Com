@@ -29,6 +29,10 @@ public class Item {
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus;
 
+    public void setImagePath(String imagePath){
+        this.imagePath = imagePath;
+    }
+
     public void updateItem(String name, String imagePath){
         this.name = name;
         this.imagePath = imagePath;
