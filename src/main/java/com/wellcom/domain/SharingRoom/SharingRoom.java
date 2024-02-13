@@ -52,4 +52,10 @@ public class SharingRoom {
 
     @UpdateTimestamp
     private LocalDateTime updatedTime;
+
+    public void updateSharingRoom(String title, String contents, int cntPeople){
+        this.title = title;
+        this.contents = contents;
+        this.cntPeople = cntPeople;
+    }
 }
