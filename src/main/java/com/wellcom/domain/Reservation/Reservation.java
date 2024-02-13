@@ -1,6 +1,5 @@
 package com.wellcom.domain.Reservation;
 
-
 import com.wellcom.domain.Desk.Desk;
 import com.wellcom.domain.Member.Member;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Builder
@@ -23,6 +21,9 @@ public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
+    private String reservationId;
 
     @JoinColumn(name = "member_id")
     @ManyToOne(fetch= FetchType.LAZY)
@@ -36,12 +37,10 @@ public class Reservation {
     private LocalDateTime startTime;
 
     @Column(nullable = false)
-    private LocalDateTime reservationTime;
+    private int reservationTime;
 
     @Column(nullable = false)
     private LocalDateTime endTime;
-
-    //private uuid
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -55,4 +54,9 @@ public class Reservation {
 
     @UpdateTimestamp
     private LocalDateTime updatedTime;
+
+    public void setStatus(String status){
+        this.status = Status.valueOf(status);
+    }
+
 }
