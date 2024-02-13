@@ -20,7 +20,7 @@ public class SharingRoomController {
         this.sharingRoomService = sharingRoomService;
     }
 
-    @PostMapping("/room/create")
+    @PostMapping("/user/room/create")
     public ResponseEntity<CommonResponse> roomCreate(SharingRoomReqDto sharingRoomReqDto){
         SharingRoom sharingRoom = sharingRoomService.create(sharingRoomReqDto);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.CREATED, "sharingRoom is successfully created", sharingRoom.getId()), HttpStatus.CREATED);
@@ -31,19 +31,19 @@ public class SharingRoomController {
         return sharingRoomService.findAll();
     }
 
-    @GetMapping("/room/{id}")
+    @GetMapping("/user/room/{id}")
     public ResponseEntity<CommonResponse> roomDetail(@PathVariable Long id){
         SharingRoomResDto sharingRoomResDto = sharingRoomService.findById(id);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "sharingRoom"+ id +" is successfully found", sharingRoomResDto), HttpStatus.OK);
     }
 
-    @PatchMapping("/room/{id}/update")
+    @PatchMapping("/user/room/{id}/update")
     public ResponseEntity<CommonResponse> roomUpdate(@PathVariable Long id, SharingRoomReqDto sharingRoomReqDto){
         SharingRoomResDto sharingRoomResDto = sharingRoomService.update(id, sharingRoomReqDto);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "sharingRoom successfully updated", sharingRoomResDto), HttpStatus.OK);
     }
 
-    @DeleteMapping("/room/{id}/delete")
+    @DeleteMapping("/user/room/{id}/delete")
     public ResponseEntity<CommonResponse> roomDelete(@PathVariable Long id){
         sharingRoomService.delete(id);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "sharingRoom"+ id +" is successfully deleted", id), HttpStatus.OK);
