@@ -29,5 +29,6 @@ public class Record {
     @JoinColumn(name="sharingroom_id")
     private SharingRoom sharingroom;
 
+    @Builder.Default
     private String isWinner="N";
 }
