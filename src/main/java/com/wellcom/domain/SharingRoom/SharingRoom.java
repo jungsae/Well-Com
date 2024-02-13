@@ -47,6 +47,9 @@ public class SharingRoom {
     @OneToOne(fetch=FetchType.LAZY, cascade=CascadeType.PERSIST)
     private Item item;
 
+    @Builder.Default
+    private String delYn="N";
+
     @CreationTimestamp
     private LocalDateTime createdTime;
 
@@ -57,5 +60,8 @@ public class SharingRoom {
         this.title = title;
         this.contents = contents;
         this.cntPeople = cntPeople;
+    }
+    public void deleteSharingRoom() {
+        this.delYn = "Y";
     }
 }

@@ -141,6 +141,6 @@ public class SharingRoomService {
         }
 
         sharingRoom.getItem().doneItem();
-        sharingRoomRepository.delete(sharingRoom);
+        sharingRoom.deleteSharingRoom();
     }
 }
