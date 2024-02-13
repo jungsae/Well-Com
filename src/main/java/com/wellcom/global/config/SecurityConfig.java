@@ -54,7 +54,7 @@ public class SecurityConfig {
                 // permit 처리 방법 두 가지 중 url 정해지는 것 보고 선택
                 .authorizeRequests()
                 .antMatchers("/user/**").authenticated()
-                .antMatchers("/admin/**").hasAuthority("ADMIN")
+                .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().permitAll()
 /*                .authorizeRequests()
                 .antMatchers("/","/css/**","/images/**","/js/**","/favicon.ico").permitAll()

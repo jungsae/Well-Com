@@ -37,10 +37,12 @@
               size="large"
               type="submit"
               variant="elevated"
-          >Sign In</v-btn>
+              style="margin-bottom: 5px;"
+          >로그인</v-btn>
         </v-form>
-        <v-spacer></v-spacer>
-        <small>아직 회원이 아니신가요? <a href="#"><b>회원가입</b></a></small>
+        <div class  ="text-right">
+          <small>아직 회원이 아니신가요? <a href="#"><b>회원가입</b></a></small>
+        </div>
       </v-card>
   </v-dialog>
 </template>
@@ -76,7 +78,7 @@ export default {
   },
   methods: {
     required (v) {
-      return !!v || '칸이 비어있습니다.'
+      return !!v || '입력이 비어있습니다.'
     },
     async onSubmit () {
       if (!this.form) return;
@@ -112,9 +114,20 @@ export default {
           }
       }
     },
+    //Todo: google로그인 성공시 body로 넘어오는 token값 localStorage에 저장(수정 필요 / 여차하면 갈아엎어야함)
     async signInWithGoogle() {
       try {
         window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+        const response = await axios.get("http://localhost:8080/google/token");
+        console.log(response.data);
+        const access_token = response.data.Authorization;
+          const refresh_token = response.data.AuthorizationRefresh;
+          if (access_token && refresh_token) {
+              const access_decoded = jwtDecode(access_token);
+              localStorage.setItem("role", access_decoded.role);
+              localStorage.setItem("Authorization", access_token);
+              localStorage.setItem("AuthorizationRefresh", refresh_token);
+          }
       } catch (error) {
         console.error('OAuth 플로우 시작 중 오류 발생:', error);
       }
@@ -125,6 +138,14 @@ export default {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+@font-face {
+  font-family: 'jua';
+  src: url(../../public/font/BMJUA_ttf.ttf);
+}
+
+  * {
+    font-family: 'jua',sans-serif;
+  }
 
   a {
     color: black;
@@ -143,7 +164,6 @@ export default {
     display: inline-flex;
     align-items: center;
     justify-content: flex-start;
-    font-family: 'Roboto', sans-serif;
   }
 
   #google-connect {
@@ -155,7 +175,6 @@ export default {
     margin: 10px auto;
     display: flex; /* 텍스트를 가운데 정렬하기 위해 Flexbox를 사용합니다. */
     align-items: center; /* 수직 가운데 정렬을 설정합니다. */
-    font-family: 'Roboto', sans-serif; /* Roboto 폰트를 적용합니다. */
   }
 
   #google-connect {

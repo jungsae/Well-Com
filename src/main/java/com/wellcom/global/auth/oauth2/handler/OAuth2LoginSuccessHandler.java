@@ -33,11 +33,13 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
             if(oAuth2User.getRole() == Role.GUEST) {
                 String accessToken = jwtService.createAccessToken(oAuth2User.getEmail(), Role.GUEST.name());
+                String refreshToken = jwtService.createRefreshToken();
                 response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
+                response.addHeader(jwtService.getRefreshHeader(), "Bearer " + refreshToken);
                 //ToDo: 소셜 로그인 시 회원가입 리다이렉트할 화면 url 설정 필요
                 response.sendRedirect("http://localhost:8081/sign-up");
 
-                jwtService.sendAccessAndRefreshToken(response, accessToken, null);
+                jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
                 Member findMember = memberRepository.findByEmail(oAuth2User.getEmail())
                                 .orElseThrow(() -> new IllegalArgumentException("이메일에 해당하는 유저가 없습니다."));
                 findMember.authorizeUser();
