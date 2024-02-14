@@ -15,6 +15,6 @@ import java.util.Optional;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     Reservation findByReservationIdAndMember(String reservationId, Member member);
     Optional<Reservation> findByReservationId(String reservationId);
-    @Query("SELECT r FROM Reservation r WHERE r.desk.deskNum = :deskNum AND r.endTime > :currentTime AND (r.status = 'WAITING' OR r.status = 'USING')")
+    @Query("SELECT r FROM Reservation r WHERE r.desk.deskNum = :deskNum AND r.startTime > :currentTime AND (r.status = 'WAITING' OR r.status = 'USING')")
     List<Reservation> findActiveReservationsByDeskAndTime(@Param("deskNum") int deskNum, @Param("currentTime") LocalDateTime currentTime);
 }

@@ -88,8 +88,8 @@ public class ReservationService {
             return savedReservation;
         } else {
             Reservation savedReservation = reservationRepository.save(reservation);
-            reservationScheduler.scheduleReservationStart(savedReservation);
             reservationScheduler.scheduleReservationEnd(savedReservation);
+            reservationScheduler.scheduleReservationStart(savedReservation);
             return savedReservation;
         }
     }
@@ -98,14 +98,8 @@ public class ReservationService {
         if(reservation == null) throw new EntityNotFoundException("잘못된 예약번호입니다.");
         reservationScheduler.cancelFutureSchedule(reservationId);
         reservation.setStatus("CANCELED");
-        Desk desk =  reservation.getDesk();
-        desk.updateIsUsable("Y");
+//        Desk desk =  reservation.getDesk();
+//        desk.updateIsUsable("Y");
         return reservationRepository.save(reservation).getReservationId();
-    }
-
-    public String updatelReservation(String reservationId)
-    {
-        //예약 수정은 없고 취소 후 다시 예약이 가능하게 하는 방법?
-        return null;
     }
 }
