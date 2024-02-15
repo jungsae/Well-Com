@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @RestController
@@ -41,4 +42,17 @@ public class DeskController {
         Desk desk = deskService.createDesk(deskCreateReqDto);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.CREATED, "Desk Information has uploaded", desk.getId()), HttpStatus.CREATED);
     }
+
+
+    @DeleteMapping("/admin/desk/delete/{deskNum}")
+    public ResponseEntity<?> deleteDesk(@PathVariable int deskNum) {
+        try {
+            deskService.deleteDesk(deskNum);
+            return ResponseEntity.ok().body("Desk 번호 " + deskNum + "이(가) 성공적으로 삭제 처리되었습니다.");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
+
+
