@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,17 @@ public class Member {
 
     private String refreshToken; // 리프레시 토큰
 
+    private LocalDateTime createdTime;
+
+    @Builder.Default
+    private String delYn = "N";
+
+    private int count;
+
+    public void deleteMember(){
+        this.delYn = "Y";
+    }
+
     public void passwordEncode(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
     }
@@ -48,7 +60,9 @@ public class Member {
     public void updateRefreshToken(String updateRefreshToken) {
         this.refreshToken = updateRefreshToken;
     }
-}
+
+
+
 
 //import com.encore.happycommunity.member.dto.MemberCreateReqDto;
 //        import com.encore.happycommunity.sharingroom.domain.SharingRoom;
@@ -63,7 +77,7 @@ public class Member {
 //        import java.util.ArrayList;
 //        import java.util.List;
 
-//@Entity
+    //@Entity
 //@Getter
 //@NoArgsConstructor
 //public class Member {
@@ -113,3 +127,21 @@ public class Member {
 //        this.password = (dto.getPassword());
 //    }
 //}
+    public void updateMember(String nickname, String password){
+        this.nickname = nickname;
+        this.password = password;
+    }
+
+    @Builder.Default
+    private boolean isBlocked = false;
+
+    public boolean isBlocked() {
+        return isBlocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        isBlocked = blocked;
+    }
+}
+
+

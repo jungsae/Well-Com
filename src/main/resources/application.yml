@@ -17,7 +17,7 @@ spring:
     password: 1234
 
   jpa:
-    show-sql: true
+    show-sql: false
     database: mysql
     database-platform: org.hibernate.dialect.MariaDBDialect
     generate-ddl: true
@@ -25,6 +25,6 @@ spring:
       hibernate:
         ddl-auto: validate
         format_sql: true
-        show_sql: true
+        show_sql: false
     hibernate:
       ddl-auto: create

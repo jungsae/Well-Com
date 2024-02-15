@@ -36,9 +36,14 @@ public class DeskService {
                 .collect(Collectors.toList());
     }
     public List<DeskResDto> findAll() {
-        List<Desk> desks = deskRepository.findAll();
+        List<Desk> desks = deskRepository.findAll()
+                .stream()
+                //현재 테이블의 상태가 N인것만 조회하도록함요
+                .filter(desk -> "N".equals(desk.getDelYn()))
+                .collect(Collectors.toList());
         return mapDesksToDeskResDtoList(desks);
     }
+
     public List<DeskResDto> findAllByUsableAndHasTV(Status isUsable, Status hasTV) {
         List<Desk> desks = deskRepository.findByIsUsableAndHasTV(isUsable, hasTV);
         return mapDesksToDeskResDtoList(desks);
@@ -56,5 +61,13 @@ public class DeskService {
     {
         Desk desk = deskRepository.findByDeskNum(deskNum).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테이블 번호입니다."));
         desk.updateIsUsable(status);
+    }
+
+
+    public void deleteDesk(int deskNum) {
+        Desk desk = deskRepository.findByDeskNum(deskNum)
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테이블 번호입니다."));
+        desk.setDelYn("Y");
+        deskRepository.save(desk); // 업데이트된 상태를 저장
     }
 }
