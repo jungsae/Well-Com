@@ -17,4 +17,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Optional<Reservation> findByReservationId(String reservationId);
     @Query("SELECT r FROM Reservation r WHERE r.desk.deskNum = :deskNum AND r.startTime > :currentTime AND (r.status = 'WAITING' OR r.status = 'USING')")
     List<Reservation> findActiveReservationsByDeskAndTime(@Param("deskNum") int deskNum, @Param("currentTime") LocalDateTime currentTime);
+
+    @Query("SELECT r FROM Reservation r WHERE r.desk.deskNum = :deskNum AND r.startTime >= :startOfDay AND r.endTime <= :endOfDay")
+    List<Reservation> findReservationsByDeskAndTime(@Param("deskNum") int desk, @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
 }

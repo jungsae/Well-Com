@@ -82,6 +82,7 @@ public class ReservationScheduler {
             endFuture.cancel(true);
 
         log.info("작업 완료: 예약 ID " + reservationId + " 관련 스케줄된 작업이 제거되었습니다.");
+        log.info("남은 예약작업: " + scheduledTasks.size() + "개.");
     }
 
     public void cancelFutureSchedule(String reservationId) {

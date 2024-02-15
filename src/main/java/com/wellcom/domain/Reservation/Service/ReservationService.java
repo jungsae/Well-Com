@@ -5,6 +5,7 @@ import com.wellcom.domain.Desk.Repository.DeskRepository;
 import com.wellcom.domain.Member.Member;
 import com.wellcom.domain.Member.Repository.MemberRepository;
 import com.wellcom.domain.Reservation.Dto.ReservationCreateReqDto;
+import com.wellcom.domain.Reservation.Dto.ReservationResDto;
 import com.wellcom.domain.Reservation.Repository.ReservationRepository;
 import com.wellcom.domain.Reservation.Reservation;
 import com.wellcom.domain.Reservation.Status;
@@ -15,8 +16,11 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -151,5 +155,19 @@ public class ReservationService {
         reservationScheduler.cancelFutureSchedule(reservationId);
         reservation.setStatus("CANCELED");
         return reservationRepository.save(reservation).getReservationId();
+    }
+    public List<ReservationResDto> getReservations(int deskNum, String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        LocalDateTime startOfDay = localDate.atStartOfDay();
+        LocalDateTime endOfDay = localDate.atTime(LocalTime.MAX);
+        List<Reservation> reservations = reservationRepository.findReservationsByDeskAndTime(deskNum, startOfDay, endOfDay);
+        return reservations.stream()
+                .map(reservation -> ReservationResDto.builder()
+                        .deskNum(reservation.getDesk().getDeskNum())
+                        .status(String.valueOf(reservation.getStatus()))
+                        .startTime(reservation.getStartTime())
+                        .endTime(reservation.getEndTime())
+                        .build())
+                .collect(Collectors.toList());
     }
 }
