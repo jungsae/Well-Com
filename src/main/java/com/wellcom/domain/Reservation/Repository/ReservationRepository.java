@@ -23,6 +23,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     int countReservationsByMemberId(Long memberId);
 
     // 회원별 총 이용 시간 조회
-    @Query("SELECT SUM(r.reservationTime) FROM Reservation r WHERE r.member.id = :memberId")
-    Integer sumReservationTimeByMemberId(Long memberId);
+    @Query("SELECT COALESCE(SUM(r.reservationTime), 0) FROM Reservation r WHERE r.member.id = :memberId")
+    int sumReservationTimeByMemberId(Long memberId);
+
 }

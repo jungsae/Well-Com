@@ -55,7 +55,7 @@ public class MemberService {
 
         int sharingRoomCount = sharingRoomRepository.countByMemberId(id);
         int reservationCount = reservationRepository.countReservationsByMemberId(id);
-        Integer totalReservationTime = reservationRepository.sumReservationTimeByMemberId(id);
+        int totalReservationTime = reservationRepository.sumReservationTimeByMemberId(id);
 
         // 관리자 권한 확인
         boolean isAdmin = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
@@ -71,7 +71,7 @@ public class MemberService {
                     member.getCreatedTime(),
                     sharingRoomCount,
                     reservationCount,
-                    totalReservationTime == null ? 0 : totalReservationTime
+                    totalReservationTime
             );
         } else {
             // 일반 사용자인 경우 비밀번호와 역할 정보 제외
@@ -84,7 +84,7 @@ public class MemberService {
                     member.getCreatedTime(),
                     sharingRoomCount,
                     reservationCount,
-                    totalReservationTime == null ? 0 : totalReservationTime
+                    totalReservationTime
             );
         }
     }
@@ -122,4 +122,6 @@ public class MemberService {
         member.setBlocked(false);
         memberRepository.save(member);
     }
+
+
 }
