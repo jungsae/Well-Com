@@ -22,5 +22,5 @@ public class MemberDetailResDto {
     private int reservationCount;
 
     //총 이용시간
-    private Integer totalReservationTime;
+    private int totalReservationTime;
 }
