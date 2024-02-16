@@ -40,8 +40,6 @@ import java.util.stream.Collectors;
 public class SharingRoomService {
     private final SharingRoomRepository sharingRoomRepository;
     private final MemberRepository memberRepository;
-    private final ItemRepository itemRepository;
-
     private final AmazonS3Client amazonS3Client;
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -52,29 +50,14 @@ public class SharingRoomService {
 
         Member member = memberRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("not found email"));
 
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.IMAGE_JPEG);
-
         MultipartFile file = sharingRoomReqDto.getItemImage();
         String fileUrl = saveFile(file);
-
-//        String fileName = multipartFile.getOriginalFilename();
 
         Item item = Item.builder()
                 .name(sharingRoomReqDto.getItemName())
                 .imagePath(fileUrl)
                 .itemStatus(ItemStatus.SHARING)
                 .build();
-//        Item item = itemRepository.save(new_item);
-//        Path path = Paths.get("C:/Users/Playdata/Desktop/wellcom/", item.getId() +"_"+ fileName);
-//        item.setImagePath(fileUrl);
-
-//        try {
-//            byte[] bytes = multipartFile.getBytes();
-//            Files.write(path, bytes, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-//        } catch (IOException e) {
-//            throw new IllegalArgumentException("image is not available");
-//        }
 
         // SharingRoom 객체가 생성될 때 Item 객체도 함께 생성 : Cascading PERSIST
         SharingRoom sharingRoom = SharingRoom.builder()
