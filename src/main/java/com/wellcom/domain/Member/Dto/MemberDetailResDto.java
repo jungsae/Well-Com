@@ -1,10 +1,12 @@
 package com.wellcom.domain.Member.Dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
 public class MemberDetailResDto {
     private Long id;
     private String nickName;
