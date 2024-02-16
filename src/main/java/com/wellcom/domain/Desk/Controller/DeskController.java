@@ -44,15 +44,14 @@ public class DeskController {
     }
 
 
-    @DeleteMapping("/admin/desk/delete/{deskNum}")
-    public ResponseEntity<?> deleteDesk(@PathVariable int deskNum) {
-        try {
-            deskService.deleteDesk(deskNum);
-            return ResponseEntity.ok().body("Desk 번호 " + deskNum + "이(가) 성공적으로 삭제 처리되었습니다.");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+
+    @PatchMapping("/admin/desk/delete/{deskNum}")
+    public ResponseEntity<CommonResponse> deleteDesk(@PathVariable int deskNum) {
+        deskService.deleteDesk(deskNum); // 이 메소드 내에서 EntityNotFoundException 발생 시 ExceptionHandlerClass가 처리
+        CommonResponse response = new CommonResponse(HttpStatus.OK, "Desk 번호 " + deskNum + "이(가) 성공적으로 삭제 처리되었습니다.", null);
+        return ResponseEntity.ok(response);
     }
 }
+
 
 

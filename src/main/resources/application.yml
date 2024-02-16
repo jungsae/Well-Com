@@ -1,7 +1,7 @@
 spring:
   profiles:
     group:
-      "local" : "local, jwt, oauth"
+      "local" : "local, jwt, oauth, s3"
     active : local
 
 ---
@@ -25,6 +25,6 @@ spring:
       hibernate:
         ddl-auto: validate
         format_sql: true
-        show_sql: false
+        show_sql: true
     hibernate:
       ddl-auto: create
