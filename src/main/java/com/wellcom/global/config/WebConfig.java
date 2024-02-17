@@ -12,6 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:8081") // 허용할 오리진 지정
                 .allowedMethods("*") // 허용할 HTTP 메서드
                 .allowedHeaders("*") // 허용할 헤더
-                .allowCredentials(true); // 쿠키 허용
+                .allowCredentials(true) // 쿠키 허용
+                .maxAge(3600);
     }
 }

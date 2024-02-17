@@ -3,7 +3,6 @@ spring:
     group:
       "local" : "local, jwt, oauth"
     active : local
-
 ---
 spring:
   config:
@@ -20,11 +19,11 @@ spring:
     show-sql: true
     database: mysql
     database-platform: org.hibernate.dialect.MariaDBDialect
-    generate-ddl: true
+    generate-ddl: false
     properties:
       hibernate:
         ddl-auto: validate
-        format_sql: true
-        show_sql: true
+        format_sql: false
+        show_sql: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: update

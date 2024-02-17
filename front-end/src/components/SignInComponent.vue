@@ -1,6 +1,6 @@
 <template>
   <v-dialog transition="slide-y-transition" v-model="dialog" max-width="450px">
-      <v-card class="blue-lighten-1 pa-12" rounded>
+      <v-card class="blue-lighten-1 pa-12 rounded-xl">
        <!-- <v-card class="mx-auto px-6 py-8" max-width="344"> -->
         <v-card-title>
           <span class="headline">로그인</span>
@@ -20,11 +20,13 @@
               :readonly="loading"
               :rules="[required]"
               clearable
-              type="password"
+              :type="'password'"
+              id="password"
+              class="v-password"
               label="Password"
               placeholder="Enter your password"
           ></v-text-field>
-          <v-btn @click="signInWithGoogle" dark id="google-connect" class="social-button">
+          <v-btn @click.prevent="signInWithGoogle" dark id="google-connect" class="social-button">
             <v-icon left>mdi mdi-google</v-icon>
             <span class="text">구글 계정으로 로그인</span>
           </v-btn>
@@ -40,8 +42,8 @@
               style="margin-bottom: 5px;"
           >로그인</v-btn>
         </v-form>
-        <div class  ="text-right">
-          <small>아직 회원이 아니신가요? <a href="#"><b>회원가입</b></a></small>
+        <div class="text-right">
+          <small>아직 회원이 아니신가요? <v-text href="#"><b>회원가입</b></v-text></small>
         </div>
       </v-card>
   </v-dialog>
@@ -50,6 +52,7 @@
 <script>
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+
 
 export default {
   props: {
@@ -60,9 +63,9 @@ export default {
   },
   data() {
     return {
-      form: false,
       email: "",
       password: "",
+      form: false,
       loading: false,
     }
   },
@@ -91,14 +94,16 @@ export default {
       try{
           const loginData = {email: this.email, password: this.password }
           const response =  await axios.post(`${process.env.VUE_APP_API_BASE_URL}/login`, loginData);
+          console.log(response);
           const access_token = response.data.Authorization;
           const refresh_token = response.data.AuthorizationRefresh;
           if (access_token && refresh_token) {
               const access_decoded = jwtDecode(access_token);
               localStorage.setItem("role", access_decoded.role);
+              localStorage.setItem("expiredTime", access_decoded.exp);
               localStorage.setItem("Authorization", access_token);
               localStorage.setItem("AuthorizationRefresh", refresh_token);
-              window.location.href = "/test-modal";
+              window.location.reload();
           }else{
               console.log("200 OK but not token");
               alert("Login Failed")
@@ -114,24 +119,9 @@ export default {
           }
       }
     },
-    //Todo: google로그인 성공시 body로 넘어오는 token값 localStorage에 저장(수정 필요 / 여차하면 갈아엎어야함)
-    async signInWithGoogle() {
-      try {
-        window.location.href = 'http://localhost:8080/oauth2/authorization/google';
-        const response = await axios.get("http://localhost:8080/google/token");
-        console.log(response.data);
-        const access_token = response.data.Authorization;
-          const refresh_token = response.data.AuthorizationRefresh;
-          if (access_token && refresh_token) {
-              const access_decoded = jwtDecode(access_token);
-              localStorage.setItem("role", access_decoded.role);
-              localStorage.setItem("Authorization", access_token);
-              localStorage.setItem("AuthorizationRefresh", refresh_token);
-          }
-      } catch (error) {
-        console.error('OAuth 플로우 시작 중 오류 발생:', error);
-      }
-    }
+    signInWithGoogle() {
+      window.location.href = "http://localhost:8080/oauth2/authorize/google?redirect_uri=http://localhost:8081/oauth2/redirect";
+    },
   }
 };
 </script>
@@ -147,11 +137,15 @@ export default {
     font-family: 'jua',sans-serif;
   }
 
-  a {
+  .v-card--shaped {
+    border-radius: 24px;
+  }
+
+  .v-text {
     color: black;
     text-decoration-line: none;
   }
-  a:hover{
+  .v-text--hover{
     text-decoration-line: underline;
   }
 

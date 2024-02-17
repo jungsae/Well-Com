@@ -94,9 +94,7 @@ private Long accessTokenExpirationPeriod;
         String result = objectMapper.writeValueAsString(token);
         response.getWriter().write(result);
 
-//        setAccessTokenHeader(response, accessToken);
-//        setRefreshTokenHeader(response, refreshToken);
-        log.info("Access Token, Refresh Token 헤더 설정 완료");
+        log.info("Access Token, Refresh Token 바디 설정 완료");
     }
 
     public Optional<String> extractRefreshToken(HttpServletRequest request) {
@@ -135,14 +133,6 @@ private Long accessTokenExpirationPeriod;
             log.error("액세스 토큰이 유효하지 않습니다.");
             return Optional.empty();
         }
-    }
-
-    public void setAccessTokenHeader(HttpServletResponse response, String accessToken) {
-        response.setHeader(accessHeader, accessToken);
-    }
-
-    public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
-        response.setHeader(refreshHeader, refreshToken);
     }
 
     public void updateRefreshToken(String email, String refreshToken) {

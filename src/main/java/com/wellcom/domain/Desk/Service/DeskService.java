@@ -7,6 +7,7 @@ import com.wellcom.domain.Desk.Repository.DeskRepository;
 import com.wellcom.domain.Desk.Status;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,5 +50,11 @@ public class DeskService {
     public List<DeskResDto> findAllByHasTV(Status hasTV) {
         List<Desk> desks = deskRepository.findByHasTV(hasTV);
         return mapDesksToDeskResDtoList(desks);
+    }
+
+    public void updateDeskStatus(int deskNum, String status)
+    {
+        Desk desk = deskRepository.findByDeskNum(deskNum).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테이블 번호입니다."));
+        desk.updateIsUsable(status);
     }
 }

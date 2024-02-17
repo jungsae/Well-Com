@@ -10,6 +10,10 @@ const routes = [
         path: '/test-modal',
         name: 'ModalTest',
         component: ()=>import('@/components/ParentComponent.vue'),
+    },
+    {
+        path: '/oauth2/redirect',
+        component: ()=>import('@/components/GoogleRedirect.vue'),
     }
 ]
 

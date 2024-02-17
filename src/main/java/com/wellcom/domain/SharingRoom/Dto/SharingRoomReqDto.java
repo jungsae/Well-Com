@@ -1,14 +1,18 @@
 package com.wellcom.domain.SharingRoom.Dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
-public class SharingRoomCreateReqDto {
+@Builder
+@AllArgsConstructor
+public class SharingRoomReqDto {
     private String title;
     private String contents;
     private int cntPeople;
-    // Item으로 조립할 값들
     private String itemName;
     private String itemImagePath;
-    // Status는 default=SHARING
+    private MultipartFile itemImage;
 }

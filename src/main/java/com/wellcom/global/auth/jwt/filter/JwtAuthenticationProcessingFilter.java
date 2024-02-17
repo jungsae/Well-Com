@@ -20,8 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@RequiredArgsConstructor
+
 @Slf4j
+@RequiredArgsConstructor
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private static final String[] NO_CHECK_URLS = {"/login"};
@@ -48,25 +49,21 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
             checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
             return;
         }
-
-        if (refreshToken == null) {
-            checkAccessTokenAndAuthentication(request, response, filterChain);
-        }
+        checkAccessTokenAndAuthentication(request, response, filterChain);
     }
 
     public void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
         memberRepository.findByRefreshToken(refreshToken)
                 .ifPresent(member -> {
-                    String reIssuedRefreshToken = reIssueRefreshToken(member);
                     try {
-                        jwtService.sendAccessAndRefreshToken(response, jwtService.createAccessToken(member.getEmail(), member.getRole().name()),
-                                reIssuedRefreshToken);
+                        jwtService.sendAccessToken(response, jwtService.createAccessToken(member.getEmail(), member.getRole().name()));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 });
     }
 
+    // RefreshToken 재발급 메소드
     private String reIssueRefreshToken(Member member) {
         String reIssuedRefreshToken = jwtService.createRefreshToken();
         member.updateRefreshToken(reIssuedRefreshToken);
