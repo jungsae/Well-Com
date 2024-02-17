@@ -37,22 +37,25 @@ public class ReservationScheduler {
         String reservationId = reservation.getReservationId();
 
         ScheduledFuture<?> future = taskScheduler.schedule(() -> {
-            log.info("예약된 작업시작: 예약번호" + reservationId + "처리 / " + deskNum + "번 테이블 사용가능");
-            deskService.updateDeskStatus(deskNum, "Y");
+            log.info("작업시작: 예약번호" + reservationId + "완료처리 / 현재 " + deskNum + "번 테이블 사용가능");
             updateReservationStatus(reservationId, "COMPLETE");
+            deskService.updateDeskStatus(deskNum, "Y");
             }, Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant()));
-        scheduledTasks.put(reservation.getReservationId(), future);
+        scheduledTasks.put("end_" + reservation.getReservationId(), future);
     }
     public void scheduleReservationStart(Reservation reservation) {
         LocalDateTime startTime = reservation.getStartTime();
         int deskNum = reservation.getDesk().getDeskNum();
         String reservationId = reservation.getReservationId();
 
+        // 사용요청이 WAITING 상태로 예약 될 경우 시작과 종료 작업이 뒤죽박죽 섞여 들어가서 데이터베이스의 무결성 파괴
+        // 예약 시작 작업들을 예약 종료 작업보다 1초 딜레이를 줘서 양쪽 작업들끼리의 그룹 블록 생성
+        LocalDateTime delayStartTime = startTime.plusSeconds(1);
         ScheduledFuture<?> future = taskScheduler.schedule(() -> {
-            log.info("예약 시작 작업: 예약번호 " + reservationId + " / " + deskNum + "번 테이블 사용 시작");
-            deskService.updateDeskStatus(deskNum, "N");
+            log.info("작업시작: 예약번호 " + reservationId + " / " + deskNum + "번 테이블 사용 시작");
             updateReservationStatus(reservationId, "USING");
-        }, Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant()));
+            deskService.updateDeskStatus(deskNum, "N");
+        }, Date.from(delayStartTime.atZone(ZoneId.systemDefault()).toInstant()));
         scheduledTasks.put("start_" + reservation.getReservationId(), future);
     }
     private void updateReservationStatus(String reservationId, String status) {
@@ -62,12 +65,25 @@ public class ReservationScheduler {
         reservationRepository.save(reservation);
     }
     public void cancelFutureSchedule(String reservationId) {
-        System.out.println("---------------------사이즈: "+scheduledTasks.size()+" -----------------");
-        ScheduledFuture<?> future = scheduledTasks.get(reservationId);
-        if (future != null){
-            future.cancel(false);
-            scheduledTasks.remove(reservationId);
-            System.out.println("---------------------사이즈: "+scheduledTasks.size()+" -----------------");
+//        예약 취소시 예약의 시작과 종료를 ConcurrentHashMap에 넣을때 동일한 예약 id로 넣어서 하나만 삭제되어지는 에러가 발생
+//        각 예약에 시작과 종료 작업 태그를 예약번호에 추가하고 HashMap에서 전부 삭제
+        String startTaskKey = "start_" + reservationId;
+        String endTaskKey = "end_" + reservationId;
+
+        ScheduledFuture<?> startFuture = scheduledTasks.get(startTaskKey);
+        if (startFuture != null) {
+            startFuture.cancel(false);
+            scheduledTasks.remove(startTaskKey);
+            log.info("예약 시작 작업 취소됨: " + startTaskKey);
         }
+
+        ScheduledFuture<?> endFuture = scheduledTasks.get(endTaskKey);
+        if (endFuture != null) {
+            endFuture.cancel(false);
+            scheduledTasks.remove(endTaskKey);
+            log.info("예약 종료 작업 취소됨: " + endTaskKey);
+        }
+
+        log.info("현재 스케줄된 작업 수: " + scheduledTasks.size());
     }
 }

@@ -26,9 +26,4 @@ public class ReservationController {
     public ResponseEntity<CommonResponse> cancelReservation(@PathVariable String reservation_id){
         return new ResponseEntity<>(new CommonResponse(HttpStatus.NO_CONTENT, "예약이 취소되었습니다", reservationService.cancelReservation(reservation_id)), HttpStatus.NO_CONTENT);
     }
-
-    @PatchMapping("/reservation/{reservation_id}/update")
-    public ResponseEntity<CommonResponse> updateReservation(@PathVariable String reservation_id){
-        return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "예약이 수정되었습니다", reservationService.updatelReservation(reservation_id)), HttpStatus.OK);
-    }
 }

@@ -1,8 +1,9 @@
 package com.wellcom.domain.SharingRoom.Service;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.wellcom.domain.Item.Item;
 import com.wellcom.domain.Item.ItemStatus;
-import com.wellcom.domain.Item.Repository.ItemRepository;
 import com.wellcom.domain.Member.Member;
 import com.wellcom.domain.Member.Repository.MemberRepository;
 import com.wellcom.domain.SharingRoom.Dto.SharingRoomReqDto;
@@ -10,11 +11,9 @@ import com.wellcom.domain.SharingRoom.Dto.SharingRoomResDto;
 import com.wellcom.domain.SharingRoom.Repository.SharingRoomRepository;
 import com.wellcom.domain.SharingRoom.SharingRoom;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,11 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +31,9 @@ import java.util.stream.Collectors;
 public class SharingRoomService {
     private final SharingRoomRepository sharingRoomRepository;
     private final MemberRepository memberRepository;
-    private final ItemRepository itemRepository;
+    private final AmazonS3Client amazonS3Client;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     public SharingRoom create(SharingRoomReqDto sharingRoomReqDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -43,17 +41,15 @@ public class SharingRoomService {
 
         Member member = memberRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("not found email"));
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);
+        MultipartFile file = sharingRoomReqDto.getItemImage();
+        String fileUrl = saveFile(file);
 
-        MultipartFile multipartFile = sharingRoomReqDto.getItemImage();
-        String fileName = multipartFile.getOriginalFilename();
-
-        Item new_item = Item.builder()
+        Item item = Item.builder()
                 .name(sharingRoomReqDto.getItemName())
-                .imagePath(sharingRoomReqDto.getItemImagePath())
+                .imagePath(fileUrl)
                 .itemStatus(ItemStatus.SHARING)
                 .build();
+<<<<<<< HEAD
         Item item = itemRepository.save(new_item);
         Path path = Paths.get("C:/Users/wingk/Desktop/wellcom/", item.getId() +"_"+ fileName);
         item.setImagePath(path.toString());
@@ -64,6 +60,8 @@ public class SharingRoomService {
         } catch (IOException e) {
             throw new IllegalArgumentException("image is not available");
         }
+=======
+>>>>>>> f81d0744be9397e20b91b4eb63ac6a2534ca6631
 
         // SharingRoom 객체가 생성될 때 Item 객체도 함께 생성 : Cascading PERSIST
         SharingRoom sharingRoom = SharingRoom.builder()
@@ -74,6 +72,20 @@ public class SharingRoomService {
                 .item(item).build();
 
         return sharingRoomRepository.save(sharingRoom);
+    }
+
+    public String saveFile(MultipartFile file) {
+        String fileUrl = "";
+        try {
+            fileUrl = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            ObjectMetadata metadata= new ObjectMetadata();
+            metadata.setContentType(file.getContentType());
+            metadata.setContentLength(file.getSize());
+            amazonS3Client.putObject(bucket, fileUrl, file.getInputStream(), metadata);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("image is not available");
+        }
+        return amazonS3Client.getUrl(bucket, fileUrl).toString();
     }
 
     public List<SharingRoomResDto> findAll() {
@@ -103,6 +115,7 @@ public class SharingRoomService {
             throw new AccessDeniedException("Access denied");
         }
 
+<<<<<<< HEAD
         MultipartFile multipartFile = sharingRoomReqDto.getItemImage();
         String fileName = multipartFile.getOriginalFilename();
         Path path = Paths.get("C:/Users/wingk/Desktop/wellcom/", sharingRoom.getItem().getId() +"_"+ fileName);
@@ -114,6 +127,11 @@ public class SharingRoomService {
         } catch (IOException e) {
             throw new IllegalArgumentException("image is not available");
         }
+=======
+        MultipartFile file = sharingRoomReqDto.getItemImage();
+        String fileUrl = saveFile(file);
+        sharingRoom.getItem().updateItem(sharingRoomReqDto.getItemName(), fileUrl);
+>>>>>>> f81d0744be9397e20b91b4eb63ac6a2534ca6631
 
         sharingRoom.updateSharingRoom(
                 sharingRoomReqDto.getTitle(),
@@ -140,7 +158,9 @@ public class SharingRoomService {
             throw new IllegalArgumentException("already canceled sharing room");
         }
 
+        //ItemStatue=DONE 설정
         sharingRoom.getItem().doneItem();
-        sharingRoomRepository.delete(sharingRoom);
+        //SharingRoom delYn="Y" 설정
+        sharingRoom.deleteSharingRoom();
     }
 }
