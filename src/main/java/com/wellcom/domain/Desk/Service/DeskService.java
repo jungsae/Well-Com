@@ -30,11 +30,13 @@ public class DeskService {
                 .build();
         return deskRepository.save(desk);
     }
+
     private List<DeskResDto> mapDesksToDeskResDtoList(List<Desk> desks) {
         return desks.stream()
                 .map(desk -> DeskResDto.toDeskResDto(desk))
                 .collect(Collectors.toList());
     }
+
     public List<DeskResDto> findAll() {
         List<Desk> desks = deskRepository.findAll()
                 .stream()
@@ -48,17 +50,18 @@ public class DeskService {
         List<Desk> desks = deskRepository.findByIsUsableAndHasTV(isUsable, hasTV);
         return mapDesksToDeskResDtoList(desks);
     }
+
     public List<DeskResDto> findAllByUsable(Status isUsable) {
         List<Desk> desks = deskRepository.findByIsUsable(isUsable);
         return mapDesksToDeskResDtoList(desks);
     }
+
     public List<DeskResDto> findAllByHasTV(Status hasTV) {
         List<Desk> desks = deskRepository.findByHasTV(hasTV);
         return mapDesksToDeskResDtoList(desks);
     }
 
-    public void updateDeskStatus(int deskNum, String status)
-    {
+    public void updateDeskStatus(int deskNum, String status) {
         Desk desk = deskRepository.findByDeskNum(deskNum).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테이블 번호입니다."));
         desk.updateIsUsable(status);
     }
@@ -67,7 +70,6 @@ public class DeskService {
     public void deleteDesk(int deskNum) {
         Desk desk = deskRepository.findByDeskNum(deskNum)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테이블 번호입니다."));
-        desk.setDelYn("Y");
-        deskRepository.save(desk); // 업데이트된 상태를 저장
+        deskRepository.delete(desk);
     }
 }

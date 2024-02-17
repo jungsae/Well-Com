@@ -1,20 +1,13 @@
 package com.wellcom.domain.Member.Controller;
 
 import com.wellcom.domain.Member.Dto.*;
-import com.wellcom.domain.Member.Member;
 import com.wellcom.domain.Member.Service.MemberService;
 import com.wellcom.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,7 +42,7 @@ public class MemberController {
     // 회원 목록 조회
     @GetMapping("/admin/member/list")
     public ResponseEntity<CommonResponse> memberList() {
-        MemberListResponse memberListResponse = memberService.findAll();
+        MemberListTotalResDto memberListResponse = memberService.findAll();
         return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "멤버조회입니다.", memberListResponse));
     }
 

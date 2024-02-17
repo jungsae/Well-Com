@@ -7,16 +7,12 @@ import com.wellcom.domain.Member.Role;
 import com.wellcom.domain.Reservation.Repository.ReservationRepository;
 import com.wellcom.domain.SharingRoom.Repository.SharingRoomRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,14 +80,23 @@ public class MemberService {
         member.deleteMember();
     }
 
-    public MemberListResponse findAll() {
+    public MemberListTotalResDto findAll() {
         List<MemberListResDto> memberListResDtos = memberRepository.findAll().stream()
-                .map(member -> new MemberListResDto(member.getId(), member.getNickname(), member.getEmail()))
+                .map(member -> MemberListResDto.builder()
+                        .id(member.getId())
+                        .nickName(member.getNickname())
+                        .email(member.getEmail())
+                        .build())
                 .collect(Collectors.toList());
 
         long totalMembers = memberRepository.count();
-        return new MemberListResponse(memberListResDtos, totalMembers);
+
+        return MemberListTotalResDto.builder()
+                .members(memberListResDtos)
+                .totalMembers(totalMembers)
+                .build();
     }
+
 
     public void blockMember(Long id) {
         Member member = findById(id); // findById 메서드 활용
