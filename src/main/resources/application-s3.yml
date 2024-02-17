@@ -1,0 +1,12 @@
+cloud:
+  aws:
+    s3:
+      bucket: mywellcombucket
+    credentials:
+      access-key: AKIASOJHOEEQEDOFWRHD
+      secret-key: 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
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false

@@ -45,6 +45,10 @@ public class DeskController {
     public ResponseEntity<CommonResponse> roomCreate(@RequestBody DeskCreateReqDto deskCreateReqDto) {
         Desk desk = deskService.createDesk(deskCreateReqDto);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.CREATED, "Desk Information has uploaded", desk.getId()), HttpStatus.CREATED);
+    @PostMapping("/desk/create")
+    public ResponseEntity<CommonResponse> roomCreate(@RequestBody DeskCreateReqDto deskCreateReqDto) {
+        Desk desk = deskService.createDesk(deskCreateReqDto);
+        return new ResponseEntity<>(new CommonResponse(HttpStatus.CREATED, "Desk Information has uploaded", desk.getId()), HttpStatus.CREATED);
     }
 
 
@@ -55,6 +59,8 @@ public class DeskController {
         return ResponseEntity.ok(response); // CommonResponse 객체와 함께 200 OK 상태 코드 반환
     }
 }
+
+
 
 
 
