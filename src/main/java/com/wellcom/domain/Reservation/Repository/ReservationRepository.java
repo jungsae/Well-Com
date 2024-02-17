@@ -28,5 +28,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT COALESCE(SUM(r.reservationTime), 0) FROM Reservation r WHERE r.member.id = :memberId")
     int sumReservationTimeByMemberId(@Param("memberId") Long memberId);
 
-
+    List<Reservation> findByMember(Member member);
 }

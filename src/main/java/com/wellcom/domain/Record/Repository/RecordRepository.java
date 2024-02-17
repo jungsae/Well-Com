@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long> {
+    long countByMemberIdAndIsWinner(Long memberId, String isWinner);
+    long countByMemberId(Long memberId);
 }

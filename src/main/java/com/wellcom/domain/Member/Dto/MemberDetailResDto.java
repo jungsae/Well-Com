@@ -20,4 +20,6 @@ public class MemberDetailResDto {
     private int sharingRoomCount;
     private int reservationCount;
     private int totalReservationTime;
+    private long wins;
+    private double winRate;
 }
