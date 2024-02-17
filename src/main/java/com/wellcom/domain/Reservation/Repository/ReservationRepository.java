@@ -18,9 +18,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("SELECT r FROM Reservation r WHERE r.desk.deskNum = :deskNum AND r.startTime > :currentTime AND (r.status = 'WAITING' OR r.status = 'USING')")
     List<Reservation> findActiveReservationsByDeskAndTime(@Param("deskNum") int deskNum, @Param("currentTime") LocalDateTime currentTime);
 
-    // 회원별 예약 횟수 조회
-    @Query("SELECT COUNT(r) FROM Reservation r WHERE r.member.id = :memberId")
-    int countReservationsByMemberId(Long memberId);
+
     // 회원별 예약 횟수 조회
     @Query("SELECT COUNT(r) FROM Reservation r WHERE r.member.id = :memberId")
     int countReservationsByMemberId(Long memberId);
