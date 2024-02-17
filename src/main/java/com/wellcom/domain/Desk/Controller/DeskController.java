@@ -45,25 +45,22 @@ public class DeskController {
     public ResponseEntity<CommonResponse> roomCreate(@RequestBody DeskCreateReqDto deskCreateReqDto) {
         Desk desk = deskService.createDesk(deskCreateReqDto);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.CREATED, "Desk Information has uploaded", desk.getId()), HttpStatus.CREATED);
+    @PostMapping("/desk/create")
+    public ResponseEntity<CommonResponse> roomCreate(@RequestBody DeskCreateReqDto deskCreateReqDto) {
+        Desk desk = deskService.createDesk(deskCreateReqDto);
+        return new ResponseEntity<>(new CommonResponse(HttpStatus.CREATED, "Desk Information has uploaded", desk.getId()), HttpStatus.CREATED);
     }
 
 
-
     @PatchMapping("/admin/desk/{deskNum}/delete/")
     public ResponseEntity<CommonResponse> deleteDesk(@PathVariable int deskNum) {
         deskService.deleteDesk(deskNum); // 이 메소드 내에서 EntityNotFoundException 발생 시 ExceptionHandlerClass가 처리
         CommonResponse response = new CommonResponse(HttpStatus.OK, "Desk 번호 " + deskNum + "이(가) 성공적으로 삭제 처리되었습니다.",HttpStatus.OK);
         return ResponseEntity.ok(response); // CommonResponse 객체와 함께 200 OK 상태 코드 반환
-
-
-    @PatchMapping("/admin/desk/{deskNum}/delete/")
-    public ResponseEntity<CommonResponse> deleteDesk(@PathVariable int deskNum) {
-        deskService.deleteDesk(deskNum); // 이 메소드 내에서 EntityNotFoundException 발생 시 ExceptionHandlerClass가 처리
-        CommonResponse response = new CommonResponse(HttpStatus.OK, "Desk 번호 " + deskNum + "이(가) 성공적으로 삭제 처리되었습니다.",HttpStatus.OK);
-        return ResponseEntity.ok(response); // CommonResponse 객체와 함께 200 OK 상태 코드 반환
-    
     }
 }
+
+
 
 
 

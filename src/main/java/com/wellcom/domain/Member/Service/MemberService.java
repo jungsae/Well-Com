@@ -16,6 +16,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,45 +51,26 @@ public class MemberService {
         Member member = memberRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("검색하신 ID의 Member가 없습니다."));
         return member;
     }
-    public MemberDetailResDto findMemberDetail(Long id, Authentication authentication) {
-        Member member = findById(id);
+    public MemberDetailResDto findMemberDetail(Long id) {
+        Member member = findById(id); // 회원 정보 조회
 
+        // 회원과 관련된 추가 정보 조회
         int sharingRoomCount = sharingRoomRepository.countByMemberId(id);
         int reservationCount = reservationRepository.countReservationsByMemberId(id);
-        int totalReservationTime = reservationRepository.sumReservationTimeByMemberId(id);
+        Integer totalReservationTimeWrapper = reservationRepository.sumReservationTimeByMemberId(id);
+        int totalReservationTime = totalReservationTimeWrapper != null ? totalReservationTimeWrapper : 0;
 
-        // 관리자 권한 확인
-        boolean isAdmin = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
-
-        if (isAdmin) {
-            // 관리자인 경우 모든 정보 반환
-            return new MemberDetailResDto(
-                    member.getId(),
-                    member.getNickname(),
-                    member.getEmail(),
-                    member.getPassword(),
-                    member.getRole().toString(),
-                    member.getCreatedTime(),
-                    sharingRoomCount,
-                    reservationCount,
-                    totalReservationTime
-            );
-        } else {
-            // 일반 사용자인 경우 비밀번호와 역할 정보 제외
-            return new MemberDetailResDto(
-                    member.getId(),
-                    member.getNickname(),
-                    member.getEmail(),
-                    null, // 비밀번호 null 처리
-                    null, // 역할 정보 null 처리
-                    member.getCreatedTime(),
-                    sharingRoomCount,
-                    reservationCount,
-                    totalReservationTime
-            );
-        }
+        // 모든 사용자에게 반환될 정보를 포함하는 MemberDetailResDto 생성
+        return MemberDetailResDto.builder()
+                .id(member.getId())
+                .nickName(member.getNickname())
+                .email(member.getEmail())
+                .createdTime(member.getCreatedTime())
+                .sharingRoomCount(sharingRoomCount)
+                .reservationCount(reservationCount)
+                .totalReservationTime(totalReservationTime)
+                .build();
     }
-
 
 
     public void update(Long id, MemberUpdateReqDto memberUpdateReqDto) {
@@ -122,6 +104,5 @@ public class MemberService {
         member.setBlocked(false);
         memberRepository.save(member);
     }
-
-
 }
+

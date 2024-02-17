@@ -21,9 +21,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     // 회원별 예약 횟수 조회
     @Query("SELECT COUNT(r) FROM Reservation r WHERE r.member.id = :memberId")
     int countReservationsByMemberId(Long memberId);
+    // 회원별 예약 횟수 조회
+    @Query("SELECT COUNT(r) FROM Reservation r WHERE r.member.id = :memberId")
+    int countReservationsByMemberId(Long memberId);
 
     // 회원별 총 이용 시간 조회
+    // 기존 메서드 정의를 다음과 같이 수정하거나, 새로운 메서드를 추가합니다.
     @Query("SELECT COALESCE(SUM(r.reservationTime), 0) FROM Reservation r WHERE r.member.id = :memberId")
-    int sumReservationTimeByMemberId(Long memberId);
+    int sumReservationTimeByMemberId(@Param("memberId") Long memberId);
+
 
 }
