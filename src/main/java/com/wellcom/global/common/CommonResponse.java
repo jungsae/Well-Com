@@ -10,5 +10,4 @@ public class CommonResponse {
     private HttpStatus status;
     private String message;
     private Object result;
-
 }

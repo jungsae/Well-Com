@@ -32,7 +32,7 @@ public class MemberController {
     }
 
     // 회원 삭제
-    @DeleteMapping("/admin/member/{id}/delete/")
+    @DeleteMapping("/admin/member/{id}/delete")
     public ResponseEntity<CommonResponse> memberDelete(@PathVariable Long id) {
         memberService.delete(id);
         return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "회원이 성공적으로 삭제되었습니다.", id));
@@ -40,11 +40,12 @@ public class MemberController {
 
     // 회원 상세 정보 조회
     // 관리자와 일반 사용자용 엔드포인트를 하나로 통합
-    @GetMapping("/member/{id}/detail/")
-    public ResponseEntity<CommonResponse> memberDetail(@PathVariable Long id, Authentication authentication) {
-        MemberDetailResDto memberDetail = memberService.findMemberDetail(id, authentication);
+    @GetMapping("/member/{id}/detail")
+    public ResponseEntity<CommonResponse> memberDetail(@PathVariable Long id) {
+        MemberDetailResDto memberDetail = memberService.findMemberDetail(id);
         return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "멤버상세조회입니다.", memberDetail));
     }
+
     // 회원 목록 조회
     @GetMapping("/admin/member/list")
     public ResponseEntity<CommonResponse> memberList() {
