@@ -15,5 +15,4 @@ public class WellComApplication {
     public static void main(String[] args) {
         SpringApplication.run(WellComApplication.class, args);
     }
-
 }
