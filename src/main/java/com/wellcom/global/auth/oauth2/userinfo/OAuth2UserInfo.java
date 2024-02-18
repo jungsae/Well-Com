@@ -12,6 +12,8 @@ public abstract class OAuth2UserInfo {
 
     public abstract String getId();
 
+    public abstract String getEmail();
+
     public abstract String getNickname();
 
     public abstract String getImageUrl();
