@@ -1,27 +1,15 @@
 package com.wellcom.domain.Member.Controller;
 
-import com.sun.net.httpserver.HttpsParameters;
-import com.sun.net.httpserver.HttpsServer;
 import com.wellcom.domain.Member.Dto.MemberSignUpDto;
-import com.wellcom.domain.Member.Role;
 import com.wellcom.domain.Member.Service.MemberService;
 import com.wellcom.global.auth.jwt.service.JwtService;
-import com.wellcom.global.auth.oauth2.CustomOAuth2User;
 import com.wellcom.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.connector.Response;
-import org.springframework.beans.factory.annotation.Value;
+import com.wellcom.domain.Member.Dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.oidc.StandardClaimAccessor;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,20 +20,55 @@ public class MemberController {
     private final JwtService jwtService;
 
     @PostMapping("/sign-up")
-    public String signUp(@RequestBody MemberSignUpDto memberSignUpDto) throws Exception {
-        log.info(memberSignUpDto.toString());
+    public ResponseEntity<CommonResponse> signUp(@RequestBody MemberSignUpDto memberSignUpDto) throws Exception {
         memberService.signUp(memberSignUpDto);
-        return "회원가입 성공";
+        return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "회원가입이 정상적으로 이루어졌습니다.", ""));
     }
 
-    @GetMapping("/admin/list")
-    @ResponseBody
-    public String test(){
-        return "test successfully";
-    }
-
+    // reissue용 api 아무것도 실행 안함
     @GetMapping("/members/reissue")
-    public void reIssueToken(){
-        // reissue용 api 아무것도 실행 안함
+    public void reIssueToken(){}
+
+    // 회원 삭제
+    @DeleteMapping("/admin/member/{id}/delete")
+    public ResponseEntity<CommonResponse> memberDelete(@PathVariable Long id) {
+        memberService.delete(id);
+        return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "회원이 성공적으로 삭제되었습니다.", id));
+    }
+
+    // 회원 상세 정보 조회
+    // 관리자와 일반 사용자용 엔드포인트를 하나로 통합
+    @GetMapping("/member/{id}/detail")
+    public ResponseEntity<CommonResponse> memberDetail(@PathVariable Long id) {
+        MemberDetailResDto memberDetail = memberService.findMemberDetail(id);
+        return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "멤버상세조회입니다.", memberDetail));
+    }
+
+    // 회원 목록 조회
+    @GetMapping("/admin/member/list")
+    public ResponseEntity<CommonResponse> memberList() {
+        MemberListTotalResDto memberListResponse = memberService.findAll();
+        return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "멤버조회입니다.", memberListResponse));
+    }
+
+    // 회원 정보 수정
+    @PostMapping("/member/{id}/update")
+    public ResponseEntity<CommonResponse> memberUpdate(@PathVariable Long id, @RequestBody MemberUpdateReqDto memberUpdateReqDto) {
+        memberService.update(id, memberUpdateReqDto);
+        return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "성공적으로 수정되었습니다.",HttpStatus.OK));
+    }
+
+    // 회원 차단
+    @PutMapping("/admin/member/{id}/block")
+    public ResponseEntity<CommonResponse> blockMember(@PathVariable Long id) {
+        memberService.blockMember(id);
+        return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "회원이 성공적으로 차단되었습니다.", HttpStatus.OK));
+    }
+
+    // 회원 차단 해제
+    @PutMapping("/admin/member/{id}/unblock")
+    public ResponseEntity<CommonResponse> unblockMember(@PathVariable Long id) {
+        memberService.unblockMember(id);
+        return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "회원 차단이 성공적으로 해제되었습니다.", HttpStatus.OK));
     }
 }

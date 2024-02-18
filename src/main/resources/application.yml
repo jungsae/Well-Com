@@ -16,7 +16,7 @@ spring:
     password: 1234
 
   jpa:
-    show-sql: true
+    show-sql: false
     database: mysql
     database-platform: org.hibernate.dialect.MariaDBDialect
     generate-ddl: false
