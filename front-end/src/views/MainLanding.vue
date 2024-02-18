@@ -83,22 +83,20 @@ export default {
   transition: 2.5s;
   opacity: 1;
 }
-
 .custom-fade-enter-active .button-wrap {
   opacity: 0;
   transform: scale(1);
 }
-
 .custom-fade-enter .button-wrap {
   opacity: 0;
   transform: scale(0.5);
 }
 
 .custom-btn {
-  margin: 100px 50px;
-  width: 1500px;
-  height: 500px;
-  border-radius: 20px;
+  margin: 2vw;
+  width: 80vw;
+  height: 30vw;
+  border-radius: 2.5vw;
   border: 10px solid white;
   background-color: rgba(155, 255, 255, 0.3);
   color: white;
@@ -107,6 +105,13 @@ export default {
   justify-content: center;
   align-items: center;
 
-  font-size: 70px;
+  font-size: calc(30px + 2vw);
+}
+@media (max-width: 780px) {
+  .custom-btn {
+    font-size: calc(3px + 3vw);
+    padding: 2vw;
+    margin: 1vw;
+  }
 }
 </style>
