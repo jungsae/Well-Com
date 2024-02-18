@@ -3,48 +3,11 @@
       <v-card class="blue-lighten-1 pa-12 rounded">
         <!-- <v-card class="mx-auto px-6 py-8" max-width="344"> -->
         <v-card-title>
-          <span class="headline">로그인</span>
+          <span class="headline">회원가입</span>
         </v-card-title>
         <v-form v-model="form" @submit.prevent="onSubmit">
-          <v-text-field
-              v-model="email"
-              :readonly="loading"
-              :rules="[required]"
-              class="mb-2"
-              clearable
-              label="Email"
-              placeholder="encore@wellbeing.com"
-          ></v-text-field>
-          <v-text-field
-              v-model="password"
-              :readonly="loading"
-              :rules="[required]"
-              clearable
-              :type="'password'"
-              id="password"
-              class="v-password"
-              label="Password"
-              placeholder="Enter your password"
-          ></v-text-field>
-          <v-btn @click.prevent="signInWithGoogle" dark id="google-connect" class="social-button">
-            <v-icon left>mdi mdi-google</v-icon>
-            <span class="text">구글 계정으로 로그인</span>
-          </v-btn>
-          <br/>
-          <v-btn
-              :disabled="!form"
-              :loading="loading"
-              block
-              color="blue-accent-2"
-              size="large"
-              type="submit"
-              variant="elevated"
-              style="margin-bottom: 5px;"
-          >로그인</v-btn>
+
         </v-form>
-        <div class="text-right">
-          <small>아직 회원이 아니신가요? <a href="#"><b>회원가입</b></a></small>
-        </div>
       </v-card>
   </v-dialog>
 </template>
