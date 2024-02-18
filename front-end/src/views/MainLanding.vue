@@ -8,7 +8,7 @@
             <v-col cols="5">
               <div class="button-wrap">
                 <v-btn @click="goToPage('/tableHome')" class="custom-btn"
-                  >테이블 예약</v-btn
+                >테이블 예약</v-btn
                 >
               </div>
             </v-col>
@@ -16,7 +16,7 @@
             <v-col cols="5">
               <div class="button-wrap">
                 <v-btn @click="goToPage('/sharingHome')" class="custom-btn"
-                  >물건 나눔</v-btn
+                >물건 나눔</v-btn
                 >
               </div>
             </v-col>
@@ -37,7 +37,7 @@ export default {
   mounted() {
     setTimeout(() => {
       this.showButtons = true;
-    }, 750);
+    }, 700);
   },
   methods: {
     goToPage(path) {
@@ -80,13 +80,15 @@ export default {
 }
 
 .button-wrap {
-  transition: 0.3s;
-  opacity: 0;
-}
-.custom-fade-enter-active .button-wrap {
+  transition: 2.5s;
   opacity: 1;
+}
+
+.custom-fade-enter-active .button-wrap {
+  opacity: 0;
   transform: scale(1);
 }
+
 .custom-fade-enter .button-wrap {
   opacity: 0;
   transform: scale(0.5);
