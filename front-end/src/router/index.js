@@ -7,6 +7,11 @@ const routes = [
     //     component: ()=>import('@/components/HelloWorld.vue'),
     // },
     {
+        path: '/tableHome',
+        name: 'TableHome',
+        component: () => import('@/views/TableHome.vue'),
+    },
+    {
         path: '/test-modal',
         name: 'ModalTest',
         component: () => import('@/components/ParentComponent.vue'),
