@@ -21,6 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -49,19 +53,6 @@ public class SharingRoomService {
                 .imagePath(fileUrl)
                 .itemStatus(ItemStatus.SHARING)
                 .build();
-<<<<<<< HEAD
-        Item item = itemRepository.save(new_item);
-        Path path = Paths.get("C:/Users/wingk/Desktop/wellcom/", item.getId() +"_"+ fileName);
-        item.setImagePath(path.toString());
-
-        try {
-            byte[] bytes = multipartFile.getBytes();
-            Files.write(path, bytes, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("image is not available");
-        }
-=======
->>>>>>> f81d0744be9397e20b91b4eb63ac6a2534ca6631
 
         // SharingRoom 객체가 생성될 때 Item 객체도 함께 생성 : Cascading PERSIST
         SharingRoom sharingRoom = SharingRoom.builder()
@@ -115,23 +106,9 @@ public class SharingRoomService {
             throw new AccessDeniedException("Access denied");
         }
 
-<<<<<<< HEAD
-        MultipartFile multipartFile = sharingRoomReqDto.getItemImage();
-        String fileName = multipartFile.getOriginalFilename();
-        Path path = Paths.get("C:/Users/wingk/Desktop/wellcom/", sharingRoom.getItem().getId() +"_"+ fileName);
-
-        sharingRoom.getItem().updateItem(sharingRoomReqDto.getItemName(), path.toString());
-        try {
-            byte[] bytes = multipartFile.getBytes();
-            Files.write(path, bytes, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("image is not available");
-        }
-=======
         MultipartFile file = sharingRoomReqDto.getItemImage();
         String fileUrl = saveFile(file);
         sharingRoom.getItem().updateItem(sharingRoomReqDto.getItemName(), fileUrl);
->>>>>>> f81d0744be9397e20b91b4eb63ac6a2534ca6631
 
         sharingRoom.updateSharingRoom(
                 sharingRoomReqDto.getTitle(),

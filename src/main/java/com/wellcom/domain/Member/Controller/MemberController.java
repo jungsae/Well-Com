@@ -46,10 +46,6 @@ public class MemberController {
 
     @GetMapping("/members/reissue")
     public void reIssueToken(){
-    }
-
-    @GetMapping("/members/ping")
-    public String ping(){
-        return "pong";
+        // reissue용 api 아무것도 실행 안함
     }
 }

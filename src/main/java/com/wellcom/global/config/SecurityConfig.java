@@ -11,6 +11,7 @@ import com.wellcom.global.auth.login.service.LoginService;
 import com.wellcom.global.auth.oauth2.handler.OAuth2LoginFailureHandler;
 import com.wellcom.global.auth.oauth2.handler.OAuth2LoginSuccessHandler;
 import com.wellcom.global.auth.oauth2.service.CustomOAuth2UserService;
+import com.wellcom.global.auth.oauth2.repository.HttpCookieOAuth2AuthorizationRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +38,7 @@ public class SecurityConfig {
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     private final OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final HttpCookieOAuth2AuthorizationRequestRepository cookieOAuth2AuthorizationRequestRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -47,27 +49,29 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
 
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
+                .cors()
                 .and()
 
-                // permit 처리 방법 두 가지 중 url 정해지는 것 보고 선택
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+
                 .authorizeRequests()
                 .antMatchers("/user/**").authenticated()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().permitAll()
-/*                .authorizeRequests()
-                .antMatchers("/","/css/**","/images/**","/js/**","/favicon.ico").permitAll()
-                .antMatchers("/**").permitAll()
-                .antMatchers("/admin/**").hasAuthority("ADMIN")
-                .anyRequest().authenticated()*/
                 .and()
 
-                //== 소셜 로그인 설정 ==//
                 .oauth2Login()
-                .successHandler(oAuth2LoginSuccessHandler)
-                .failureHandler(oAuth2LoginFailureHandler)
-                .userInfoEndpoint().userService(customOAuth2UserService);
+                    .authorizationEndpoint().baseUri("/oauth2/authorize")
+                    .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository)
+                .and()
+                    .redirectionEndpoint().baseUri("/login/oauth2/code/**")
+                .and()
+                    .userInfoEndpoint().userService(customOAuth2UserService)
+                .and()
+                    .successHandler(oAuth2LoginSuccessHandler)
+                    .failureHandler(oAuth2LoginFailureHandler);
+
 
         http.addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class);
         http.addFilterBefore(jwtAuthenticationProcessingFilter(), CustomJsonUsernamePasswordAuthenticationFilter.class);

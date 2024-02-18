@@ -18,6 +18,7 @@ export default {
             localStorage.setItem('AuthorizationRefresh', refresh_token);
             const access_decoded = jwtDecode(access_token);
             localStorage.setItem("role", access_decoded.role);
+            localStorage.setItem("expiredTime", access_decoded.exp);
             window.alert('로그인이 성공적으로 이루어졌습니다.');
             router.push({path: '/'})
         } else {

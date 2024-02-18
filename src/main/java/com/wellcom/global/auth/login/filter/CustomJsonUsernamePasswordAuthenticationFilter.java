@@ -15,6 +15,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+/**
+ * 스프링 시큐리티의 폼 기반의 UsernamePasswordAuthenticationFilter를 참고하여 만든 커스텀 필터
+ * Username : 회원 아이디 -> email로 설정
+ * "/login" 요청 왔을 때 JSON 값을 매핑 처리하는 필터
+*/
 public class CustomJsonUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final String DEFAULT_LOGIN_REQUEST_URL = "/login";
@@ -32,6 +37,11 @@ public class CustomJsonUsernamePasswordAuthenticationFilter extends AbstractAuth
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * AbstractAuthenticationProcessingFilter(부모)의 getAuthenticationManager()로 AuthenticationManager 객체를 반환 받은 후
+     * authenticate()의 파라미터로 UsernamePasswordAuthenticationToken 객체를 넣고 인증 처리
+     * (여기서 AuthenticationManager 객체는 ProviderManager -> SecurityConfig에서 설정)
+     */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
         if(request.getContentType() == null || !request.getContentType().equals(CONTENT_TYPE)  ) {
