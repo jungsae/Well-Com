@@ -1,15 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [
-    // {
-    //     path: '/',
-    //     name: 'home',
-    //     component: ()=>import('@/components/HelloWorld.vue'),
-    // },
+    {
+        path: '/',
+        name: 'MainLanding',
+        component: () => import('@/views/MainLanding.vue'),
+    },
     {
         path: '/tableHome',
         name: 'TableHome',
         component: () => import('@/views/TableHome.vue'),
+    },
+    {
+        path: '/sharingHome',
+        name: 'SharingHome',
+        component: () => import('@/views/SharingHome.vue'),
     },
     {
         path: '/test-modal',
