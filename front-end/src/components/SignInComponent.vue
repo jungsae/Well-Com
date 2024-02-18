@@ -4,6 +4,7 @@
        <!-- <v-card class="mx-auto px-6 py-8" max-width="344"> -->
         <v-card-title>
           <span class="headline">로그인</span>
+          
         </v-card-title>
         <v-form v-model="form" @submit.prevent="onSubmit">
           <v-text-field
@@ -43,7 +44,7 @@
           >로그인</v-btn>
         </v-form>
         <div class="text-right">
-          <small>아직 회원이 아니신가요? <v-text href="#"><b>회원가입</b></v-text></small>
+          <small>아직 회원이 아니신가요? <a href="#"><b>회원가입</b></a></small>
         </div>
       </v-card>
   </v-dialog>
@@ -126,7 +127,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 @font-face {
   font-family: 'jua';
@@ -141,11 +142,15 @@ export default {
     border-radius: 24px;
   }
 
-  .v-text {
+  .v-text-field input {
+    font-family: sans-serif;
+  }
+
+  a{
     color: black;
     text-decoration-line: none;
   }
-  .v-text--hover{
+  a:hover{
     text-decoration-line: underline;
   }
 
