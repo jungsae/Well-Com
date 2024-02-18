@@ -1,15 +1,15 @@
 package com.wellcom.domain.Reservation.Dto;
 
-import com.wellcom.domain.Member.Member;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class ReservationCreateReqDto {
-    private Member member;
+@Builder
+public class ReservationResDto {
     private int deskNum;
-    private int cntPeople;
+    private String status;
     private LocalDateTime startTime;
-    private int minutes;
+    private LocalDateTime endTime;
 }

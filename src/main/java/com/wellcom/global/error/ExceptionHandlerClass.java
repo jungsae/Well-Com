@@ -2,7 +2,7 @@ package com.wellcom.global.error;
 
 import com.nimbusds.oauth2.sdk.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -26,9 +26,9 @@ public class ExceptionHandlerClass {
         log.error("IllegalArgumentException message : " + e.getMessage());
         return ErrorResponseDto.makeMessage(HttpStatus.BAD_REQUEST, e.getMessage());
     }
-    @ExceptionHandler(DataIntegrityViolationException.class) //JPA Column이 Unique인 값에 중복으로 넣을때 나오는 에러
-    public ResponseEntity<Map<String, Object>> DataIntegrityViolationException(DataIntegrityViolationException e){
-        log.error("DataIntegrityViolationException message : " + e.getMessage());
+    @ExceptionHandler(ConstraintViolationException.class) //JPA Column이 Unique인 값에 중복으로 넣을때 나오는 에러
+    public ResponseEntity<Map<String, Object>> ConstraintViolationExceptionHandler(ConstraintViolationException e){
+        log.error("ConstraintViolationException message : " + e.getMessage());
         return ErrorResponseDto.makeMessage(HttpStatus.CONFLICT, e.getMessage());
     }
     /**
