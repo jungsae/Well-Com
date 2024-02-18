@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -70,5 +72,15 @@ public class MemberController {
     public ResponseEntity<CommonResponse> unblockMember(@PathVariable Long id) {
         memberService.unblockMember(id);
         return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "회원 차단이 성공적으로 해제되었습니다.", HttpStatus.OK));
+    }
+@GetMapping("/admin/member/blocked")
+    public ResponseEntity<CommonResponse> listBlockedMembers() {
+        List<MemberListResDto> blockedMembers = memberService.findBlockedMembers();
+        return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "차단된 회원 목록 조회", blockedMembers));
+    }
+    @GetMapping("/member/{memberId}/reservations")
+    public ResponseEntity<List<ReservationDetailDto>> getMemberReservations(@PathVariable Long memberId) {
+        List<ReservationDetailDto> reservations = memberService.getMemberReservations(memberId);
+        return ResponseEntity.ok(reservations);
     }
 }

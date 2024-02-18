@@ -28,8 +28,13 @@ public class ReservationController {
         Reservation reservation = reservationService.saveReservation(reservationCreateReqDto);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.CREATED, "예약 성공", reservation.getReservationId()),HttpStatus.CREATED);
     }
+    @PostMapping("/reservation/now")
+    public ResponseEntity<CommonResponse> saveInstantUse(@RequestBody ReservationCreateReqDto reservationCreateReqDto){
+        Reservation reservation = reservationService.saveInstantUse(reservationCreateReqDto);
+        return new ResponseEntity<>(new CommonResponse(HttpStatus.CREATED,reservation.getDesk().getDeskNum() + "번 테이블 즉시 사용 등록", reservation.getReservationId()),HttpStatus.CREATED);
+    }
     @PatchMapping("/reservation/{reservation_id}/cancel")
     public ResponseEntity<CommonResponse> cancelReservation(@PathVariable String reservation_id){
-        return new ResponseEntity<>(new CommonResponse(HttpStatus.NO_CONTENT, "예약이 취소되었습니다", reservationService.cancelReservation(reservation_id)), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(new CommonResponse(HttpStatus.OK, "예약이 취소되었습니다", reservationService.cancelReservation(reservation_id)), HttpStatus.OK);
     }
 }

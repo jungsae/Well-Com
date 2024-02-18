@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    Reservation findByReservationIdAndMember(String reservationId, Member member);
+    Optional<Reservation> findByReservationIdAndMember(String reservationId, Member member);
     Optional<Reservation> findByReservationId(String reservationId);
     @Query("SELECT r FROM Reservation r WHERE r.desk.deskNum = :deskNum AND r.startTime > :currentTime AND (r.status = 'WAITING' OR r.status = 'USING')")
     List<Reservation> findActiveReservationsByDeskAndTime(@Param("deskNum") int deskNum, @Param("currentTime") LocalDateTime currentTime);
@@ -26,4 +26,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     // 기존 메서드 정의를 다음과 같이 수정하거나, 새로운 메서드를 추가합니다.
     @Query("SELECT COALESCE(SUM(r.reservationTime), 0) FROM Reservation r WHERE r.member.id = :memberId")
     int sumReservationTimeByMemberId(@Param("memberId") Long memberId);
+    List<Reservation> findByMember(Member member);
 }

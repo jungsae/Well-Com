@@ -4,7 +4,9 @@ import com.wellcom.domain.Member.Dto.*;
 import com.wellcom.domain.Member.Member;
 import com.wellcom.domain.Member.Repository.MemberRepository;
 import com.wellcom.domain.Member.Role;
+import com.wellcom.domain.Record.Repository.RecordRepository;
 import com.wellcom.domain.Reservation.Repository.ReservationRepository;
+import com.wellcom.domain.Reservation.Reservation;
 import com.wellcom.domain.SharingRoom.Repository.SharingRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +27,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final SharingRoomRepository sharingRoomRepository;
     private final ReservationRepository reservationRepository;
+    private final RecordRepository recordRepository;
 
 
     public void signUp(MemberSignUpDto memberSignUpDto) throws Exception {
@@ -55,6 +58,9 @@ public class MemberService {
         int reservationCount = reservationRepository.countReservationsByMemberId(id);
         Integer totalReservationTimeWrapper = reservationRepository.sumReservationTimeByMemberId(id);
         int totalReservationTime = totalReservationTimeWrapper != null ? totalReservationTimeWrapper : 0;
+        long wins = recordRepository.countByMemberIdAndIsWinner(member.getId(), "Y");
+        long totalParticipations = recordRepository.countByMemberId(member.getId());
+        double winRate = (totalParticipations > 0) ? ((double) wins/totalParticipations) * 100 : 0 ;
 
         // 모든 사용자에게 반환될 정보를 포함하는 MemberDetailResDto 생성
         return MemberDetailResDto.builder()
@@ -65,6 +71,8 @@ public class MemberService {
                 .sharingRoomCount(sharingRoomCount)
                 .reservationCount(reservationCount)
                 .totalReservationTime(totalReservationTime)
+                .wins(wins)
+                .winRate(winRate)
                 .build();
     }
 
@@ -108,6 +116,29 @@ public class MemberService {
         Member member = findById(id); // findById 메서드 활용
         member.setBlocked(false);
         memberRepository.save(member);
+    }
+    public List<MemberListResDto> findBlockedMembers() {
+        return memberRepository.findByIsBlockedTrue().stream()
+                .map(member -> MemberListResDto.builder()
+                        .id(member.getId())
+                        .nickName(member.getNickname())
+                        .email(member.getEmail())
+                        .build())
+                .collect(Collectors.toList());
+    }
+    public List<ReservationDetailDto> getMemberReservations(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
+
+        List<Reservation> reservations = reservationRepository.findByMember(member);
+
+        return reservations.stream().map(reservation -> new ReservationDetailDto(
+                reservation.getId(),
+                reservation.getDesk().getId(),
+                reservation.getStartTime(),
+                reservation.getEndTime(),
+                reservation.getStatus().name()
+        )).collect(Collectors.toList());
     }
 }
 
