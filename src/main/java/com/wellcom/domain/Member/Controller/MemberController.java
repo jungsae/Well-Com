@@ -1,10 +1,12 @@
 package com.wellcom.domain.Member.Controller;
 
-import com.wellcom.domain.Member.Dto.*;
+import com.wellcom.domain.Member.Dto.MemberSignUpDto;
 import com.wellcom.domain.Member.Service.MemberService;
+import com.wellcom.global.auth.jwt.service.JwtService;
 import com.wellcom.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.wellcom.domain.Member.Dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +17,17 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtService jwtService;
 
     @PostMapping("/sign-up")
-    @CrossOrigin(originPatterns = "*")
-    public String signUp(@RequestBody MemberSignUpDto memberSignUpDto) throws Exception {
-        log.info(memberSignUpDto.toString());
+    public ResponseEntity<CommonResponse> signUp(@RequestBody MemberSignUpDto memberSignUpDto) throws Exception {
         memberService.signUp(memberSignUpDto);
-        return "회원가입 성공";
+        return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "회원가입이 정상적으로 이루어졌습니다.", ""));
     }
+
+    // reissue용 api 아무것도 실행 안함
+    @GetMapping("/members/reissue")
+    public void reIssueToken(){}
 
     // 회원 삭제
     @DeleteMapping("/admin/member/{id}/delete")
