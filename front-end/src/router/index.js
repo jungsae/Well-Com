@@ -1,19 +1,19 @@
-import {createRouter, createWebHistory} from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [
-    {
-        path: '/',
-        name: 'home',
-        component: ()=>import('@/components/HelloWorld.vue'),
-    },
+    // {
+    //     path: '/',
+    //     name: 'home',
+    //     component: ()=>import('@/components/HelloWorld.vue'),
+    // },
     {
         path: '/test-modal',
         name: 'ModalTest',
-        component: ()=>import('@/components/ParentComponent.vue'),
+        component: () => import('@/components/ParentComponent.vue'),
     },
     {
         path: '/oauth2/redirect',
-        component: ()=>import('@/components/GoogleRedirect.vue'),
+        component: () => import('@/components/GoogleRedirect.vue'),
     }
 ]
 
