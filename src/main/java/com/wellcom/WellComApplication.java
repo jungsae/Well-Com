@@ -11,9 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
         }
 )
 public class WellComApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(WellComApplication.class, args);
     }
-
 }

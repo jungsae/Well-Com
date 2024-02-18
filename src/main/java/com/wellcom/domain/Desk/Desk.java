@@ -38,7 +38,14 @@ public class Desk {
     private LocalDateTime createdTime;
     @UpdateTimestamp
     private LocalDateTime updatedTime;
+
+    @Builder.Default
+    private String delYn = "N";
     public void updateIsUsable(String status) {
         this.isUsable = Status.valueOf(status);
+    }
+
+    public void setDelYn(String delYn) {
+        this.delYn = delYn;
     }
 }

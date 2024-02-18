@@ -3,7 +3,6 @@ spring:
     group:
       "local" : "local, jwt, oauth, s3"
     active : local
-
 ---
 spring:
   config:
@@ -17,10 +16,10 @@ spring:
     password: 1234
 
   jpa:
-    show-sql: true
+    show-sql: false
     database: mysql
     database-platform: org.hibernate.dialect.MariaDBDialect
-    generate-ddl: true
+    generate-ddl: false
     properties:
       hibernate:
         ddl-auto: validate

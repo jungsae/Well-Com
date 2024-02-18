@@ -23,7 +23,6 @@ import java.util.Map;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final MemberRepository memberRepository;
-    private final String SOCIAL_TYPE = "GOOGLE";
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -33,10 +32,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
-        // OAuth2 로그인 시 PK값
         String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
-        // 소셜 로그인에서 API가 제공하는 userInfo의 Json 값(유저 정보들)
+
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
         OAuthAttributes extractAttributes = OAuthAttributes.ofGoogle(userNameAttributeName, attributes);
