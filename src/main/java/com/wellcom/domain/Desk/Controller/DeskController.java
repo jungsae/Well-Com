@@ -3,6 +3,7 @@ package com.wellcom.domain.Desk.Controller;
 import com.wellcom.domain.Desk.Desk;
 import com.wellcom.domain.Desk.Dto.DeskCreateReqDto;
 import com.wellcom.domain.Desk.Dto.DeskResDto;
+import com.wellcom.domain.Desk.Dto.DeskUpdateReqDto;
 import com.wellcom.domain.Desk.Service.DeskService;
 import com.wellcom.domain.Desk.Status;
 import com.wellcom.global.common.CommonResponse;
@@ -49,6 +50,11 @@ public class DeskController {
         deskService.deleteDesk(deskNum);
         CommonResponse response = new CommonResponse(HttpStatus.OK, "Desk 번호 " + deskNum + "이(가) 성공적으로 삭제 처리되었습니다.", HttpStatus.OK);
         return ResponseEntity.ok(response);
+    }
+    @PatchMapping("/admin/desk/{id}/update")
+    public ResponseEntity<Desk> updateDesk(@PathVariable Long id, @RequestBody DeskUpdateReqDto deskUpdateReqDto) {
+        Desk updatedDesk = deskService.updateDesk(id, deskUpdateReqDto);
+        return ResponseEntity.ok(updatedDesk);
     }
 }
 

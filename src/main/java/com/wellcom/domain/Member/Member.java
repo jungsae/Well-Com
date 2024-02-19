@@ -45,7 +45,7 @@ public class Member {
 
     private int count;
 
-    @OneToMany(mappedBy ="member")
+    @OneToMany(mappedBy = "member")
     List<Record> histories = new ArrayList<>();
 
     @OneToMany(mappedBy = "member")
@@ -65,7 +65,7 @@ public class Member {
         isBlocked = blocked;
     }
 
-    public void deleteMember(){
+    public void deleteMember() {
         this.delYn = "Y";
     }
 
@@ -85,8 +85,17 @@ public class Member {
         return this.socialId != null;
     }
 
-    public void updateMember(String nickname, String password){
-        this.nickname = nickname;
-        this.password = password;
+    public void updateMember(String nickname, String password, String email) {
+        if (nickname != null && !nickname.isEmpty()) {
+            this.nickname = nickname;
+        }
+        if (password != null && !password.isEmpty()) {
+            // 비밀번호 인코딩 로직은 서비스 레이어에서 처리합니다.
+            // 이 메서드 내에서는 이미 인코딩된 비밀번호가 전달될 것으로 가정합니다.
+            this.password = password;
+        }
+        if (email != null && !email.isEmpty()) {
+            this.email = email;
+        }
     }
 }
