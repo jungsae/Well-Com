@@ -35,4 +35,13 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+@font-face {
+  font-family: "jua";
+  src: url(../public/font/BMJUA_ttf.ttf);
+}
+
+* {
+  font-family: "jua";
+}
+</style>
