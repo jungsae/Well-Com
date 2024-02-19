@@ -3,8 +3,11 @@ package com.wellcom.domain.Desk.Service;
 import com.wellcom.domain.Desk.Desk;
 import com.wellcom.domain.Desk.Dto.DeskCreateReqDto;
 import com.wellcom.domain.Desk.Dto.DeskResDto;
+import com.wellcom.domain.Desk.Dto.DeskUpdateReqDto;
 import com.wellcom.domain.Desk.Repository.DeskRepository;
 import com.wellcom.domain.Desk.Status;
+import com.wellcom.domain.Member.Dto.MemberUpdateReqDto;
+import com.wellcom.domain.Member.Member;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -71,5 +74,17 @@ public class DeskService {
         Desk desk = deskRepository.findByDeskNum(deskNum)
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 테이블 번호입니다."));
         deskRepository.delete(desk);
+    }
+    public Desk updateDesk(Long id, DeskUpdateReqDto deskUpdateReqDto) {
+        Desk desk = deskRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 Desk가 존재하지 않습니다. id=" + id));
+
+        desk.updateIsUsable(deskUpdateReqDto.getIsUsable());
+
+        desk.setDeskNum(deskUpdateReqDto.getDeskNum());
+        desk.setSeats(deskUpdateReqDto.getSeats());
+        desk.setHasTV(Status.valueOf(deskUpdateReqDto.getHasTV()));
+
+        return deskRepository.save(desk);
     }
 }

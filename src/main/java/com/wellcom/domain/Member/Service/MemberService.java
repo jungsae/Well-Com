@@ -79,9 +79,17 @@ public class MemberService {
 
     public void update(Long id, MemberUpdateReqDto memberUpdateReqDto) {
         Member member = findById(id); // findById 메서드 활용
-        member.updateMember(memberUpdateReqDto.getNickName(), passwordEncoder.encode(memberUpdateReqDto.getPassword()));
+        // 비밀번호 인코딩 처리
+        String encodedPassword = passwordEncoder.encode(memberUpdateReqDto.getPassword());
+        // 업데이트 메서드 호출 시 이메일 파라미터도 포함하여 전달
+        member.updateMember(
+                memberUpdateReqDto.getNickName(),
+                encodedPassword,
+                memberUpdateReqDto.getEmail()
+        );
         memberRepository.save(member);
     }
+
 
     public void delete(Long id) {
         Member member = findById(id); // findById 메서드 활용
