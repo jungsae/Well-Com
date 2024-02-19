@@ -1,10 +1,12 @@
 package com.wellcom.domain.Member.Dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class ReservationDetailDto {
     private Long reservationId;
     private Long deskId;

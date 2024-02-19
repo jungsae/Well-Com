@@ -44,8 +44,16 @@ public class Desk {
     public void updateIsUsable(String status) {
         this.isUsable = Status.valueOf(status);
     }
-
     public void setDelYn(String delYn) {
         this.delYn = delYn;
+    }
+    public void setDeskNum(int deskNum) {
+        this.deskNum = deskNum;
+    }
+    public void setSeats(int seats) {
+        this.seats = seats;
+    }
+    public void setHasTV(Status hasTV) {
+        this.hasTV = hasTV;
     }
 }
