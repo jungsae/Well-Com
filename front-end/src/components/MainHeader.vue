@@ -1,4 +1,7 @@
 <template>
+  <sign-in-component v-model="signIn" value></sign-in-component>
+  <sign-up-component v-model="signUp" value></sign-up-component>
+
   <v-navigation-drawer v-model="drawer" app right temporary color="blue-grey">
     <v-list>
       <v-list-item link to="/tableHome" @click="drawer = false">
@@ -43,6 +46,7 @@
       class="login-button custom-login-color"
       @mouseover="loginHover = true"
       @mouseleave="loginHover = false"
+      @click.stop="signIn = true"
       :elevation="loginHover ? 10 : 2"
     >
       로그인
@@ -52,6 +56,7 @@
       class="signup-button custom-signup-color"
       @mouseover="signupHover = true"
       @mouseleave="signupHover = false"
+      @click.stop="signUp = true"
       :elevation="signupHover ? 10 : 2"
     >
       회원가입
@@ -64,11 +69,15 @@
 </template>
 
 <script>
+import SignInComponent from './SignInComponent.vue';
+import SignUpComponent from './SignUpComponent.vue';
 export default {
   data: () => ({
     loginHover: false,
     signupHover: false,
     drawer: false,
+    signIn: false,
+    signUp: false,
   }),
   methods: {
     goToPage(path) {
@@ -78,6 +87,10 @@ export default {
       this.drawer = !this.drawer;
     },
   },
+  components: {
+    SignInComponent,
+    SignUpComponent,
+  }
 };
 </script>
 

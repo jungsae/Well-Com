@@ -70,6 +70,9 @@ export default {
       loading: false,
     }
   },
+  created() {
+    console.log("!");
+  },
   watch: {
     dialog: {
       get() {
@@ -135,7 +138,7 @@ export default {
 }
 
   * {
-    font-family: 'jua',sans-serif;
+    font-family: 'jua', sans-serif;
   }
 
   .v-card--shaped {
