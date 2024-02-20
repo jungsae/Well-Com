@@ -25,7 +25,8 @@ const methods = {
                 (err) => {
                     localStorage.clear();
                     console.log(err);
-                    window.location.href = "/";
+                    alert("로그인 세션이 만료되었습니다.")
+                    window.location.href("/");
 
                     return Promise.reject(err);
                 }

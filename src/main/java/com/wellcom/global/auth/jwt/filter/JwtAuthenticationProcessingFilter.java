@@ -3,7 +3,7 @@ package com.wellcom.global.auth.jwt.filter;
 import com.wellcom.domain.Member.Repository.MemberRepository;
 import com.wellcom.domain.Member.Member;
 import com.wellcom.global.error.ErrorResponseDto;
-import com.wellcom.global.util.PasswordUtil;
+import com.wellcom.global.auth.oauth2.util.PasswordUtil;
 import com.wellcom.global.auth.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

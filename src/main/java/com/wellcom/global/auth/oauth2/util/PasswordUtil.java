@@ -1,4 +1,4 @@
-package com.wellcom.global.util;
+package com.wellcom.global.auth.oauth2.util;
 
 import java.util.Random;
 
