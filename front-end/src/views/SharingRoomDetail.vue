@@ -1,4 +1,9 @@
 <template>
+  <h2>Hi</h2>
+</template>
+
+<!--
+<template>
   <div>
     <h1>Sharing Room Detail</h1>
     <p v-if="loading">Loading...</p>
@@ -18,7 +23,7 @@
   </div>
 </template>
 
-<!-- <script>
+<script>
 import axios from "axios";
 
 export default {
