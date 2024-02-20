@@ -17,8 +17,11 @@
             <v-card-subtitle class="text-center custom-subtitle">
               상품 이름: {{ room.itemName }}
             </v-card-subtitle>
-            <v-card-subtitle class="text-center custom-subtitle">
+            <!-- <v-card-subtitle class="text-center custom-subtitle">
               작성자 이메일: {{ room.memberEmail }}
+            </v-card-subtitle> -->
+            <v-card-subtitle class="text-center custom-subtitle">
+              내용: {{ room.contents }}
             </v-card-subtitle>
             <div style="text-align: center; margin-top: 20px">
               <img
@@ -56,8 +59,15 @@
               <v-btn
                 v-if="getTokenEmail() === room.memberEmail"
                 color="primary"
-                @click="editPost(room.id)"
+                @click="updateSharingRoom(room.id)"
+                style="margin-right: 10px"
                 >수정하기</v-btn
+              >
+              <v-btn
+                v-if="getTokenEmail() === room.memberEmail"
+                color="primary"
+                @click="updateSharingRoom(room.id)"
+                >삭제하기</v-btn
               >
               <v-btn
                 v-else-if="room.itemStatus !== 'DONE'"
@@ -110,9 +120,10 @@ export default {
         alert("로그인이 필요한 서비스입니다.");
       }
     },
-    editPost(roomId) {
+    updateSharingRoom(roomId) {
       // 수정 로직 구현
       console.log("수정하기 버튼 클릭 - 게시글 ID:", roomId);
+      
     },
     isAuthenticated() {
       return localStorage.getItem("Authorization") !== null;
