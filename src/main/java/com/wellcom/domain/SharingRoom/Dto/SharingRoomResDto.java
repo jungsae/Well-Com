@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class SharingRoomResDto {
     private Long id;
-    private Long memberId;
+    private String memberEmail;
     private String title;
     private String contents;
     private int cntPeople;
@@ -18,7 +18,7 @@ public class SharingRoomResDto {
     public static SharingRoomResDto toDto(SharingRoom sharingRoom) {
         SharingRoomResDto dto = new SharingRoomResDto();
         dto.setId(sharingRoom.getId());
-        dto.setMemberId(sharingRoom.getMember().getId());
+        dto.setMemberEmail(sharingRoom.getMember().getEmail());
         dto.setTitle(sharingRoom.getTitle());
         dto.setContents(sharingRoom.getContents());
         dto.setCntPeople(sharingRoom.getCntPeople());
