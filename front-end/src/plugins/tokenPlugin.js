@@ -26,6 +26,8 @@ const methods = {
                     localStorage.clear();
                     console.log(err);
                     window.location.href = "/";
+
+                    return Promise.reject(err);
                 }
             ) 
         }

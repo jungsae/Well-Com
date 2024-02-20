@@ -48,6 +48,7 @@
       @mouseleave="loginHover = false"
       @click.stop="signIn = true"
       :elevation="loginHover ? 10 : 2"
+      v-if="!isLogin"
     >
       로그인
     </v-btn>
@@ -58,8 +59,20 @@
       @mouseleave="signupHover = false"
       @click.stop="signUp = true"
       :elevation="signupHover ? 10 : 2"
+      v-if="!isLogin"
     >
       회원가입
+    </v-btn>
+    <v-btn
+      text
+      class="logout-button custom-logout-color"
+      @mouseover="logoutHover = true"
+      @mouseleave="logoutHover = false"
+      @click.prevent="doLogout"
+      :elevation="logoutHover ? 10 : 2"
+      v-if="isLogin"
+    >
+      로그아웃
     </v-btn>
     <v-app-bar-nav-icon
       @click.stop="drawer = !drawer"
@@ -75,10 +88,18 @@ export default {
   data: () => ({
     loginHover: false,
     signupHover: false,
+    logoutHover: false,
     drawer: false,
     signIn: false,
     signUp: false,
+    isLogin: false,
+    userRole: null,
   }),
+  created(){
+    if(localStorage.getItem("Authorization")){
+        this.isLogin = true;
+    }
+  },
   methods: {
     goToPage(path) {
       this.$router.push(path);
@@ -86,6 +107,10 @@ export default {
     toggleDrawer() {
       this.drawer = !this.drawer;
     },
+    doLogout(){
+        localStorage.clear();
+        this.goToPage("/");
+    }
   },
   components: {
     SignInComponent,
@@ -103,7 +128,8 @@ export default {
 }
 
 .custom-login-color,
-.custom-signup-color {
+.custom-signup-color,
+.custom-logout-color {
   background-color: #8197db;
   color: #ffffff;
   margin-right: 10px;

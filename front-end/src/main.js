@@ -1,14 +1,24 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router'
+import router from '@/router/index.js'
 import vuetify from './plugins/vuetify'
 import token from './plugins/tokenPlugin.js'
 import { loadFonts } from './plugins/webfontloader'
+import axios from 'axios'
 
 loadFonts()
 
-createApp(App)
-  .use(router)
-  .use(vuetify)
-  .use(token)
-  .mount('#app')
+const app = createApp(App);
+
+axios.interceptors.response.use(response => response, error => {
+  if(error.response && error.response.status === 401){
+      localStorage.clear();
+      window.location.href = "/";
+  }
+  return Promise.reject(error);
+})
+
+app.use(router)
+app.use(vuetify)
+app.use(token)
+app.mount('#app')

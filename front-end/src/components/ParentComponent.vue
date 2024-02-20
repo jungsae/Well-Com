@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-top: 10%;">
     <v-btn color="accent" large @click.stop="signin = true">Sign in</v-btn>
     <v-btn color="accent" large @click.stop="signup = true">Sign up</v-btn>
     <v-btn color="accent" large @click.prevent="reissue">ReIssue 테스트</v-btn>
