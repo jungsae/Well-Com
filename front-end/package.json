@@ -17,14 +17,15 @@
     "axios": "^1.6.7",
     "core-js": "^3.8.3",
     "jwt-decode": "^4.0.0",
+    "net": "^1.0.2",
     "roboto-fontface": "*",
     "sockjs-client": "^1.6.1",
+    "stompjs": "^2.3.3",
     "vue": "^3.2.13",
     "vue-router": "^4.2.5",
     "vuetify": "^3.5.3",
     "vuex": "^4.1.0",
-    "webfontloader": "^1.0.0",
-    "webstomp-client": "^1.2.6"
+    "webfontloader": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

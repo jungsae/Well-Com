@@ -13,7 +13,7 @@ const app = createApp(App);
 axios.interceptors.response.use(response => response, error => {
   if(error.response && error.response.status === 401){
       localStorage.clear();
-      window.location.href = "/";
+      history.back();
   }
   return Promise.reject(error);
 })
