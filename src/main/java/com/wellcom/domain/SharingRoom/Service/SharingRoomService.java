@@ -88,7 +88,6 @@ public class SharingRoomService {
         // 로그인 한 사용자만 Sharing Room 상세 조회 가능
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-
         memberRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("not found email"));
         SharingRoom sharingRoom = sharingRoomRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("sharingRoom not found"));
         return SharingRoomResDto.toDto(sharingRoom);

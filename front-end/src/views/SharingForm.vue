@@ -7,16 +7,26 @@
             <v-card-title class="text-center">나눔 글쓰기</v-card-title>
             <v-card-text>
               <v-form @submit.prevent="roomCreate">
-                <v-text-field v-model="title" label="제목"></v-text-field>
-                <v-textarea v-model="contents" label="내용"></v-textarea>
+                <v-text-field
+                  v-model="title"
+                  label="제목"
+                  maxlength="20"
+                ></v-text-field>
+                <v-textarea
+                  v-model="contents"
+                  label="내용"
+                  maxlength="300"
+                ></v-textarea>
                 <v-text-field
                   v-model.number="cntPeople"
                   label="인원 수"
                   type="number"
+                  max="150"
                 ></v-text-field>
                 <v-text-field
                   v-model="itemName"
                   label="상품 이름"
+                  maxlength="20"
                 ></v-text-field>
                 <v-file-input
                   v-model="itemImage"
@@ -68,13 +78,9 @@ export default {
         );
         alert("상품 등록에 성공했습니다.");
         console.log(response.data.result);
-        this.$router.push({
-          name: "SharingRoomDetail",
-          params: { id: response.data.result },
-        });
       } catch (error) {
         console.error("Error submitting form:", error);
-        alert("상품 등록에 실패했습니다.");
+        alert("권한이 없습니다. 로그인 후 이용해주세요.");
         this.$router.push("/sharingHome");
       }
     },
