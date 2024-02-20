@@ -32,7 +32,7 @@ public class MemberController {
     public void reIssueToken(){}
 
     // 회원 삭제
-    @DeleteMapping("/admin/member/{id}/delete")
+    @DeleteMapping("/member/{id}/delete")
     public ResponseEntity<CommonResponse> memberDelete(@PathVariable Long id) {
         memberService.delete(id);
         return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "회원이 성공적으로 삭제되었습니다.", id));
@@ -47,7 +47,7 @@ public class MemberController {
     }
 
     // 회원 목록 조회
-    @GetMapping("/admin/member/list")
+    @GetMapping("/member/list")
     public ResponseEntity<CommonResponse> memberList() {
         MemberListTotalResDto memberListResponse = memberService.findAll();
         return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "멤버조회입니다.", memberListResponse));

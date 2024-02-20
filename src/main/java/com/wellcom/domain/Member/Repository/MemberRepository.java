@@ -13,4 +13,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByRefreshToken(String refreshToken);
     Optional<Member> findBySocialId(String socialId);
     List<Member> findByIsBlockedTrue();
+    List<Member> findByDelYn(String delYn);
 }

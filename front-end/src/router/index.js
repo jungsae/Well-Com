@@ -18,6 +18,10 @@ const routes = [
     component: () => import("@/views/SharingHome.vue"),
   },
   {
+    path: "/admin/home",
+    component: () => import("@/views/AdminHomeForm.vue"),
+  },
+  {
     path: "/test-modal",
     name: "ModalTest",
     component: () => import("@/components/ParentComponent.vue"),

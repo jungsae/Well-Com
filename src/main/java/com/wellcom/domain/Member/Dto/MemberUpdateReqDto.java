@@ -5,6 +5,5 @@ import lombok.Data;
 @Data
 public class MemberUpdateReqDto {
     private String nickName;
-    private String password;
     private String email;
 }
