@@ -1,18 +1,16 @@
+import SharingForm from "@/views/SharingForm.vue";
+import MemberCreate from "@/views/SharingRoomDetail.vue";
+
 export const sharingRoutes = [
-  {
-    path: "/sharingHome",
-    name: "SharingHome",
-    component: ()=>import("@/views/SharingHome.vue"),
-  },
   {
     path: "/make/sharingRoom",
     name: "SharingForm",
-    component: ()=>import("@/views/SharingForm.vue"),
+    component: SharingForm,
   },
   {
     path: "/user/room/:id",
     name: "SharingRoomDetail",
-    component: ()=>import("@/views/SharingRoomDetail.vue"),
+    component: MemberCreate,
     props: true,
   },
 ];
