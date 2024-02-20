@@ -3,7 +3,7 @@
     <v-container class="v-container">
       <v-row justify="end" class="mb-4">
         <v-col cols="auto">
-          <v-btn color="primary" @click="handleClickButton">나눔 글쓰기</v-btn>
+          <v-btn color="primary" @click="checkAuth">나눔 글쓰기</v-btn>
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -16,6 +16,9 @@
             >
             <v-card-subtitle class="text-center custom-subtitle">
               상품 이름: {{ room.itemName }}
+            </v-card-subtitle>
+            <v-card-subtitle class="text-center custom-subtitle">
+              작성자 이메일: {{ room.memberEmail }}
             </v-card-subtitle>
             <div style="text-align: center; margin-top: 20px">
               <img
@@ -51,7 +54,13 @@
             </div>
             <div style="margin-top: 20px; text-align: center">
               <v-btn
-                v-if="room.itemStatus !== 'DONE'"
+                v-if="getTokenEmail() === room.memberEmail"
+                color="primary"
+                @click="editPost(room.id)"
+                >수정하기</v-btn
+              >
+              <v-btn
+                v-else-if="room.itemStatus !== 'DONE'"
                 color="primary"
                 @click="goToDetailPage(room.id)"
                 >선착순 나눔받기</v-btn
@@ -65,18 +74,9 @@
   </v-main>
 </template>
 
-<style scoped>
-.custom-title {
-  font-size: 35px;
-}
-
-.custom-subtitle {
-  font-size: 18px;
-}
-</style>
-
 <script>
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 export default {
   data() {
@@ -96,7 +96,7 @@ export default {
         console.error("Error fetching sharing rooms:", error);
       }
     },
-    handleClickButton() {
+    checkAuth() {
       if (this.isAuthenticated()) {
         this.$router.push("/make/sharingRoom");
       } else {
@@ -110,11 +110,21 @@ export default {
         alert("로그인이 필요한 서비스입니다.");
       }
     },
+    editPost(roomId) {
+      // 수정 로직 구현
+      console.log("수정하기 버튼 클릭 - 게시글 ID:", roomId);
+    },
     isAuthenticated() {
       return localStorage.getItem("Authorization") !== null;
     },
-    goToPage(path) {
-      this.$router.push(path);
+    getTokenEmail() {
+      const token = localStorage.getItem("Authorization");
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        const userEmail = decodedToken.email;
+        return userEmail;
+      }
+      return null;
     },
   },
   created() {
@@ -124,11 +134,11 @@ export default {
 </script>
 
 <style scoped>
-.wrap {
-  background-image: url("../assets/background.jpg");
-  background-size: cover;
-  background-position: center;
-  width: 100%;
-  height: 100%;
+.custom-title {
+  font-size: 35px;
+}
+
+.custom-subtitle {
+  font-size: 18px;
 }
 </style>
