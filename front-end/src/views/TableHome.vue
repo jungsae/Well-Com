@@ -8,7 +8,7 @@
               :height="450"
               :width="2000"
               aspect-ratio="16/9"
-              src="../assets/table.png"
+              class="tableImage"
               alt="이미지 준비중"
             ></v-img>
             <v-card-title>{{ tables[n - 1].description }}</v-card-title>
@@ -25,6 +25,7 @@
 export default {
   data() {
     return {
+      myImage: require('@/assets/table.png'),
       tables: [
         {
           description: "테이블 1 설명",
@@ -59,5 +60,9 @@ export default {
 
 .v-container {
   margin: auto;
+}
+
+.tableImage {
+  background-image: url("../assets/table.png");
 }
 </style>

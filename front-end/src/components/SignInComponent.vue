@@ -27,7 +27,7 @@
               label="Password"
               placeholder="Enter your password"
           ></v-text-field>
-          <v-btn @click.prevent="signInWithGoogle" dark id="google-connect" class="social-button">
+          <v-btn v-on:click.prevent="signInWithGoogle" dark id="google-connect" class="social-button">
             <v-icon left>mdi mdi-google</v-icon>
             <span class="text">구글 계정으로 로그인</span>
           </v-btn>
@@ -69,9 +69,6 @@ export default {
       form: false,
       loading: false,
     }
-  },
-  created() {
-    console.log("!");
   },
   watch: {
     dialog: {
@@ -119,7 +116,6 @@ export default {
               alert(error_message);
           }else{
               console.log(error);
-              alert("Login Failed")
           }
       }
     },
