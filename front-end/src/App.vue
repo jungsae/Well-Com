@@ -29,7 +29,8 @@ export default {
   },
   watch: {
     currentPath(newVal) {
-      this.isMain = newVal !== "/";
+      // 메인 페이지 또는 /admin/home 페이지가 아닐 때만 헤더와 푸터를 보이게 함
+      this.isMain = newVal !== "/" && newVal !== "/admin/home";
     },
   },
 };

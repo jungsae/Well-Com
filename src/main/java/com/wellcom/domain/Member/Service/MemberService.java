@@ -78,16 +78,15 @@ public class MemberService {
 
 
     public void update(Long id, MemberUpdateReqDto memberUpdateReqDto) {
-        Member member = findById(id); // findById 메서드 활용
-        // 비밀번호 인코딩 처리
-        String encodedPassword = passwordEncoder.encode(memberUpdateReqDto.getPassword());
-        // 업데이트 메서드 호출 시 이메일 파라미터도 포함하여 전달
+        Member member = findById(id); // findById 메서드를 활용하여 회원 정보 조회
+
+        // 비밀번호 업데이트 로직 제거
+        // 닉네임과 이메일만 업데이트하는 로직으로 변경
         member.updateMember(
                 memberUpdateReqDto.getNickName(),
-                encodedPassword,
                 memberUpdateReqDto.getEmail()
         );
-        memberRepository.save(member);
+        memberRepository.save(member); // 변경된 회원 정보 저장
     }
 
 
@@ -97,7 +96,7 @@ public class MemberService {
     }
 
     public MemberListTotalResDto findAll() {
-        List<MemberListResDto> memberListResDtos = memberRepository.findAll().stream()
+        List<MemberListResDto> memberListResDtos = memberRepository.findByDelYn("N").stream()
                 .map(member -> MemberListResDto.builder()
                         .id(member.getId())
                         .nickName(member.getNickname())
@@ -105,7 +104,8 @@ public class MemberService {
                         .build())
                 .collect(Collectors.toList());
 
-        long totalMembers = memberRepository.count();
+        // 삭제되지 않은 회원만 카운트
+        long totalMembers = memberListResDtos.size();
 
         return MemberListTotalResDto.builder()
                 .members(memberListResDtos)
