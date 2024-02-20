@@ -1,8 +1,15 @@
 <template>
   <v-main class="wrap">
     <v-container class="v-container">
+      <v-row>
+        <v-btn @click="filterTablesWithTV">TV가 있는 테이블 보기</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn @click="filterTablesWithUsable"
+          >바로 사용가능한 테이블 보기</v-btn
+        >
+      </v-row>
       <v-row justify="center">
-        <v-col cols="12" sm="6" v-for="table in tableList" :key="table.id">
+        <v-col cols="12" sm="3" v-for="table in tableList" :key="table.id">
           <v-card class="card-image">
             <v-card-title>테이블 번호: {{ table.deskNum }}</v-card-title>
             <v-card-subtitle>좌석수: {{ table.seats }}</v-card-subtitle>
@@ -14,18 +21,22 @@
               />
               <div v-if="table.isUsable === 'N'" class="overlay">사용중</div>
             </div>
+            <!-- <v-divider></v-divider>
             <v-card-item>{{
               table.hasTV == "Y" ? "TV 있음" : "TV 없음"
             }}</v-card-item>
+            <v-divider></v-divider> -->
             <v-card-actions>
               <v-btn
                 :disabled="table.isUsable == 'N'"
+                style="height: 50%; width: 50%"
                 @click="openImmediateUseDialog(table.id, table.seats)"
                 color="primary"
                 >바로사용하기</v-btn
               >
               <v-spacer></v-spacer>
               <v-btn
+                style="height: 50%; width: 50%"
                 @click="showReservationModal(table.id, table.seats)"
                 color="primary"
                 >예약하기</v-btn
@@ -49,6 +60,7 @@
             <v-col cols="12">
               <v-date-picker
                 v-model="selectedDate"
+                :min="today"
                 @input="showTimePicker = true"
               ></v-date-picker>
             </v-col>
@@ -65,13 +77,19 @@
             <v-col cols="12" v-if="showTimePicker">
               <v-text-field
                 label="시간을 입력해주세요 (예: 15:00)"
+                :rules="[
+                  (v) => !!v || '시간을 선택해주세요',
+                  (v) =>
+                    (v > 0 && v <= 60) ||
+                    '유효한 시간을 입력해주세요 (1분 ~ 60분)',
+                ]"
                 v-model="manualTimeInput"
                 @input="updateTimePicker"
               ></v-text-field>
-              <v-time-picker
+              <!-- <v-time-picker
                 v-model="selectedTime"
                 @change="handleTimeChange"
-              ></v-time-picker>
+              ></v-time-picker> -->
             </v-col>
           </v-row>
         </v-card-text>
@@ -100,12 +118,17 @@
                 .map(Number.call, Number)
                 .slice(1)
             "
+            :rules="[(v) => !!v || '인원을 선택해주세요']"
           ></v-select>
           <v-text-field
             v-model="immediateUseMinutes"
             label="사용할 시간 (분)"
             type="number"
-            :rules="[(v) => !!v || '시간을 입력해주세요']"
+            :rules="[
+              (v) => !!v || '시간을 입력해주세요',
+              (v) =>
+                (v > 0 && v <= 60) || '유효한 시간을 입력해주세요 (1분 ~ 60분)',
+            ]"
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
@@ -127,6 +150,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      today: new Date().toISOString().substring(0, 10),
       tableList: [],
       maxSeat: null,
       selectedSeats: null,
@@ -198,47 +222,63 @@ export default {
       const reservationData = {
         deskNum: this.currentTableId,
         cntPeople: this.selectedSeats,
-        minutes: this.immediateUseMinutes, // 고정된 값으로 설정, 필요에 따라 조정 가능
+        minutes: this.immediateUseMinutes,
       };
       try {
-        await axios.post(
-          `${process.env.VUE_APP_API_BASE_URL}/reservation/now`,
-          reservationData
-        );
-        alert("바로 사용 예약 성공!");
-      } catch (error) {
-        if (error.response.status) {
-          alert("로그인 해주세요");
+        if (
+          reservationData.minutes === 0 ||
+          reservationData.minutes === null ||
+          reservationData.cntPeople === 0 ||
+          reservationData.cntPeople === null
+        ) {
+          alert("값을 입력해주세요");
+        } else if (localStorage.Authorization == null) {
+          alert("로그인 해주세요 입력해주세요");
+          location.reload();
+        } else {
+          await axios.post(
+            `${process.env.VUE_APP_API_BASE_URL}/reservation/now`,
+            reservationData,
+            this.$token("members/reissue")
+          );
+          this.closeImmediateUseDialog();
+          alert("바로 사용 예약 성공!");
+          location.reload();
         }
-        alert("바로 사용 예약 실패");
-      } finally {
-        this.closeImmediateUseDialog();
+      } catch (error) {
+        console.log("Error! " + error);
+        if (error.response.status == 404) {
+          alert("로그인 해주세요");
+        } else {
+          alert(error);
+        }
       }
+      // finally {
+      //   this.closeImmediateUseDialog();
+      //   location.reload();
+      // }
     },
 
     async reserveTable() {
       const reservationData = {
         deskNum: this.currentTableId,
-        cntPeople: 6, // 예시: 사용자가 선택한 사람 수 또는 고정 값
+        cntPeople: this.selectedSeats, // 예시: 사용자가 선택한 사람 수 또는 고정 값
         startTime: `${this.selectedDate}T${this.selectedTime}:00`, // 날짜와 시간을 ISO 형식으로 조합
         minutes: 5, // 예시: 예약 지속 시간 (분 단위)
       };
       const isoDateTime = `${this.selectedDate}T${this.selectedTime}:00`;
       console.log(isoDateTime); // "2024-02-19T14:20:00"과 같은 출력을 기대합니다.
       try {
-        // 서버로 예약 데이터 전송
         const response = await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/reservation/create`,
           reservationData
         );
-        console.log(response.data); // 응답 로깅
-        // 예약 성공 후 처리, 예를 들어 사용자에게 알림 표시
-        this.closeReservationModal(); // 모달 닫기
+        console.log(response.data);
+        this.closeReservationModal();
       } catch (error) {
         console.log(error.message);
         alert("예약실패");
-        this.closeReservationModal(); // 모달 닫기
-        // 에러 처리, 예를 들어 사용자에게 에러 메시지 표시
+        this.closeReservationModal();
       } // 실제 예약 처리를 여기에 구현합니다. 예: API 호출
     },
   },
@@ -255,6 +295,7 @@ export default {
 
 .v-container {
   margin: auto;
+  margin-top: 10px;
 }
 .image-container {
   position: relative;
@@ -276,10 +317,10 @@ export default {
   width: 100%;
   height: 100%;
   background-color: rgba(255, 255, 255, 0.6);
-  color: black; /* 텍스트 색상 */
+  color: black;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 35px; /* 텍스트 크기 */
+  font-size: 35px;
 }
 </style>
