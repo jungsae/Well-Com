@@ -3,23 +3,30 @@
     <v-container class="v-container">
       <v-row justify="center">
         <v-col cols="12" sm="6" v-for="table in tableList" :key="table.id">
-          <v-card>
+          <v-card class="card-image">
             <v-card-title>테이블 번호: {{ table.deskNum }}</v-card-title>
             <v-card-subtitle>좌석수: {{ table.seats }}</v-card-subtitle>
-            <v-img
-              class="mytable"
-              :height="300"
-              :width="1200"
-              aspect-ratio="16/9"
-            ></v-img>
+            <div class="image-container">
+              <img
+                :src="table.tableImg"
+                alt="이미지 준비중"
+                style="height: 100%; width: 100%"
+              />
+              <div v-if="table.isUsable === 'N'" class="overlay">사용중</div>
+            </div>
             <v-card-item>{{
               table.hasTV == "Y" ? "TV 있음" : "TV 없음"
             }}</v-card-item>
             <v-card-actions>
               <v-btn
-                v-if="table.isUsable == 'Y'"
                 :disabled="table.isUsable == 'N'"
-                @click="showReservationModal(table.id)"
+                @click="openImmediateUseDialog(table.id, table.seats)"
+                color="primary"
+                >바로사용하기</v-btn
+              >
+              <v-spacer></v-spacer>
+              <v-btn
+                @click="showReservationModal(table.id, table.seats)"
                 color="primary"
                 >예약하기</v-btn
               >
@@ -28,37 +35,45 @@
         </v-col>
       </v-row>
     </v-container>
+
     <v-dialog
       v-model="isReservationModalVisible"
       max-width="450px"
-      max-height="700px"
+      max-height="850px"
+      transition="dialog-bottom-transition"
     >
       <v-card>
         <v-card-title>예약 날짜와 시간 선택</v-card-title>
         <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-date-picker
-                  v-model="selectedDate"
-                  @input="showTimePicker = true"
-                ></v-date-picker>
-              </v-col>
-              <v-col cols="12" v-if="showTimePicker">
-                <!-- 시간을 직접 입력할 수 있는 텍스트 필드 추가 -->
-                <v-text-field
-                  label="시간 직접 입력 (예: 15:00)"
-                  v-model="manualTimeInput"
-                  @input="updateTimePicker"
-                ></v-text-field>
-                <!-- 시간 선택기 -->
-                <v-time-picker
-                  v-model="selectedTime"
-                  @change="handleTimeChange"
-                ></v-time-picker>
-              </v-col>
-            </v-row>
-          </v-container>
+          <v-row>
+            <v-col cols="12">
+              <v-date-picker
+                v-model="selectedDate"
+                @input="showTimePicker = true"
+              ></v-date-picker>
+            </v-col>
+            <v-select
+              v-model="selectedSeats"
+              label="인원선택"
+              density="comfortable"
+              :items="
+                Array.apply(0, { length: maxSeat + 1 })
+                  .map(Number.call, Number)
+                  .slice(1)
+              "
+            ></v-select>
+            <v-col cols="12" v-if="showTimePicker">
+              <v-text-field
+                label="시간을 입력해주세요 (예: 15:00)"
+                v-model="manualTimeInput"
+                @input="updateTimePicker"
+              ></v-text-field>
+              <v-time-picker
+                v-model="selectedTime"
+                @change="handleTimeChange"
+              ></v-time-picker>
+            </v-col>
+          </v-row>
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" @click="reserveTable">예약 확인</v-btn>
@@ -67,55 +82,63 @@
       </v-card>
     </v-dialog>
 
-    <!-- 예약 모달 -->
-    <!-- <v-dialog
-      v-model="isReservationModalVisible"
-      max-width="450px"
-      max-height="700px"
+    <v-dialog
+      v-model="isImmediateUseDialogVisible"
+      max-width="290px"
+      persistent
+      transition="dialog-bottom-transition"
     >
       <v-card>
-        <v-card-title>예약 날짜와 시간 선택</v-card-title>
+        <v-card-title>사용 시간 입력</v-card-title>
         <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-date-picker
-                  show-adjacent-months
-                  v-model="selectedDate"
-                  @input="showTimePicker = true"
-                ></v-date-picker>
-              </v-col>
-              <v-col cols="12" v-if="showTimePicker">
-                <v-time-picker
-                  v-model="selectedTime"
-                  @change="handleTimeChange"
-                ></v-time-picker>
-              </v-col>
-            </v-row>
-          </v-container>
+          <v-select
+            v-model="selectedSeats"
+            label="인원선택"
+            density="comfortable"
+            :items="
+              Array.apply(0, { length: maxSeat + 1 })
+                .map(Number.call, Number)
+                .slice(1)
+            "
+          ></v-select>
+          <v-text-field
+            v-model="immediateUseMinutes"
+            label="사용할 시간 (분)"
+            type="number"
+            :rules="[(v) => !!v || '시간을 입력해주세요']"
+          ></v-text-field>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="primary" @click="reserveTable">예약 확인</v-btn>
-          <v-btn text @click="closeReservationModal">취소</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="closeImmediateUseDialog"
+            >취소</v-btn
+          >
+          <v-btn color="blue darken-1" text @click="immediateUseTable"
+            >확인</v-btn
+          >
         </v-card-actions>
       </v-card>
-    </v-dialog> -->
+    </v-dialog>
   </v-main>
 </template>
 
 <script>
 import axios from "axios";
-
 export default {
   data() {
     return {
       tableList: [],
+      maxSeat: null,
+      selectedSeats: null,
+
+      isImmediateUseDialogVisible: false,
       isReservationModalVisible: false,
       selectedDate: null,
       selectedTime: null,
       showTimePicker: false,
       manualTimeInput: "",
       currentTableId: null,
+      immediateUseMinutes: null,
     };
   },
   async created() {
@@ -123,29 +146,36 @@ export default {
       `${process.env.VUE_APP_API_BASE_URL}/desks`
     );
     this.tableList = response.data;
-    console.lo;
+    this.tableList = this.tableList.map((table) => ({
+      ...table,
+      tableImg: require("../assets/table.jpg"),
+    }));
+  },
+  watch: {
+    selectedDate(newVal) {
+      if (newVal) {
+        this.showTimePicker = true;
+      }
+    },
   },
   methods: {
     handleDateChange(value) {
-      this.selectedDate = value; // 선택된 날짜 업데이트
-      this.showTimePicker = true; // 시간 선택기 활성화
+      this.selectedDate = value;
+      this.showTimePicker = true;
     },
     updateTimePicker() {
-      // `manualTimeInput`에서 입력된 시간을 `selectedTime`에 업데이트
-      // 입력 형식이 올바른지 확인 후 시간 업데이트
       if (this.manualTimeInput.match(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/)) {
         this.selectedTime = this.manualTimeInput;
       }
     },
     handleTimeChange(value) {
       this.selectedTime = value;
-      // `v-time-picker`에서 시간을 선택하면 `manualTimeInput`도 업데이트
       this.manualTimeInput = this.selectedTime;
     },
     showReservationModal(tableId) {
       this.currentTableId = tableId;
       this.isReservationModalVisible = true;
-      this.showTimePicker = false; // 시간 선택기를 초기화합니다.
+      this.showTimePicker = false;
     },
     closeReservationModal() {
       this.isReservationModalVisible = false;
@@ -153,6 +183,39 @@ export default {
       this.selectedDate = null;
       this.selectedTime = null;
     },
+    openImmediateUseDialog(tableId, seats) {
+      this.isImmediateUseDialogVisible = true;
+      this.currentTableId = tableId;
+      this.maxSeat = seats;
+    },
+    closeImmediateUseDialog() {
+      this.isImmediateUseDialogVisible = false;
+      this.currentTableId = null;
+      this.selectedSeats = null;
+      this.immediateUseMinutes = null;
+    },
+    async immediateUseTable() {
+      const reservationData = {
+        deskNum: this.currentTableId,
+        cntPeople: this.selectedSeats,
+        minutes: this.immediateUseMinutes, // 고정된 값으로 설정, 필요에 따라 조정 가능
+      };
+      try {
+        await axios.post(
+          `${process.env.VUE_APP_API_BASE_URL}/reservation/now`,
+          reservationData
+        );
+        alert("바로 사용 예약 성공!");
+      } catch (error) {
+        if (error.response.status) {
+          alert("로그인 해주세요");
+        }
+        alert("바로 사용 예약 실패");
+      } finally {
+        this.closeImmediateUseDialog();
+      }
+    },
+
     async reserveTable() {
       const reservationData = {
         deskNum: this.currentTableId,
@@ -172,7 +235,8 @@ export default {
         // 예약 성공 후 처리, 예를 들어 사용자에게 알림 표시
         this.closeReservationModal(); // 모달 닫기
       } catch (error) {
-        console.error(error);
+        console.log(error.message);
+        alert("예약실패");
         this.closeReservationModal(); // 모달 닫기
         // 에러 처리, 예를 들어 사용자에게 에러 메시지 표시
       } // 실제 예약 처리를 여기에 구현합니다. 예: API 호출
@@ -192,10 +256,30 @@ export default {
 .v-container {
   margin: auto;
 }
+.image-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 16px;
+}
 
-.mytable {
-  max-width: 1000px;
-  max-height: 1000px;
-  background-image: url("../assets/table.jpg");
+.card-image {
+  border-radius: 20px;
+  display: block;
+  object-fit: cover;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.6);
+  color: black; /* 텍스트 색상 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 35px; /* 텍스트 크기 */
 }
 </style>
