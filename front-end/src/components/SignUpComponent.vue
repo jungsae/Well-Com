@@ -1,15 +1,35 @@
 <template>
-  <v-dialog v-model="dialog" fullscreen :scrim="false" transition="dialog-bottom-transition">
-      <v-card class="blue-lighten-1 pa-12 rounded">
-        <!-- <v-card class="mx-auto px-6 py-8" max-width="344"> -->
-        <v-card-title>
-          <span class="headline">회원가입</span>
-        </v-card-title>
-        <v-form v-model="form" @submit.prevent="onSubmit">
+  <div id="app">
+    <!-- 사이드바 -->
+    <div class="sidebar">
+      <h1>관리자 페이지</h1>
+      <ul>
+        <li @click="navigateTo('memberList')">회원 목록 조회</li>
+        <!-- 추가적인 사이드바 메뉴 항목 -->
+      </ul>
+    </div>
 
-        </v-form>
-      </v-card>
-  </v-dialog>
+    <!-- 메인 컨텐츠 영역 -->
+    <div class="main-content">
+      <h1>환영합니다, 관리자님!</h1>
+      <!-- 조건부 렌더링을 사용하여 선택된 페이지 내용을 표시 -->
+      <div v-if="currentPage === 'memberList'">
+        <!-- 회원 목록 표시 -->
+        <table>
+          <tr>
+            <th>회원 ID</th>
+            <th>이름</th>
+            <th>이메일</th>
+          </tr>
+          <tr v-for="member in members" :key="member.id">
+            <td>{{ member.id }}</td>
+            <td>{{ member.name }}</td>
+            <td>{{ member.email }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

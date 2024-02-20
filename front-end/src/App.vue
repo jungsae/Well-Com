@@ -27,9 +27,13 @@ export default {
       return this.$route.path;
     },
   },
+  
   watch: {
-    currentPath(newVal) {
-      this.isMain = newVal !== "/";
+    '$route.path': {
+      immediate: true,
+      handler(newVal) {
+        this.isMain = newVal === "/" || newVal === "/adminHome";
+      },
     },
   },
 };
