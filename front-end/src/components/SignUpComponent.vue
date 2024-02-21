@@ -1,13 +1,28 @@
 <template>
-  <v-dialog v-model="dialog" fullscreen :scrim="false" transition="dialog-bottom-transition">
-    <v-card class="blue-lighten-1 pa-12 rounded">
-      <!-- <v-card class="mx-auto px-6 py-8" max-width="344"> -->
-      <v-card-title>
-        <span class="headline">회원가입</span>
+  <v-dialog transition="slide-y-transition" v-model="dialog" max-width="450px" class="dialog-container">
+    <v-card class="blue-lighten-1 pa-12 rounded-xl">
+      <v-card-title class="d-flex justify-between">
+        <span class="headline">로그인</span>
+        <v-btn icon class="ma-0" style="width: 24px; height: 24px;" @click="showRegisterModal()">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
       </v-card-title>
       <v-form v-model="form" @submit.prevent="onSubmit">
-
+        <v-text-field v-model="email" :readonly="loading" :rules="[required]" class="mb-2" clearable label="Email"
+          placeholder="encore@wellbeing.com"></v-text-field>
+        <v-text-field v-model="password" :readonly="loading" :rules="[required]" clearable :type="'password'"
+          class="password-input" label="Password" placeholder="Enter your password"></v-text-field>
+        <v-btn v-on:click.prevent="signInWithGoogle" dark id="google-connect" class="social-button">
+          <v-icon left>mdi mdi-google</v-icon>
+          <span class="text">구글 계정으로 로그인</span>
+        </v-btn>
+        <br />
+        <v-btn :disabled="!form" :loading="loading" block color="blue-accent-2" size="large" type="submit"
+          variant="elevated" style="margin-bottom: 5px;">로그인</v-btn>
       </v-form>
+      <div class="text-right">
+        <small>비밀번호를 잊어버리셨나요? <a href="#"><b>비밀번호찾기</b></a></small>
+      </div>
     </v-card>
   </v-dialog>
 </template>
@@ -63,6 +78,7 @@ export default {
         if (access_token && refresh_token) {
           const access_decoded = jwtDecode(access_token);
           localStorage.setItem("role", access_decoded.role);
+          localStorage.setItem("expiredTime", access_decoded.exp);
           localStorage.setItem("Authorization", access_token);
           localStorage.setItem("AuthorizationRefresh", refresh_token);
           window.location.reload();
@@ -77,31 +93,39 @@ export default {
           alert(error_message);
         } else {
           console.log(error);
-          alert("Login Failed")
         }
       }
     },
     signInWithGoogle() {
       window.location.href = "http://localhost:8080/oauth2/authorize/google?redirect_uri=http://localhost:8081/oauth2/redirect";
     },
+    showRegisterModal() {
+      // 회원가입 모달창 표시
+      this.$emit('update:dialog', false); // 현재 로그인 모달 닫기
+      this.$emit('showRegister'); // 회원가입 모달창 표시 이벤트 발생
+    }
   }
 };
 </script>
 
-<style scoped>
+<style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-@font-face {
-  font-family: 'jua';
-  src: url(../../public/font/BMJUA_ttf.ttf);
+.card-container {
+  position: relative;
 }
 
-* {
-  font-family: 'jua', sans-serif;
+.v-card-title {
+  display: flex;
+  justify-content: space-between;
 }
 
 .v-card--shaped {
   border-radius: 24px;
+}
+
+.password-input input {
+  font-family: sans-serif;
 }
 
 a {
@@ -148,5 +172,12 @@ a:hover {
 #google-connect:hover {
   background-color: rgb(220, 74, 61);
   color: #FFF;
+}
+
+#register-modal-toggle {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>

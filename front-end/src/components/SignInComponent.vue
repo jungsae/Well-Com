@@ -20,7 +20,7 @@
           variant="elevated" style="margin-bottom: 5px;">로그인</v-btn>
       </v-form>
       <div class="text-right">
-        <small>아직 회원이 아니신가요? <a href="#"><b>회원가입</b></a></small>
+        <small>비밀번호를 잊어버리셨나요? <a href="#"><b>비밀번호찾기</b></a></small>
       </div>
     </v-card>
   </v-dialog>
@@ -104,15 +104,6 @@ export default {
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-
-@font-face {
-  font-family: 'jua';
-  src: url(../../public/font/BMJUA_ttf.ttf);
-}
-
-* {
-  font-family: 'jua', sans-serif;
-}
 
 .v-card--shaped {
   border-radius: 24px;
