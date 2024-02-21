@@ -15,18 +15,18 @@
               >{{ room.title }}</v-card-title
             >
             <v-card-subtitle class="text-center custom-subtitle">
+              작성자: {{ room.memberEmail }}
+            </v-card-subtitle>
+            <v-card-subtitle class="text-center custom-subtitle">
               상품 이름: {{ room.itemName }}
             </v-card-subtitle>
-            <!-- <v-card-subtitle class="text-center custom-subtitle">
-              작성자 이메일: {{ room.memberEmail }}
-            </v-card-subtitle> -->
             <v-card-subtitle class="text-center custom-subtitle">
               내용: {{ room.contents }}
             </v-card-subtitle>
             <div style="text-align: center; margin-top: 20px">
               <img
                 v-if="room.itemImagePath"
-                :src="room.itemImagePath"
+                :src="s3BucketUrl + room.itemImagePath"
                 :style="{
                   maxWidth: '300px',
                   filter:
@@ -57,22 +57,28 @@
             </div>
             <div style="margin-top: 20px; text-align: center">
               <v-btn
-                v-if="getTokenEmail() === room.memberEmail"
+                v-if="
+                  getTokenEmail() === room.memberEmail &&
+                  room.itemStatus !== 'DONE'
+                "
                 color="primary"
-                @click="updateSharingRoom(room.id)"
+                @click="goToUpdateSharingRoom(room.id)"
                 style="margin-right: 10px"
                 >수정하기</v-btn
               >
               <v-btn
-                v-if="getTokenEmail() === room.memberEmail"
+                v-if="
+                  getTokenEmail() === room.memberEmail &&
+                  room.itemStatus !== 'DONE'
+                "
                 color="primary"
-                @click="updateSharingRoom(room.id)"
+                @click="deleteSharingRoom(room.id)"
                 >삭제하기</v-btn
               >
               <v-btn
                 v-else-if="room.itemStatus !== 'DONE'"
                 color="primary"
-                @click="goToDetailPage(room.id)"
+                @click="goToNaNumRoom(room.id)"
                 >선착순 나눔받기</v-btn
               >
             </div>
@@ -92,6 +98,7 @@ export default {
   data() {
     return {
       sharingRooms: [],
+      s3BucketUrl: "https://mywellcombucket.s3.ap-northeast-2.amazonaws.com/",
     };
   },
   methods: {
@@ -113,17 +120,30 @@ export default {
         alert("로그인이 필요한 서비스입니다.");
       }
     },
-    async goToDetailPage(roomId) {
+    async goToNaNumRoom(roomId) {
       if (this.isAuthenticated()) {
-        this.$router.push(`/user/room/${roomId}`);
+        this.$router.push(`/user/nanumGame/${roomId}`);
       } else {
         alert("로그인이 필요한 서비스입니다.");
       }
     },
-    updateSharingRoom(roomId) {
-      // 수정 로직 구현
-      console.log("수정하기 버튼 클릭 - 게시글 ID:", roomId);
-      
+    goToUpdateSharingRoom(roomId) {
+      this.$router.push(`/user/room/${roomId}`);
+    },
+    async deleteSharingRoom(roomId) {
+      if (confirm("정말로 삭제하시겠습니까?")) {
+        try {
+          await axios.delete(
+            `${process.env.VUE_APP_API_BASE_URL}/user/room/${roomId}/delete`,
+            this.$token("members/reissue")
+          );
+          alert("나눔글 삭제 성공!");
+          window.location.reload();
+        } catch (error) {
+          alert("나눔글 삭제 실패!");
+          console.log(error);
+        }
+      }
     },
     isAuthenticated() {
       return localStorage.getItem("Authorization") !== null;

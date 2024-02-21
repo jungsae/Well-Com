@@ -26,9 +26,14 @@ public class SharingRoomController {
         return new ResponseEntity<>(new CommonResponse(HttpStatus.CREATED, "sharingRoom is successfully created", sharingRoom.getId()), HttpStatus.CREATED);
     }
 
+    @GetMapping("/admin/rooms")
+    public List<SharingRoomResDto> roomListForAdmin(){
+        return sharingRoomService.findAll();
+    }
+
     @GetMapping("/rooms")
     public List<SharingRoomResDto> roomList(){
-        return sharingRoomService.findAll();
+        return sharingRoomService.findByDelYn();
     }
 
     @GetMapping("/user/room/{id}")

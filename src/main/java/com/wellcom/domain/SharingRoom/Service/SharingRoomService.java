@@ -66,23 +66,35 @@ public class SharingRoomService {
     }
 
     public String saveFile(MultipartFile file) {
-        String fileUrl = "";
-        try {
-            fileUrl = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            ObjectMetadata metadata= new ObjectMetadata();
-            metadata.setContentType(file.getContentType());
-            metadata.setContentLength(file.getSize());
-            amazonS3Client.putObject(bucket, fileUrl, file.getInputStream(), metadata);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("image is not available");
+        String fileUrl;
+        if(file.isEmpty()){
+            fileUrl = null;
         }
-        return amazonS3Client.getUrl(bucket, fileUrl).toString();
+        else{
+            try {
+                fileUrl = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                ObjectMetadata metadata= new ObjectMetadata();
+                metadata.setContentType(file.getContentType());
+                metadata.setContentLength(file.getSize());
+                amazonS3Client.putObject(bucket, fileUrl, file.getInputStream(), metadata);
+//            fileUrl = amazonS3Client.getUrl(bucket, fileUrl).toString();
+            } catch (IOException e) {
+                throw new IllegalArgumentException("image is not available");
+            }
+        }
+        return fileUrl;
     }
 
     public List<SharingRoomResDto> findAll() {
         List<SharingRoom> sharingRooms = sharingRoomRepository.findAll();
         return sharingRooms.stream().map(o -> SharingRoomResDto.toDto(o)).collect(Collectors.toList());
     }
+
+    public List<SharingRoomResDto> findByDelYn(){
+        List<SharingRoom> sharingRooms = sharingRoomRepository.findByDelYn("N");
+        return sharingRooms.stream().map(o -> SharingRoomResDto.toDto(o)).collect(Collectors.toList());
+    }
+
 
     public SharingRoomResDto findById(Long id){
         // 로그인 한 사용자만 Sharing Room 상세 조회 가능
@@ -135,6 +147,9 @@ public class SharingRoomService {
             throw new IllegalArgumentException("already canceled sharing room");
         }
 
+        // s3 이미지 삭제
+//        amazonS3Client.deleteObject(bucket, sharingRoom.getItem().getImagePath());
+        
         //ItemStatue=DONE 설정
         sharingRoom.getItem().doneItem();
         //SharingRoom delYn="Y" 설정
