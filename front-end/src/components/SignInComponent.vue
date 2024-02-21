@@ -10,7 +10,7 @@
         <v-text-field v-model="email" :readonly="loading" :rules="[required]" class="mb-2" clearable label="Email"
           placeholder="encore@wellbeing.com"></v-text-field>
         <v-text-field v-model="password" :readonly="loading" :rules="[required]" clearable :type="'password'"
-          id="password" class="v-password" label="Password" placeholder="Enter your password"></v-text-field>
+          class="password-input" label="Password" placeholder="Enter your password"></v-text-field>
         <v-btn v-on:click.prevent="signInWithGoogle" dark id="google-connect" class="social-button">
           <v-icon left>mdi mdi-google</v-icon>
           <span class="text">구글 계정으로 로그인</span>
@@ -118,7 +118,7 @@ export default {
   border-radius: 24px;
 }
 
-.v-text-field input {
+.password-input input {
   font-family: sans-serif;
 }
 
