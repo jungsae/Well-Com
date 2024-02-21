@@ -64,7 +64,7 @@
         <v-card-title>예약 날짜와 시간 선택</v-card-title>
         <v-card-text>
           <v-row justify="center">
-            <v-col cols="12">
+            <v-col cols="12" style="max-height: 700px;">
               <v-select
                 v-model="selectedSeats"
                 label="인원선택"
@@ -76,28 +76,41 @@
                     .slice(1)
                 "
               ></v-select>
-              <v-col cols="12">
-                <v-date-picker
-                  title="예약 일시"
-                  color="blue-grey"
-                  v-model="selectedDate"
-                  :min="today"
-                ></v-date-picker>
-              </v-col>
-            </v-col>
-            <v-col cols="12" v-if="showTimePicker">
+              <v-date-picker
+                title="예약 일시"
+                color="blue-grey"
+                v-model="selectedDate"
+                :min="today"
+              ></v-date-picker>
+              <v-row>
+              <v-col cols="12" sm="6">
               <v-text-field
-                label="시간을 입력해주세요 (예: 15:00)"
-                :rules="[(v) => !!v || '예약할 시간을 선택해주세요']"
+              v-if="showTimePicker"
+                label="예약 시작 시간을 선택해주세요"
+                :rules="[(v) => !!v || '시간을 선택해주세요']"
                 v-model="manualTimeInput"
-                @input="updateTimePicker"
+                placeholder="분"
               ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+              <v-select
+              v-if="showTimePicker"
+              label="사용 할 시간을 선택 (예: 분)"
+              v-model="selectedDuration"
+              :items="Array.apply(1, { length: 60 })
+                    .map(Number.call, Number)
+                    .slice(1)"
+              @input="updateDateTime"
+            >  <template v-slot:append-outer>분</template>
+</v-select>
             </v-col>
+          </v-row>
+          </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" @click="reserveTable">예약 확인</v-btn>
-          <v-btn text @click="closeReservationModal">취소</v-btn>
+          <v-btn @click="closeReservationModal">취소</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -155,6 +168,7 @@ export default {
     return {
       today: new Date().toISOString().substring(0, 10),
       tableList: [],
+
       currentTableId: null,
       maxSeat: null,
       selectedSeats: null,
@@ -162,6 +176,7 @@ export default {
       immediateUseMinutes: null,
       selectedDate: null,
       selectedTime: null,
+      selectedDuration: 1,
 
       isImmediateUseDialogVisible: false,
       isReservationModalVisible: false,
@@ -177,18 +192,25 @@ export default {
     },
   },
   methods: {
-    handleDateChange(value) {
-      this.selectedDate = value;
-      this.showTimePicker = true;
+    updateDateTime() {
+      if (this.selectedDate && this.selectedStartTime && this.selectedDuration) {
+        const isoDateTime = `${this.selectedDate}T${this.selectedStartTime}:00`;
+        console.log(isoDateTime);
+        console.log(`예약 시간(분): ${this.selectedDuration}`);
+      }
     },
-    handleTimeChange(value) {
-      this.selectedTime = value;
-      this.manualTimeInput = this.selectedTime;
-    },
+    // handleDateChange(value) {
+    //   this.selectedDate = value;
+    //   this.showTimePicker = true;
+    // },
+    // handleTimeChange(value) {
+    //   this.selectedTime = value;
+    //   this.manualTimeInput = this.selectedTime;
+    // },
     showReservationModal(tableId, seats) {
+      this.isReservationModalVisible = true;
       this.currentTableId = tableId;
       this.maxSeat = seats;
-      this.isReservationModalVisible = true;
       // this.showTimePicker = false;
     },
     closeReservationModal() {
@@ -197,6 +219,7 @@ export default {
       this.selectedDate = null;
       this.selectedSeats = null;
       this.selectedTime = null;
+      this.selectedDuration = null;
     },
     openImmediateUseDialog(tableId, seats) {
       this.isImmediateUseDialogVisible = true;
@@ -293,19 +316,22 @@ export default {
       const reservationData = {
         deskNum: this.currentTableId,
         cntPeople: this.selectedSeats, // 예시: 사용자가 선택한 사람 수 또는 고정 값
-        startTime: `${this.selectedDate}T${this.selectedTime}:00`, // 날짜와 시간을 ISO 형식으로 조합
-        minutes: 5, // 예시: 예약 지속 시간 (분 단위)
+        startTime: (`${this.selectedDate.toISOString()}T${this.selectedTime}:00`), // 날짜와 시간을 ISO 형식으로 조합
+        // startTime: `2024-02-21T20:50:00`, // 날짜와 시간을 ISO 형식으로 조합
+        minutes: this.selectedDuration, // 예시: 예약 지속 시간 (분 단위)
       };
-      console.log();
-      const isoDateTime = `${this.selectedDate}T${this.selectedTime}:00`;
-      console.log(isoDateTime); // "2024-02-19T14:20:00"과 같은 출력을 기대합니다.
+      console.log("선택날짜: " + reservationData.startTime);
+      // const isoDateTime = `${this.selectedDate}T${this.selectedTime}:00`;
+      // console.log("1: " + isoDateTime); // "2024-02-19T14:20:00"과 같은 출력을 기대합니다.
       try {
         const response = await axios.post(
           `${process.env.VUE_APP_API_BASE_URL}/reservation/create`,
-          reservationData
+          reservationData,
+          this.$token("members/reissue")
         );
         console.log(response.data);
         this.closeReservationModal();
+        location.reload();
       } catch (error) {
         console.log(error.message);
         alert("예약실패");
