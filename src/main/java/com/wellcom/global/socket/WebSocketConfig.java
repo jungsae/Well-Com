@@ -9,7 +9,7 @@ import org.springframework.web.socket.config.annotation.*;
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+public class WebSocketConfig implements WebSocketConfigurer, WebSocketMessageBrokerConfigurer {
 
     private final ChatPreHandler chatPreHandler;
     private final ChatErrorHandler chatErrorHandler;
@@ -31,6 +31,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(chatPreHandler);
+    }
+
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        MyWebSocketHandler handler = new MyWebSocketHandler();
+
+        registry.addHandler(handler, "/sendMessage")
+                .setAllowedOriginPatterns("*");
     }
 }
 
