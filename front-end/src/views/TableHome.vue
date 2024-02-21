@@ -1,8 +1,10 @@
 <template>
   <v-main class="wrap">
     <v-container class="v-container">
-      <v-row>
+      <v-row align-content="sm">
         <v-btn @click="filterTablesWithTV">TV가 있는 테이블 보기</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn @click="loadTables">전체 보기</v-btn>
         <v-spacer></v-spacer>
         <v-btn @click="filterTablesWithUsable"
           >바로 사용가능한 테이블 보기</v-btn
@@ -21,32 +23,37 @@
               />
               <div v-if="table.isUsable === 'N'" class="overlay">사용중</div>
             </div>
-            <!-- <v-divider></v-divider>
-            <v-card-item>{{
-              table.hasTV == "Y" ? "TV 있음" : "TV 없음"
-            }}</v-card-item>
-            <v-divider></v-divider> -->
             <v-card-actions>
-              <v-btn
-                :disabled="table.isUsable == 'N'"
-                style="height: 50%; width: 50%"
-                @click="openImmediateUseDialog(table.id, table.seats)"
-                color="primary"
-                >바로사용하기</v-btn
-              >
-              <v-spacer></v-spacer>
-              <v-btn
-                style="height: 50%; width: 50%"
-                @click="showReservationModal(table.id, table.seats)"
-                color="primary"
-                >예약하기</v-btn
-              >
+              <v-row align-content="center">
+                <v-col cols="12" sm="6">
+                  <v-btn
+                    :disabled="table.isUsable == 'N'"
+                    color="green"
+                    size="large"
+                    rounded="xs"
+                    @click="openImmediateUseDialog(table.id, table.seats)"
+                  >
+                    바로사용하기
+                  </v-btn>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-btn
+                    color="primary"
+                    size="large"
+                    rounded="xs"
+                    @click="showReservationModal(table.id, table.seats)"
+                  >
+                    예약하기
+                  </v-btn>
+                </v-col>
+              </v-row>
             </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
     </v-container>
 
+    <!-- 예약 -->
     <v-dialog
       v-model="isReservationModalVisible"
       max-width="450px"
@@ -56,40 +63,35 @@
       <v-card>
         <v-card-title>예약 날짜와 시간 선택</v-card-title>
         <v-card-text>
-          <v-row>
+          <v-row justify="center">
             <v-col cols="12">
-              <v-date-picker
-                v-model="selectedDate"
-                :min="today"
-                @input="showTimePicker = true"
-              ></v-date-picker>
+              <v-select
+                v-model="selectedSeats"
+                label="인원선택"
+                color="blue-grey"
+                density="comfortable"
+                :items="
+                  Array.apply(0, { length: maxSeat + 1 })
+                    .map(Number.call, Number)
+                    .slice(1)
+                "
+              ></v-select>
+              <v-col cols="12">
+                <v-date-picker
+                  title="예약 일시"
+                  color="blue-grey"
+                  v-model="selectedDate"
+                  :min="today"
+                ></v-date-picker>
+              </v-col>
             </v-col>
-            <v-select
-              v-model="selectedSeats"
-              label="인원선택"
-              density="comfortable"
-              :items="
-                Array.apply(0, { length: maxSeat + 1 })
-                  .map(Number.call, Number)
-                  .slice(1)
-              "
-            ></v-select>
             <v-col cols="12" v-if="showTimePicker">
               <v-text-field
                 label="시간을 입력해주세요 (예: 15:00)"
-                :rules="[
-                  (v) => !!v || '시간을 선택해주세요',
-                  (v) =>
-                    (v > 0 && v <= 60) ||
-                    '유효한 시간을 입력해주세요 (1분 ~ 60분)',
-                ]"
+                :rules="[(v) => !!v || '예약할 시간을 선택해주세요']"
                 v-model="manualTimeInput"
                 @input="updateTimePicker"
               ></v-text-field>
-              <!-- <v-time-picker
-                v-model="selectedTime"
-                @change="handleTimeChange"
-              ></v-time-picker> -->
             </v-col>
           </v-row>
         </v-card-text>
@@ -100,6 +102,7 @@
       </v-card>
     </v-dialog>
 
+    <!-- 바로사용 -->
     <v-dialog
       v-model="isImmediateUseDialogVisible"
       max-width="290px"
@@ -152,34 +155,25 @@ export default {
     return {
       today: new Date().toISOString().substring(0, 10),
       tableList: [],
+      currentTableId: null,
       maxSeat: null,
       selectedSeats: null,
+      manualTimeInput: null,
+      immediateUseMinutes: null,
+      selectedDate: null,
+      selectedTime: null,
 
       isImmediateUseDialogVisible: false,
       isReservationModalVisible: false,
-      selectedDate: null,
-      selectedTime: null,
       showTimePicker: false,
-      manualTimeInput: "",
-      currentTableId: null,
-      immediateUseMinutes: null,
     };
   },
-  async created() {
-    const response = await axios.get(
-      `${process.env.VUE_APP_API_BASE_URL}/desks`
-    );
-    this.tableList = response.data;
-    this.tableList = this.tableList.map((table) => ({
-      ...table,
-      tableImg: require("../assets/table.jpg"),
-    }));
+  created() {
+    this.loadTables();
   },
   watch: {
     selectedDate(newVal) {
-      if (newVal) {
-        this.showTimePicker = true;
-      }
+      this.showTimePicker = newVal !== null;
     },
   },
   methods: {
@@ -187,24 +181,21 @@ export default {
       this.selectedDate = value;
       this.showTimePicker = true;
     },
-    updateTimePicker() {
-      if (this.manualTimeInput.match(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/)) {
-        this.selectedTime = this.manualTimeInput;
-      }
-    },
     handleTimeChange(value) {
       this.selectedTime = value;
       this.manualTimeInput = this.selectedTime;
     },
-    showReservationModal(tableId) {
+    showReservationModal(tableId, seats) {
       this.currentTableId = tableId;
+      this.maxSeat = seats;
       this.isReservationModalVisible = true;
-      this.showTimePicker = false;
+      // this.showTimePicker = false;
     },
     closeReservationModal() {
       this.isReservationModalVisible = false;
       this.showTimePicker = false;
       this.selectedDate = null;
+      this.selectedSeats = null;
       this.selectedTime = null;
     },
     openImmediateUseDialog(tableId, seats) {
@@ -218,6 +209,45 @@ export default {
       this.selectedSeats = null;
       this.immediateUseMinutes = null;
     },
+    async loadTables() {
+      const response = await axios.get(
+        `${process.env.VUE_APP_API_BASE_URL}/desks`
+      );
+      this.tableList = response.data;
+      this.tableList = this.tableList.map((table) => ({
+        ...table,
+        tableImg:
+          table.hasTV === "Y"
+            ? require("../assets/TvTable.jpg")
+            : require("../assets/table.jpg"),
+      }));
+    },
+    async filterTablesWithTV() {
+      const response = await axios.get(
+        `${process.env.VUE_APP_API_BASE_URL}/desks?hasTV=Y`
+      );
+      this.tableList = response.data;
+      this.tableList = this.tableList.map((table) => ({
+        ...table,
+        tableImg:
+          table.hasTV === "Y"
+            ? require("../assets/TvTable.jpg")
+            : require("../assets/table.jpg"),
+      }));
+    },
+    async filterTablesWithUsable() {
+      const response = await axios.get(
+        `${process.env.VUE_APP_API_BASE_URL}/desks?isUsable=Y`
+      );
+      this.tableList = response.data;
+      this.tableList = this.tableList.map((table) => ({
+        ...table,
+        tableImg:
+          table.hasTV === "Y"
+            ? require("../assets/TvTable.jpg")
+            : require("../assets/table.jpg"),
+      }));
+    },
     async immediateUseTable() {
       const reservationData = {
         deskNum: this.currentTableId,
@@ -226,14 +256,15 @@ export default {
       };
       try {
         if (
-          reservationData.minutes === 0 ||
+          reservationData.minutes < 1 ||
           reservationData.minutes === null ||
-          reservationData.cntPeople === 0 ||
+          reservationData.cntPeople < 1 ||
           reservationData.cntPeople === null
         ) {
-          alert("값을 입력해주세요");
-        } else if (localStorage.Authorization == null) {
-          alert("로그인 해주세요 입력해주세요");
+          alert("올바른 값을 입력해주세요");
+        } else if (localStorage.getItem("Authorization") == null) {
+          console.log(localStorage.getItem("Authorization"));
+          alert("로그인 해주세요");
           location.reload();
         } else {
           await axios.post(
@@ -246,7 +277,6 @@ export default {
           location.reload();
         }
       } catch (error) {
-        console.log("Error! " + error);
         if (error.response.status == 404) {
           alert("로그인 해주세요");
         } else {
@@ -266,6 +296,7 @@ export default {
         startTime: `${this.selectedDate}T${this.selectedTime}:00`, // 날짜와 시간을 ISO 형식으로 조합
         minutes: 5, // 예시: 예약 지속 시간 (분 단위)
       };
+      console.log();
       const isoDateTime = `${this.selectedDate}T${this.selectedTime}:00`;
       console.log(isoDateTime); // "2024-02-19T14:20:00"과 같은 출력을 기대합니다.
       try {
@@ -297,17 +328,20 @@ export default {
   margin: auto;
   margin-top: 10px;
 }
+
 .image-container {
+  text-align: center;
   position: relative;
-  display: inline-block;
+  height: 72%;
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 22px;
 }
 
 .card-image {
   border-radius: 20px;
   display: block;
   object-fit: cover;
+  height: 550px;
 }
 
 .overlay {
@@ -322,5 +356,23 @@ export default {
   justify-content: center;
   align-items: center;
   font-size: 35px;
+}
+
+@media (max-width: 675px) {
+  .v-card-title {
+    font-size: 16px; /* 폰트 크기를 줄여서 텍스트가 잘리지 않도록 조정 */
+  }
+}
+@media (max-width: 600px) {
+  .v-card-actions,
+  .card-image {
+    flex-direction: column;
+  }
+  .v-btn,
+  .card-image {
+    height: auto;
+    margin-bottom: 5px;
+    width: 100%;
+  }
 }
 </style>
