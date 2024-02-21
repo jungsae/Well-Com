@@ -40,7 +40,7 @@ public class DeskController {
             return deskService.findAll();
         }
     }
-    @PostMapping("/admin/desk/create")
+    @PostMapping("admin/desk/create")
     public ResponseEntity<CommonResponse> roomCreate(@RequestBody DeskCreateReqDto deskCreateReqDto) {
         Desk desk = deskService.createDesk(deskCreateReqDto);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.CREATED, "Desk Information has uploaded", desk.getId()), HttpStatus.CREATED);
