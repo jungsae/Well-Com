@@ -37,6 +37,9 @@ public class SharingRoom {
     @Column(nullable = false, length = 500)
     private String contents;
 
+    @Builder.Default
+    private int curPeople=0;
+
     @Column(nullable = false)
     private int cntPeople;
 

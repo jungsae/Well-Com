@@ -43,11 +43,12 @@
                   v-model="itemImage"
                   label="상품 이미지"
                   @change="fileUpload"
-                  :error-messages="itemImageErrors"
-                  :error="itemImageErrors.length > 0"
                 ></v-file-input>
                 <div class="text-right">
                   <v-btn type="submit" color="primary">제출</v-btn>
+                  <v-btn @click="goToPage('/sharingHome')" class="custom-btn"
+                    >취소</v-btn
+                  >
                 </div>
               </v-form>
             </v-card-text>
@@ -99,7 +100,9 @@ export default {
     cntPeopleErrors() {
       const errors = [];
       if (!this.cntPeople || isNaN(this.cntPeople) || this.cntPeople > 150) {
-        errors.push("올바른 인원 수를 입력하세요. 0명 ~ 150명까지 설정 가능합니다.");
+        errors.push(
+          "올바른 인원 수를 입력하세요. 0명 ~ 150명까지 설정 가능합니다."
+        );
       }
       return errors;
     },
@@ -115,39 +118,49 @@ export default {
       }
       return errors;
     },
-    itemImageErrors() {
-      const errors = [];
-      if (!this.itemImage) {
-        errors.push("상품 이미지를 선택하세요.");
-      }
-      return errors;
-    },
   },
   methods: {
+    goToPage(path) {
+      this.$router.push(path);
+    },
     fileUpload(event) {
       this.itemImage = event.target.files[0];
     },
     async roomCreate() {
       try {
-        const formData = new FormData();
-        formData.append("title", this.title);
-        formData.append("contents", this.contents);
-        formData.append("cntPeople", this.cntPeople);
-        formData.append("itemName", this.itemName);
-        formData.append("itemImage", this.itemImage);
+        // 필수 입력 필드인 title, contents, cntPeople, itemName이 모두 입력되었는지 확인
+        if (
+          this.title &&
+          this.contents &&
+          this.cntPeople !== null &&
+          this.itemName
+        ) {
+          const formData = new FormData();
+          formData.append("title", this.title);
+          formData.append("contents", this.contents);
+          formData.append("cntPeople", this.cntPeople);
+          formData.append("itemName", this.itemName);
+          formData.append("itemImage", this.itemImage ? this.itemImage : null);
+          // // 이미지가 첨부되었을 때만 FormData에 추가
+          // if (this.itemImage) {
+          //   formData.append("itemImage", this.itemImage);
+          // }
 
-        const response = await axios.post(
-          `${process.env.VUE_APP_API_BASE_URL}/user/room/create`,
-          formData,
-          this.$token("members/reissue")
-        );
-        alert("상품 등록에 성공했습니다.");
-        console.log(response.data.result);
-        this.$router.push("/sharingHome")
+          const response = await axios.post(
+            `${process.env.VUE_APP_API_BASE_URL}/user/room/create`,
+            formData,
+            this.$token("members/reissue")
+          );
+          alert("상품 등록에 성공했습니다.");
+          console.log(response.data.result);
+          this.$router.push("/sharingHome");
+        } else {
+          // 필수 입력 필드가 비어있을 경우 알림 표시
+          alert("제목, 내용, 인원 수, 상품 이름은 필수 입력 값입니다.");
+        }
       } catch (error) {
         console.error("Error submitting form:", error);
-        alert("권한이 없습니다. 로그인 후 이용해주세요.");
-        this.$router.push("/sharingHome");
+        alert("상품 등록에 실패했습니다. 다시 시도해주세요.");
       }
     },
   },

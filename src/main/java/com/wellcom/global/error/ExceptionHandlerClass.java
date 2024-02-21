@@ -47,4 +47,6 @@ public class ExceptionHandlerClass {
         log.error("handleMaxUploadSizeExceededException", e);
         return ErrorResponseDto.makeMessage(HttpStatus.REQUEST_ENTITY_TOO_LARGE, "업로드 할 수 있는 파일의 최대 크기는 10MB입니다");
     }
+
+
 }
