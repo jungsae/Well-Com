@@ -16,68 +16,32 @@
   <v-app-bar color="blue-grey">
     <div style="margin-left: 25px">
       <router-link to="/" class="text-decoration-none" style="color: white">
-        <v-toolbar-title class="text-center flex-grow-1"
-          >Well-Com</v-toolbar-title
-        >
+        <v-toolbar-title class="text-center flex-grow-1">Well-Com</v-toolbar-title>
       </router-link>
     </div>
 
     <v-spacer></v-spacer>
 
-    <v-btn
-      v-if="$route.path !== '/tableHome'"
-      text
-      class="white--text d-none d-sm-flex"
-      @click="goToPage('/tableHome')"
-      >테이블 예약하기</v-btn
-    >
-    <v-btn
-      v-if="$route.path !== '/sharingHome'"
-      text
-      class="white--text d-none d-sm-flex"
-      @click="goToPage('/sharingHome')"
-      >나눔 물건 보기</v-btn
-    >
+    <v-btn v-if="$route.path !== '/tableHome'" text class="white--text d-none d-sm-flex"
+      @click="goToPage('/tableHome')">테이블 예약하기</v-btn>
+    <v-btn v-if="$route.path !== '/sharingHome'" text class="white--text d-none d-sm-flex"
+      @click="goToPage('/sharingHome')">나눔 물건 보기</v-btn>
 
     <v-spacer></v-spacer>
 
-    <v-btn
-      text
-      class="login-button custom-login-color"
-      @mouseover="loginHover = true"
-      @mouseleave="loginHover = false"
-      @click.stop="signIn = true"
-      :elevation="loginHover ? 10 : 2"
-      v-if="!isLogin"
-    >
+    <v-btn text class="login-button custom-login-color" @mouseover="loginHover = true" @mouseleave="loginHover = false"
+      @click.stop="signIn = true" :elevation="loginHover ? 10 : 2" v-if="!isLogin">
       로그인
     </v-btn>
-    <v-btn
-      text
-      class="signup-button custom-signup-color"
-      @mouseover="signupHover = true"
-      @mouseleave="signupHover = false"
-      @click.stop="signUp = true"
-      :elevation="signupHover ? 10 : 2"
-      v-if="!isLogin"
-    >
+    <v-btn text class="signup-button custom-signup-color" @mouseover="signupHover = true"
+      @mouseleave="signupHover = false" @click.stop="signUp = true" :elevation="signupHover ? 10 : 2" v-if="!isLogin">
       회원가입
     </v-btn>
-    <v-btn
-      text
-      class="logout-button custom-logout-color"
-      @mouseover="logoutHover = true"
-      @mouseleave="logoutHover = false"
-      @click.prevent="doLogout"
-      :elevation="logoutHover ? 10 : 2"
-      v-if="isLogin"
-    >
+    <v-btn text class="logout-button custom-logout-color" @mouseover="logoutHover = true"
+      @mouseleave="logoutHover = false" @click.prevent="doLogout" :elevation="logoutHover ? 10 : 2" v-if="isLogin">
       로그아웃
     </v-btn>
-    <v-app-bar-nav-icon
-      @click.stop="drawer = !drawer"
-      class="d-flex d-sm-none"
-    ></v-app-bar-nav-icon>
+    <v-app-bar-nav-icon @click.stop="drawer = !drawer" class="d-flex d-sm-none"></v-app-bar-nav-icon>
   </v-app-bar>
 </template>
 
@@ -95,9 +59,9 @@ export default {
     isLogin: false,
     userRole: null,
   }),
-  created(){
-    if(localStorage.getItem("Authorization")){
-        this.isLogin = true;
+  created() {
+    if (localStorage.getItem("Authorization")) {
+      this.isLogin = true;
     }
   },
   methods: {
@@ -107,9 +71,10 @@ export default {
     toggleDrawer() {
       this.drawer = !this.drawer;
     },
-    doLogout(){
-        localStorage.clear();
-        this.goToPage("/");
+    doLogout() {
+      localStorage.clear();
+      alert("로그아웃 되었습니다.")
+      window.location.reload();
     }
   },
   components: {

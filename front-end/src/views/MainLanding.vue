@@ -8,7 +8,7 @@
             <v-col cols="5">
               <div class="button-wrap">
                 <v-btn @click="goToPage('/tableHome')" class="custom-btn"
-                >테이블 예약</v-btn
+                  >테이블 예약</v-btn
                 >
               </div>
             </v-col>
@@ -16,7 +16,7 @@
             <v-col cols="5">
               <div class="button-wrap">
                 <v-btn @click="goToPage('/sharingHome')" class="custom-btn"
-                >물건 나눔</v-btn
+                  >물건 나눔</v-btn
                 >
               </div>
             </v-col>
