@@ -45,13 +45,13 @@ public class DeskController {
         Desk desk = deskService.createDesk(deskCreateReqDto);
         return new ResponseEntity<>(new CommonResponse(HttpStatus.CREATED, "Desk Information has uploaded", desk.getId()), HttpStatus.CREATED);
     }
-    @DeleteMapping("/admin/desk/{deskNum}/delete")
+    @DeleteMapping("/desk/{deskNum}/delete")
     public ResponseEntity<CommonResponse> deleteDesk(@PathVariable int deskNum) {
         deskService.deleteDesk(deskNum);
         CommonResponse response = new CommonResponse(HttpStatus.OK, "Desk 번호 " + deskNum + "이(가) 성공적으로 삭제 처리되었습니다.", HttpStatus.OK);
         return ResponseEntity.ok(response);
     }
-    @PatchMapping("/admin/desk/{id}/update")
+    @PatchMapping("/desk/{id}/update")
     public ResponseEntity<Desk> updateDesk(@PathVariable Long id, @RequestBody DeskUpdateReqDto deskUpdateReqDto) {
         Desk updatedDesk = deskService.updateDesk(id, deskUpdateReqDto);
         return ResponseEntity.ok(updatedDesk);
