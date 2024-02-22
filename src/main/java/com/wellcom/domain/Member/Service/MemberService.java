@@ -146,5 +146,32 @@ public class MemberService {
                 reservation.getStatus().name()
         )).collect(Collectors.toList());
     }
+
+    public MemberDetailResDto findMemberDetailByEmail(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("검색하신 이메일의 Member가 없습니다."));
+
+        // 회원과 관련된 추가 정보 조회 로직은 동일하게 사용
+        int sharingRoomCount = sharingRoomRepository.countByMemberId(member.getId());
+        int reservationCount = reservationRepository.countReservationsByMemberId(member.getId());
+        Integer totalReservationTimeWrapper = reservationRepository.sumReservationTimeByMemberId(member.getId());
+        int totalReservationTime = totalReservationTimeWrapper != null ? totalReservationTimeWrapper : 0;
+        long wins = recordRepository.countByMemberIdAndIsWinner(member.getId(), "Y");
+        long totalParticipations = recordRepository.countByMemberId(member.getId());
+        double winRate = (totalParticipations > 0) ? ((double) wins/totalParticipations) * 100 : 0;
+
+        return MemberDetailResDto.builder()
+                .id(member.getId())
+                .nickName(member.getNickname())
+                .email(member.getEmail())
+                .createdTime(member.getCreatedTime())
+                .sharingRoomCount(sharingRoomCount)
+                .reservationCount(reservationCount)
+                .totalReservationTime(totalReservationTime)
+                .wins(wins)
+                .winRate(winRate)
+                .build();
+    }
+
 }
 

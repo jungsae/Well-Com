@@ -46,6 +46,12 @@ public class MemberController {
         return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "멤버상세조회입니다.", memberDetail));
     }
 
+    @GetMapping("/member/detailByEmail")
+    public ResponseEntity<CommonResponse> memberDetailByEmail(@RequestParam String email) {
+        MemberDetailResDto memberDetail = memberService.findMemberDetailByEmail(email);
+        return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "멤버 상세 조회입니다.", memberDetail));
+    }
+
     // 회원 목록 조회
     @GetMapping("/member/list")
     public ResponseEntity<CommonResponse> memberList() {

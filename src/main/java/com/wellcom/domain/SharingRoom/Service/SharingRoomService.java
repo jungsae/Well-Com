@@ -161,11 +161,11 @@ public class SharingRoomService {
         //SharingRoom delYn="Y" 설정
         sharingRoom.deleteSharingRoom();
     }
-
     public void completeGame(Long id) {
         SharingRoom sharingRoom = sharingRoomRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("sharingRoom not found"));
 
         //ItemStatue=DONE 설정
         sharingRoom.getItem().doneItem();
     }
+
 }
