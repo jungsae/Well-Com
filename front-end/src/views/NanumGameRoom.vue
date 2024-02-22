@@ -70,7 +70,7 @@ export default {
   methods: {
     connect() {
       // 웹 소켓 서버 URL
-      const serverURL = "http://localhost:8080/portfolio";
+      const serverURL = `${process.env.VUE_APP_API_BASE_URL}/portfolio`;
 
       // SockJS로 서버에 연결
       let socket = new SockJS(serverURL);
@@ -89,7 +89,7 @@ export default {
         (frame) => {
           console.log("소켓 연결 성공", frame);
           this.connected = true;
-
+          
           // 연결될 때마다 백에서 Client count++
           this.stompClient.send(
             "/app/connect",

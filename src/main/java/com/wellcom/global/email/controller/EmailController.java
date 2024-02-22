@@ -16,7 +16,7 @@ public class EmailController {
 
     @PostMapping("/send-email")
     public ResponseEntity<CommonResponse> emailConfirm(@RequestParam(value = "email") String email) throws Exception {
-        if(memberRepository.findByEmail(email).isEmpty()){
+        if(memberRepository.findByEmail(email).isPresent()){
             return ResponseEntity.ok(new CommonResponse(HttpStatus.BAD_REQUEST, "중복 이메일 발생", ""));
         };
         String confirm = emailService.sendSimpleMessage(email);

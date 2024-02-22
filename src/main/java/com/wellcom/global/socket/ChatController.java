@@ -1,7 +1,6 @@
 package com.wellcom.global.socket;
 
 import com.wellcom.domain.SharingRoom.Service.SharingRoomService;
-import com.wellcom.global.auth.jwt.service.JwtService;
 import com.wellcom.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import javax.persistence.EntityNotFoundException;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -84,7 +81,7 @@ public class ChatController {
             String result = data.getSessionId().equals(maxInputData.getSessionId()) ? "축하합니다" : "탈락입니다";
             System.out.println("getSessionId = : " + data.getSessionId() + ", result = " + result);
             template.convertAndSend(destination, result);
-            //template.convertAndSendToUser(data.getSessionId(), "/topic/sharing/"+roomId, result);
+//            template.convertAndSendToUser(data.getSessionId(), "/topic/sharing/"+roomId, result);
         }
         // 처리가 끝난 방의 데이터를 삭제합니다.
         System.out.println("게임 끝. 데이터 정리");
