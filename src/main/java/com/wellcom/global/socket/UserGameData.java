@@ -5,8 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class GameDataResDto {
-    private String session;
-    private String message;
-    private Long roomId;
+public class UserGameData {
+    private String sessionId; // 세션 정보
+    private int num; // 입력 값
 }
