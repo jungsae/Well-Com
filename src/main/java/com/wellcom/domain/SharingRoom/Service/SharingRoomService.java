@@ -1,5 +1,6 @@
 package com.wellcom.domain.SharingRoom.Service;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.wellcom.domain.Item.Item;
@@ -11,6 +12,7 @@ import com.wellcom.domain.SharingRoom.Dto.SharingRoomResDto;
 import com.wellcom.domain.SharingRoom.Repository.SharingRoomRepository;
 import com.wellcom.domain.SharingRoom.SharingRoom;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -30,6 +32,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class SharingRoomService {
@@ -45,8 +48,11 @@ public class SharingRoomService {
 
         Member member = memberRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("not found email"));
 
+        String fileUrl = null;
         MultipartFile file = sharingRoomReqDto.getItemImage();
-        String fileUrl = saveFile(file);
+        if (file != null && !file.isEmpty()) {
+            fileUrl = saveFile(file);
+        }
 
         Item item = Item.builder()
                 .name(sharingRoomReqDto.getItemName())
@@ -124,8 +130,11 @@ public class SharingRoomService {
             throw new AccessDeniedException("Access denied");
         }
 
+        String fileUrl = null;
         MultipartFile file = sharingRoomReqDto.getItemImage();
-        String fileUrl = saveFile(file);
+        if (file != null && !file.isEmpty()) {
+            fileUrl = saveFile(file);
+        }
         sharingRoom.getItem().updateItem(sharingRoomReqDto.getItemName(), fileUrl);
 
         sharingRoom.updateSharingRoom(
@@ -153,9 +162,12 @@ public class SharingRoomService {
             throw new IllegalArgumentException("already canceled sharing room");
         }
 
-        // s3 이미지 삭제
-//        amazonS3Client.deleteObject(bucket, sharingRoom.getItem().getImagePath());
-        
+//        // s3 이미지 삭제
+//        try{
+//            amazonS3Client.deleteObject(bucket, sharingRoom.getItem().getImagePath());
+//        } catch (SdkClientException e){
+//            log.error("Not able to delete from S3: " + e.getMessage(), e);
+//        }
         //ItemStatue=DONE 설정
         sharingRoom.getItem().doneItem();
         //SharingRoom delYn="Y" 설정
