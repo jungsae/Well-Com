@@ -1,5 +1,7 @@
 package com.wellcom.global.socket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wellcom.domain.SharingRoom.Service.SharingRoomService;
 import com.wellcom.global.common.CommonResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +23,20 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatController {
     private final SharingRoomService sharingRoomService;
-
     private final SimpMessageSendingOperations sendingOperations;
     private final SimpMessagingTemplate template;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     Map<Long, List<UserGameData>> sessionData = new HashMap<>();
     Map<Long, Integer> countMap = new HashMap<>(); // SharingRoom 연결 인원 수
     int randomNum = 0;
+
+    // 세션별 결과를 저장하는 Map
+    private Map<String, String> sessionResults = new HashMap<>();
+
+    // 세션별 결과를 설정하는 메서드
+    public void setSessionResult(String sessionId, String result) {
+        sessionResults.put(sessionId, result);
+    }
 
     @MessageMapping("connect")
     public void connect(@Payload RoomNumber roomNumber) {
@@ -48,7 +58,7 @@ public class ChatController {
 //        }
     }
     @MessageMapping("/sendMessage")
-    public void messageCheck(@Payload GameDataReqDto req, SimpMessageHeaderAccessor accessor) {
+    public void messageCheck(@Payload GameDataReqDto req, SimpMessageHeaderAccessor accessor) throws JsonProcessingException {
         String sessionId = accessor.getSessionId();
 
         // roomId에 해당하는 리스트를 가져오거나 새로 생성합니다.
@@ -64,7 +74,7 @@ public class ChatController {
         }
     }
 
-    private void processRoomData(Long roomId, List<UserGameData> roomData) {
+    private void processRoomData(Long roomId, List<UserGameData> roomData) throws JsonProcessingException {
         System.out.println("호출했음");
         // 중복을 제외한 가장 큰 숫자를 입력한 세션을 찾습니다.
         // randomNum 보다 큰 값이 들어온 데이터를 제외합니다.
@@ -76,12 +86,16 @@ public class ChatController {
         UserGameData maxInputData = Collections.max(filteredRoomData, Comparator.comparingInt(UserGameData::getNum));
         System.out.println("maxInputData = " + maxInputData);
 
-        String destination = "/topic/sharing/" + roomId;
+        String destination = "/queue/sharing/" + roomId;
         for (UserGameData data : roomData) {
             String result = data.getSessionId().equals(maxInputData.getSessionId()) ? "축하합니다" : "탈락입니다";
             System.out.println("getSessionId = : " + data.getSessionId() + ", result = " + result);
-            template.convertAndSend(destination, result);
-//            template.convertAndSendToUser(data.getSessionId(), "/topic/sharing/"+roomId, result);
+
+            // sessionResults Map에 세션별 결과를 설정합니다.
+            setSessionResult(data.getSessionId(), result);
+
+             template.convertAndSend(destination, objectMapper.writeValueAsString(sessionResults));
+            // template.convertAndSendToUser(data.getSessionId(), "/topic/sharing/"+roomId, result);
         }
         // 처리가 끝난 방의 데이터를 삭제합니다.
         System.out.println("게임 끝. 데이터 정리");
