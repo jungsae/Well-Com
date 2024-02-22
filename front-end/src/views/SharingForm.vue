@@ -40,8 +40,8 @@
                   :error="itemNameErrors.length > 0"
                 ></v-text-field>
                 <v-file-input
-                  v-model="itemImage"
                   label="상품 이미지"
+                  v-model="itemImage"
                   @change="fileUpload"
                 ></v-file-input>
                 <div class="text-right">
@@ -140,12 +140,9 @@ export default {
           formData.append("contents", this.contents);
           formData.append("cntPeople", this.cntPeople);
           formData.append("itemName", this.itemName);
-          formData.append("itemImage", this.itemImage ? this.itemImage : null);
-          // // 이미지가 첨부되었을 때만 FormData에 추가
-          // if (this.itemImage) {
-          //   formData.append("itemImage", this.itemImage);
-          // }
-
+          if (this.itemImage) {
+            formData.append("itemImage", this.itemImage);
+          }
           const response = await axios.post(
             `${process.env.VUE_APP_API_BASE_URL}/user/room/create`,
             formData,
