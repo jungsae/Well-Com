@@ -21,6 +21,13 @@
             style="margin-top: 5px"
             >메시지 전송</v-btn
           >
+          <v-btn
+            color="accent"
+            large
+            @click.prevent="disconnect"
+            style="margin-top: 5px; margin-left: 10px"
+            >나가기</v-btn
+          >
         </v-col>
       </v-row>
     </v-container>
@@ -106,15 +113,27 @@ export default {
         }
       );
     },
-    // disconnect() {
-    //   if (this.stompClient && this.stompClient.connected) {
-    //     this.stompClient.disconnect(); // Stomp 클라이언트 연결 해제
-    //     console.log("소켓 연결이 해제되었습니다.");
-    //     this.connected = false;
-    //   } else {
-    //     console.log("소켓 연결이 이미 해제되었거나 없습니다.");
-    //   }
-    // },
+    disconnect() {
+      if (this.stompClient && this.stompClient.connected) {
+        // 연결될 때마다 백에서 Client count--
+        this.stompClient.send(
+          "/app/disconnect",
+          {
+            destination: "/app/disconnect",
+          },
+          JSON.stringify({
+            roomNumber: `${this.id}`,
+          })
+        );
+
+        this.stompClient.disconnect(); // Stomp 클라이언트 연결 해제
+        console.log("소켓 연결이 해제되었습니다.");
+        this.connected = false;
+        this.$router.push("/sharingHome");
+      } else {
+        console.log("소켓 연결이 이미 해제되었거나 없습니다.");
+      }
+    },
     sendMessage() {
       if (this.connected && this.messageToSend.trim() !== "") {
         // this.messageToSend를 소켓을 통해 전송하는 로직

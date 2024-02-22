@@ -9,19 +9,14 @@
       <v-row justify="center">
         <v-col cols="12">
           <v-card v-for="room in sharingRooms" :key="room.id" class="mb-4">
-            <v-card-title
-              class="text-center custom-title"
-              style="margin-top: 20px"
-              >{{ room.title }}</v-card-title
-            >
+            <v-card-title class="custom-title d-flex" style="margin-top: 20px">
+              <div class="align-self-center mx-auto">{{ room.title }}</div>
+            </v-card-title>
             <v-card-subtitle class="text-center custom-subtitle">
-              작성자: {{ room.memberEmail }}
+              상품 이름 : {{ room.itemName }}
             </v-card-subtitle>
             <v-card-subtitle class="text-center custom-subtitle">
-              상품 이름: {{ room.itemName }}
-            </v-card-subtitle>
-            <v-card-subtitle class="text-center custom-subtitle">
-              내용: {{ room.contents }}
+              내용 : {{ room.contents }}
             </v-card-subtitle>
             <div style="text-align: center; margin-top: 20px">
               <img
@@ -36,7 +31,7 @@
               />
             </div>
             <v-card-subtitle class="text-center custom-subtitle">
-              나눔 상태:
+              나눔 상태 :
               <span
                 :style="{
                   color:
@@ -47,12 +42,10 @@
                 }}</span
               >
             </v-card-subtitle>
-            <div
-              v-if="room.itemStatus !== 'DONE'"
-              style="margin-top: 20px; text-align: center"
-            >
+            <div v-if="room.itemStatus !== 'DONE'" style="text-align: center">
               <v-card-subtitle class="text-center custom-subtitle">
-                현재인원 / {{ room.cntPeople }}</v-card-subtitle
+                참여 인원 : {{ room.curPeople }} /
+                {{ room.cntPeople }}</v-card-subtitle
               >
             </div>
             <div style="margin-top: 20px; text-align: center">
@@ -102,6 +95,21 @@ export default {
     };
   },
   methods: {
+    async loadCurrentPeopleCount() {
+      for (let room of this.sharingRooms) {
+        try {
+          const response = await axios.get(
+            `${process.env.VUE_APP_API_BASE_URL}/room/${room.id}/cntPeople`
+          );
+          this.$set(room, "curPeople", response.data);
+        } catch (error) {
+          console.error(
+            `Error fetching current people count for room ${room.id}:`,
+            error
+          );
+        }
+      }
+    },
     async loadRooms() {
       try {
         const response = await axios.get(
@@ -160,6 +168,7 @@ export default {
   },
   created() {
     this.loadRooms();
+    this.loadCurrentPeopleCount();
   },
 };
 </script>
