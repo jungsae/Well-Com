@@ -1,12 +1,72 @@
 <template>
-  <v-dialog v-model="dialog" fullscreen :scrim="false" transition="dialog-bottom-transition">
-    <v-card class="blue-lighten-1 pa-12 rounded">
-      <!-- <v-card class="mx-auto px-6 py-8" max-width="344"> -->
-      <v-card-title>
+  <v-dialog transition="slide-y-transition" v-model="dialog" max-width="450px" class="dialog-container">
+    <v-card class="blue-lighten-1 pa-12 rounded-xl">
+      <v-card-title class="d-flex justify-between">
         <span class="headline">회원가입</span>
       </v-card-title>
-      <v-form v-model="form" @submit.prevent="onSubmit">
-
+      <v-form ref="form" lazy-validation @submit.prevent="onSubmit">
+        <v-row>
+          <v-col cols="12">
+            <v-text-field
+            v-model="email"
+            :rules="user_email_rule"
+            color="primary"
+            label="이메일"
+            placeholder="Enter your password"
+            variant="underlined"
+          ></v-text-field>
+          <v-row>
+            <v-col cols="12" sm="5">
+              <transition name="fade">
+                <v-btn :disabled="mail_btn" :loading="loading" color="accent" style="margin-top: 20px" large @click.prevent="sendEmail()">인증번호 발송</v-btn>
+              </transition>
+            </v-col>
+            <v-col cols="12" sm="6">  
+              <transition name="x-slide">
+                <v-text-field
+                v-model="keyValue"
+                v-if="viewkeyValue"
+                :rules="mail_key_rule"
+                style="margin-top: 10px"
+                color="primary"
+                label="인증번호"
+                placeholder="인증번호를 입력해주세요."
+                variant="underlined"
+              ></v-text-field>
+            </transition>
+            </v-col>
+          </v-row>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
+            v-model="password"
+            :rules="user_pw_rule"
+            clearable
+            color="primary"
+            label="비밀번호"
+            :type="'password'"
+            class="password-input"
+            placeholder="Enter your password"
+            maxlength="30"
+            variant="underlined"
+          ></v-text-field>
+          <v-text-field
+          v-model="passwordCheck"
+          :rules="pw_check_rule"
+          clearable
+          color="primary"
+          label="비밀번호 확인"
+          :type="'password'"
+          class="password-input"
+          placeholder="Enter your password"
+          maxlength="30"
+          variant="underlined"
+        ></v-text-field>
+          </v-col>
+        </v-row>
+        <br />
+        <v-btn :disabled="form" block color="#8197db" size="large" type="submit"
+          variant="elevated" style="margin-bottom: 5px;">회원가입</v-btn>
       </v-form>
     </v-card>
   </v-dialog>
@@ -14,8 +74,6 @@
 
 <script>
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
-
 
 export default {
   props: {
@@ -26,10 +84,31 @@ export default {
   },
   data() {
     return {
-      email: "",
-      password: "",
-      form: false,
       loading: false,
+      mail_btn: false,
+      form: false,
+      email: "",
+      user_email_rule: [
+        v => !!v || '이메일은 필수 입력사항입니다.',
+        v => /.+@.+\..+/.test(v) || '유효한 이메일 주소를 입력해주세요.',
+      ],
+      password: "",
+      passwordCheck: "",
+      user_pw_rule: [
+        v => !!v || '비밀번호는 필수 입력사항입니다.',
+        v => !(v && v.length >= 30) || '비밀번호는 30자 이상 입력할 수 없습니다.',
+      ],
+      pw_check_rule: [
+        v => !!v || '비밀번호는 필수 입력사항입니다.',
+        v => !(v && v.length >= 30) || '비밀번호는 30자 이상 입력할 수 없습니다.',
+        v => v === this.password || '비밀번호가 일치하지 않습니다.'
+      ],
+      key: "",
+      keyValue: "",
+      viewkeyValue: false,
+      mail_key_rule: [
+        v => v === this.key || "인증번호가 일치하지 않습니다."
+      ]
     }
   },
   watch: {
@@ -43,78 +122,66 @@ export default {
     },
   },
   methods: {
-    required(v) {
-      return !!v || '입력이 비어있습니다.'
-    },
     async onSubmit() {
-      if (!this.form) return;
-
-      this.loading = true;
-      await this.doLogin();
-      this.loading = false;
-    },
-    async doLogin() {
-      try {
-        const loginData = { email: this.email, password: this.password }
-        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/login`, loginData);
-        console.log(response);
-        const access_token = response.data.Authorization;
-        const refresh_token = response.data.AuthorizationRefresh;
-        if (access_token && refresh_token) {
-          const access_decoded = jwtDecode(access_token);
-          localStorage.setItem("role", access_decoded.role);
-          localStorage.setItem("Authorization", access_token);
-          localStorage.setItem("AuthorizationRefresh", refresh_token);
-          window.location.reload();
-        } else {
-          console.log("200 OK but not token");
-          alert("Login Failed")
+      const validate = this.$refs.form.validate();
+      const object = Promise.resolve(validate); 
+      object.then(async (value) => {
+        if(value.valid){
+          if(!this.mail_btn){
+            alert("이메일 인증을 해주세요.");
+            return; 
+          }
+          const params = {
+            email: this.email,
+            password: this.password,
+          }
+          try{
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/sign-up`, params);
+            alert("회원가입이 정상적으로 이루어졌습니다.")
+            window.location.reload();
+          } catch(err){
+            if(err.response.status === 400){
+              alert("이미 등록된 이메일입니다.")
+            }
+          } 
         }
-      } catch (error) {
-        const error_message = error.response.data.error_message;
-        if (error_message) {
-          console.log(error_message);
-          alert(error_message);
+      });
+    },
+    async sendEmail() {
+      if(this.email != ""){
+        this.loading = true;
+        await axios.post(`${process.env.VUE_APP_API_BASE_URL}/send-email?email=${this.email}`)
+          .then((res) => {
+            this.key = res.data.result;
+            this.mail_btn = true;
+            this.viewkeyValue = true;
+          });
+          this.loading = false;
         } else {
-          console.log(error);
-          alert("Login Failed")
+          alert("유효한 이메일을 입력해주세요.");
         }
       }
     },
-    signInWithGoogle() {
-      window.location.href = "http://localhost:8080/oauth2/authorize/google?redirect_uri=http://localhost:8081/oauth2/redirect";
-    },
   }
-};
 </script>
 
-<style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+<style>
 
-@font-face {
-  font-family: 'jua';
-  src: url(../../public/font/BMJUA_ttf.ttf);
+.card-container {
+  position: relative;
 }
 
-* {
-  font-family: 'jua', sans-serif;
+.v-card-title {
+  display: flex;
+  justify-content: space-between;
 }
 
 .v-card--shaped {
   border-radius: 24px;
 }
 
-a {
-  color: black;
-  text-decoration-line: none;
-}
-
-a:hover {
-  text-decoration-line: underline;
-}
-
-.social-button:hover {
-  box-shadow: 0 8px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+.password-input input {
+  font-family: sans-serif;
 }
 
 .text {
@@ -124,29 +191,17 @@ a:hover {
   justify-content: flex-start;
 }
 
-#google-connect {
-  height: 40px;
-  /* 버튼의 높이를 조절합니다. */
-  color: rgb(220, 74, 61);
-  /* 텍스트 색상 */
-  text-transform: uppercase;
-  width: 100%;
-  border-radius: 3px;
-  margin: 10px auto;
-  display: flex;
-  /* 텍스트를 가운데 정렬하기 위해 Flexbox를 사용합니다. */
-  align-items: center;
-  /* 수직 가운데 정렬을 설정합니다. */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to{
+  opacity: 0;
 }
 
-#google-connect {
-  background-color: white;
-  /* 기본 배경색 */
-  border: 1px solid rgb(220, 74, 61);
+.x-slide-enter-active, .x-slide-leave-active {
+  transition: transform 0.5s ease;
 }
-
-#google-connect:hover {
-  background-color: rgb(220, 74, 61);
-  color: #FFF;
+.x-slide-enter, .x-slide-leave-to {
+  transform: translateX(100%);
 }
 </style>

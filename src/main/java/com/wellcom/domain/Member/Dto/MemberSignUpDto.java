@@ -8,7 +8,4 @@ import lombok.NoArgsConstructor;
 public class MemberSignUpDto {
     private String email;
     private String password;
-    private String nickname;
-    private int age;
-    private String city;
 }

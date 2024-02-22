@@ -28,7 +28,7 @@ public class MemberController {
     }
 
     // reissue용 api 아무것도 실행 안함
-    @GetMapping("/members/reissue")
+    @GetMapping("/member/reissue")
     public void reIssueToken(){}
 
     // 회원 삭제

@@ -8,6 +8,8 @@
     <v-btn color="accent" large @click.prevent="disconnect()" v-if="connected">연결 성공</v-btn>
     <v-text-field v-model="messageToSend"></v-text-field>
     <v-btn color="accent" large @click.prevent="sendMessage">메시지 전송</v-btn>
+    <v-text-field v-model="email"></v-text-field>
+    <v-btn color="accent" large @click.prevent="sendEmail()">이메일 보내기</v-btn>
   </v-container>
     
     <!-- <v-btn color="accent" large @click.prevent="reissue">ReIssue 테스트</v-btn> -->
@@ -19,6 +21,7 @@ import SignInComponent from '@/components/SignInComponent.vue';
 import SignUpComponent from "@/components/SignUpComponent.vue";
 import Stomp from 'stompjs'
 import SockJS from 'sockjs-client'
+import axios from 'axios';
 
 export default {
   data() {
@@ -26,7 +29,8 @@ export default {
       signin: false,
       signup: false,
       connected: false,
-      messageToSend: ''
+      messageToSend: '',
+      email: '',
     };
   },
   components: {
@@ -90,6 +94,10 @@ export default {
       } else {
         console.log('연결되지 않았거나 빈 메시지입니다.');
       }
+    },
+    async sendEmail() {
+      await axios.post(`${process.env.VUE_APP_API_BASE_URL}/send-email?email=${this.email}`)
+        .then((res) => console.log(res.data.result));
     }
   }
 }

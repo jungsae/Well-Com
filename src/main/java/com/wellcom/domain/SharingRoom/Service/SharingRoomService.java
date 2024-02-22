@@ -95,7 +95,6 @@ public class SharingRoomService {
         return sharingRooms.stream().map(o -> SharingRoomResDto.toDto(o)).collect(Collectors.toList());
     }
 
-
     public SharingRoomResDto findById(Long id){
         // 로그인 한 사용자만 Sharing Room 상세 조회 가능
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -105,6 +104,13 @@ public class SharingRoomService {
         SharingRoom sharingRoom = sharingRoomRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("sharingRoom not found"));
         return SharingRoomResDto.toDto(sharingRoom);
     }
+
+    public SharingRoomResDto findByIdForGame(Long id){
+        // 어차피 프론트에서 로그인한 사용자만 들어오니까 인증 확인 없이 SharingRoom 반환
+        SharingRoom sharingRoom = sharingRoomRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("sharingRoom not found"));
+        return SharingRoomResDto.toDto(sharingRoom);
+    }
+
 
     public SharingRoomResDto update(Long id, SharingRoomReqDto sharingRoomReqDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -161,6 +167,5 @@ public class SharingRoomService {
         //ItemStatue=DONE 설정
         sharingRoom.getItem().doneItem();
     }
+
 }
-
-
