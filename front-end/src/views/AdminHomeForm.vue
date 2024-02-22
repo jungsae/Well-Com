@@ -161,7 +161,7 @@
       <v-btn color="primary" @click="openEditTableModal">Edit</v-btn>
     <v-btn color="primary" @click="closeTableListModal">Close</v-btn>
     <v-btn color="error" @click="confirmDelete">Delete</v-btn>
-    <v-btn color="error" @click="confirmDeleteSharingRoom">Delete</v-btn>
+    
 
   </v-card-actions>
 </v-card>
@@ -377,7 +377,7 @@ export default {
       tableModalOpen: false,
       editModalOpen: false, // Added for the edit member modal
       selectedService: {},
-      memberList: [],
+      memberList:[],
       selectedMembers: [],
       showMemberDetails: false,
       addTableModalOpen: false,
@@ -441,18 +441,35 @@ export default {
       this.selectedMembers = [];
       this.showMemberDetails = false;
     },
-    fetchMemberList() {
-const apiUrl = `${process.env.VUE_APP_API_BASE_URL}/member/list`;
-// Return the Axios promise directly
-return axios.get(apiUrl)
-  .then(response => {
-    this.memberList = response.data.result.members;
-  })
-  .catch(error => {
-    console.error('Error fetching member list:', error);
-  });
-},
+  //   const token = localStorage.getItem('Authorization'); // 인증 토큰 가져오기
+  // const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
+  // axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/room/${id}`, { headers })
+  //   .then(response => {
+
+  //   fetchSharingRoomDetails(id) {
+  // const token = localStorage.getItem('Authorization'); // 인증 토큰 가져오기
+  // const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  // axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/room/${id}`, { headers })
+  //   .then(response => {
+  //     this.sharingRoomDetails = response.data.result; 
+  //       this.detailsModalOpen = true; // 상세 정보 모달 열기
+  //     })
+  //     .catch(error => {
+  //       console.error('Error fetching sharing room details:', error);
+  //     });
+  // },
+    fetchMemberList() {
+      const token = localStorage.getItem('Authorization');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      axios.get(`${process.env.VUE_APP_API_BASE_URL}/admin/member/list`, { headers })
+      .then(response => {
+        this.memberList = response.data.result.members})
+        .catch(error => {
+          console.error('Error fetching sharing room details:', error);
+      });
+    },
     isSelected(member) {
       return this.selectedMembers.includes(member);
     },
@@ -467,6 +484,7 @@ if (this.selectedMembers.length === 1) {
     backToList() {
       this.showMemberDetails = false;
     },
+    
     editMember() {
       if (this.selectedMembers.length !== 1) {
         return;
@@ -480,48 +498,58 @@ if (this.selectedMembers.length === 1) {
       this.editModalOpen = true;
     },
     async updateMember() {
-const apiUrl = `${process.env.VUE_APP_API_BASE_URL}/member/${this.editedMember.id}/update`;
+  const token = localStorage.getItem('Authorization');
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const apiUrl = `${process.env.VUE_APP_API_BASE_URL}/member/${this.editedMember.id}/update`;
 
-try {
-  await axios.post(apiUrl, {
-    nickName: this.editedMember.nickName,
-    email: this.editedMember.email
-  });
-  // 회원 정보를 즉시 업데이트
-  const updatedMemberIndex = this.memberList.findIndex(member => member.id === this.editedMember.id);
-  if (updatedMemberIndex !== -1) {
-    this.memberList[updatedMemberIndex].nickName = this.editedMember.nickName;
-    this.memberList[updatedMemberIndex].email = this.editedMember.email;
+  try {
+    await axios.post(apiUrl, {
+      nickName: this.editedMember.nickName,
+      email: this.editedMember.email
+    }, { headers }); // 헤더를 요청과 함께 전송
+
+    // 회원 정보를 즉시 업데이트
+    const updatedMemberIndex = this.memberList.findIndex(member => member.id === this.editedMember.id);
+    if (updatedMemberIndex !== -1) {
+      this.memberList[updatedMemberIndex].nickName = this.editedMember.nickName;
+      this.memberList[updatedMemberIndex].email = this.editedMember.email;
+    }
+    // 모달 닫기
+    this.editModalOpen = false;
+  } catch (error) {
+    console.error('Error updating member information:', error);
+    // 에러 처리 로직 추가 (예: 사용자에게 에러 메시지 표시)
   }
-  // 모달 닫기
-  this.editModalOpen = false;
-} catch (error) {
-  console.error('Error updating member information:', error);
-  alert("회원 정보 업데이트에 실패했습니다. 콘솔을 확인해주세요.");
-}
 },
 
-    deleteMember() {
-      if (this.selectedMembers.length !== 1) {
-        alert("Please select a member."); 
-        return;
-      }
-      if (!confirm("Are you sure you want to delete this member?")) {
-        return; 
-      }
-      const memberId = this.selectedMembers[0].id;
-      const apiUrl = `${process.env.VUE_APP_API_BASE_URL}/member/${memberId}/delete`;
-      axios.delete(apiUrl)
-        .then(() => {
-          this.memberList = this.memberList.filter(member => member.id !== memberId);
-          this.closeModal(); 
-          this.selectedMembers = []; 
-        })
-        .catch(error => {
-          console.error('Error deleting member:', error);
-          alert("There was an error deleting the member."); 
-        });
-    },
+deleteMember() {
+  if (this.selectedMembers.length !== 1) {
+    alert("Please select a member."); 
+    return;
+  }
+  if (!confirm("Are you sure you want to delete this member?")) {
+    return; 
+  }
+  const memberId = this.selectedMembers[0].id;
+  const apiUrl = `${process.env.VUE_APP_API_BASE_URL}/member/${memberId}/delete`;
+
+  // 토큰 값을 가져오고, 헤더에 추가
+  const token = localStorage.getItem('Authorization');
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  
+  axios.delete(apiUrl, { headers }) // headers를 요청과 함께 전송
+    .then(() => {
+      // 멤버 리스트에서 삭제된 멤버 제거
+      this.memberList = this.memberList.filter(member => member.id !== memberId);
+      this.closeModal(); // 모달 닫기
+      this.selectedMembers = []; // 선택된 멤버 초기화
+    })
+    .catch(error => {
+      console.error('Error deleting member:', error);
+      alert("There was an error deleting the member."); 
+    });
+},
+
     openTableList() {
     this.fetchTables();
     this.tableListModalOpen = true;
@@ -668,18 +696,29 @@ fetchReservations() {
     this.updateModalOpen = true;
   },
   updateSharingRoom() {
-    // API 호출을 통해 서버에 수정 요청
-    axios.patch(`/user/room/${this.sharingRoomDetails.id}/update`, this.sharingRoomDetails)
-      .then(() => {
-        alert("Sharing Room updated successfully.");
-        this.updateModalOpen = false;
-        this.detailsModalOpen = false;
-        // 필요한 경우 목록 새로고침 등의 추가 작업
-      })
-      .catch(error => {
-        console.error("Error updating sharing room:", error);
-      });
-  },
+  // API 엔드포인트 URL 구성
+  const apiUrl = `${process.env.VUE_APP_API_BASE_URL}/user/room/${this.sharingRoomDetails.id}/update`;
+
+  // localStorage에서 토큰 값 가져오기
+  const token = localStorage.getItem('Authorization');
+  // 토큰이 있으면 Authorization 헤더에 추가
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  // axios PATCH 요청, 헤더에 인증 토큰 포함
+  axios.patch(apiUrl, this.sharingRoomDetails, { headers })
+    .then(() => {
+      alert("Sharing Room updated successfully.");
+      // 모달 닫기
+      this.updateModalOpen = false;
+      this.detailsModalOpen = false;
+      // 필요한 경우 목록 새로고침 등의 추가 작업
+      // 예: this.fetchSharingRooms();
+    })
+    .catch(error => {
+      console.error("Error updating sharing room:", error);
+    });
+},
+
 
   confirmDeleteSharingRoom() {
     if (confirm(`Are you sure you want to delete Sharing Room ${this.sharingRoomDetails.id}?`)) {
@@ -687,19 +726,29 @@ fetchReservations() {
     }
   },
   deleteSharingRoom() {
-    // API 호출을 통해 서버에 삭제 요청
-    axios.delete(`/user/room/${this.sharingRoomDetails.id}/delete`)
-      .then(() => {
-        alert(`Sharing Room ${this.sharingRoomDetails.id} deleted successfully.`);
-        this.detailsModalOpen = false; // 삭제 후 상세정보 모달 닫기
-        // 목록 새로고침 등의 추가 작업
-        this.fetchSharingRooms(); // 예시로 목록 새로고침 추가
-      })
-      .catch(error => {
-        console.error("Error deleting sharing room:", error);
-        alert("Error deleting sharing room. Please try again.");
-      });
-  },
+  // API 엔드포인트 URL 구성
+  const apiUrl = `${process.env.VUE_APP_API_BASE_URL}/user/room/${this.sharingRoomDetails.id}/delete`;
+
+  // localStorage에서 토큰 값 가져오기
+  const token = localStorage.getItem('Authorization');
+  // 토큰이 있으면 Authorization 헤더에 추가
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  // axios.delete 요청, config 객체에 헤더 포함
+  axios.delete(apiUrl, { headers })
+    .then(() => {
+      alert(`Sharing Room ${this.sharingRoomDetails.id} deleted successfully.`);
+      // 삭제 후 상세정보 모달 닫기
+      this.detailsModalOpen = false;
+      // 목록 새로고침 등의 추가 작업
+      this.fetchSharingRooms(); // 목록 새로고침
+    })
+    .catch(error => {
+      console.error("Error deleting sharing room:", error);
+      alert("Error deleting sharing room. Please try again.");
+    });
+}
+
   },
 };
 </script>

@@ -53,7 +53,7 @@ public class MemberController {
     }
 
     // 회원 목록 조회
-    @GetMapping("/member/list")
+    @GetMapping("admin/member/list")
     public ResponseEntity<CommonResponse> memberList() {
         MemberListTotalResDto memberListResponse = memberService.findAll();
         return ResponseEntity.ok(new CommonResponse(HttpStatus.OK, "멤버조회입니다.", memberListResponse));
