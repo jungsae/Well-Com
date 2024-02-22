@@ -36,9 +36,20 @@
                   :counter="itemNameCounter"
                   maxlength="20"
                 ></v-text-field>
+                <!-- <p v-if="itemImagePath">{{ itemImagePath.split("_").pop() }}</p>
                 <v-file-input
                   v-model="itemImage"
                   label="상품 이미지"
+                  @change="fileUpload"
+                ></v-file-input> -->
+                <v-file-input
+                  v-model="itemImage"
+                  :label="
+                    itemImagePath
+                      ? itemImagePath.split('_').pop()
+                      : '상품 이미지'
+                  "
+                  accept="image/*"
                   @change="fileUpload"
                 ></v-file-input>
                 <div class="text-right">
@@ -68,7 +79,8 @@ export default {
       contents: "",
       cntPeople: null,
       itemName: "",
-      itemImage: "",
+      itemImage: null,
+      itemImagePath: "",
     };
   },
   computed: {
@@ -120,8 +132,11 @@ export default {
     goToPage(path) {
       this.$router.push(path);
     },
+    // fileUpload(event) {
+    //   this.itemImage = event.target.files[0];
+    // },
     fileUpload(event) {
-      this.itemImage = event.target.files[0];
+      this.itemImage = event.target.files[0] || "";
     },
     async loadRoomDetail() {
       try {
@@ -135,6 +150,7 @@ export default {
         this.contents = this.room.contents;
         this.cntPeople = this.room.cntPeople;
         this.itemName = this.room.itemName;
+        this.itemImagePath = this.room.itemImagePath; // 파일명.확장자가 label에 담김
       } catch (error) {
         console.error("Error fetching sharing rooms:", error);
         alert("해당 나눔글을 불러오는 데 실패했습니다.");
@@ -149,7 +165,10 @@ export default {
           formData.append("contents", this.contents);
           formData.append("cntPeople", this.cntPeople);
           formData.append("itemName", this.itemName);
-          formData.append("itemImage", this.itemImage);
+          // formData.append("itemImage", this.itemImage);
+          if (this.itemImage) {
+            formData.append("itemImage", this.itemImage);
+          }
 
           const response = await axios.patch(
             `${process.env.VUE_APP_API_BASE_URL}/user/room/${roomId}/update`,
