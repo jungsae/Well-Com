@@ -131,10 +131,34 @@ public class SharingRoomService {
         }
 
         String fileUrl = null;
-        MultipartFile file = sharingRoomReqDto.getItemImage();
-        if (file != null && !file.isEmpty()) {
-            fileUrl = saveFile(file);
+        // 입력(SharingRoomReqDto)에서 들어온 itemImage가 null
+        if(sharingRoomReqDto.getItemImage() == null){
+            // DB에 image값이 있다면 image 값 유지
+            if(sharingRoom.getItem().getImagePath() != null){
+                fileUrl = sharingRoom.getItem().getImagePath();
+            }
+            // DB에 image값이 없다면 null 값 유지
+            else {
+                fileUrl = null;
+            }
         }
+        // dto에서 들어온 itemImage가 not null => 기존 이미지 삭제 후 재업로드
+        else{
+            // 기존 s3에 업로드 된 이미지 삭제
+            if(sharingRoom.getItem().getImagePath() != null){
+                try{
+                    amazonS3Client.deleteObject(bucket, sharingRoom.getItem().getImagePath());
+                } catch (SdkClientException e){
+                    log.error("Not able to delete from S3: " + e.getMessage(), e);
+                }
+            }
+            // 새로운 이미지 s3에 재업로드
+            MultipartFile file = sharingRoomReqDto.getItemImage();
+            if (file != null && !file.isEmpty()) {
+                fileUrl = saveFile(file);
+            }
+        }
+
         sharingRoom.getItem().updateItem(sharingRoomReqDto.getItemName(), fileUrl);
 
         sharingRoom.updateSharingRoom(
@@ -162,12 +186,15 @@ public class SharingRoomService {
             throw new IllegalArgumentException("already canceled sharing room");
         }
 
-//        // s3 이미지 삭제
-//        try{
-//            amazonS3Client.deleteObject(bucket, sharingRoom.getItem().getImagePath());
-//        } catch (SdkClientException e){
-//            log.error("Not able to delete from S3: " + e.getMessage(), e);
-//        }
+        // s3에 업로드 된 경우에만 이미지 삭제
+        if(sharingRoom.getItem().getImagePath() != null){
+            try{
+                amazonS3Client.deleteObject(bucket, sharingRoom.getItem().getImagePath());
+            } catch (SdkClientException e){
+                log.error("Not able to delete from S3: " + e.getMessage(), e);
+            }
+        }
+
         //ItemStatue=DONE 설정
         sharingRoom.getItem().doneItem();
         //SharingRoom delYn="Y" 설정
