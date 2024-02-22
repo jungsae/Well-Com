@@ -15,9 +15,13 @@
             <v-card-subtitle class="text-center custom-subtitle">
               상품 이름 : {{ room.itemName }}
             </v-card-subtitle>
-            <v-card-subtitle class="text-center custom-subtitle">
-              내용 : {{ room.contents }}
+            <v-card-subtitle
+              class="text-center custom-subtitle"
+              style="white-space: pre-wrap"
+            >
+              {{ room.contents }}
             </v-card-subtitle>
+
             <div style="text-align: center; margin-top: 20px">
               <img
                 v-if="room.itemImagePath"
@@ -82,6 +86,12 @@
     </v-container>
   </v-main>
 </template>
+
+<style scoped>
+.text-pre-wrap {
+  white-space: pre-wrap;
+}
+</style>
 
 <script>
 import axios from "axios";

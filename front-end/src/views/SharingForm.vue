@@ -42,6 +42,7 @@
                 <v-file-input
                   label="상품 이미지"
                   v-model="itemImage"
+                  accept="image/*"
                   @change="fileUpload"
                 ></v-file-input>
                 <div class="text-right">
