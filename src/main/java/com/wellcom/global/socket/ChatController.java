@@ -52,10 +52,6 @@ public class ChatController {
             System.out.println("전원 입장 완료");
             printAllEnter(roomId);
         }
-        // 전원 입장 완료 후 URL 쳐서 들어오면 들어와짐ㅠ
-//        else {
-//          접근 튕겨ㅠ
-//        }
     }
     @MessageMapping("/sendMessage")
     public void messageCheck(@Payload GameDataReqDto req, SimpMessageHeaderAccessor accessor) throws JsonProcessingException {
@@ -114,7 +110,7 @@ public class ChatController {
         Random rand = new Random();
         randomNum = rand.nextInt(901) + 100;
 
-        String question = "0 ~" + randomNum + " 사이의 숫자를 입력하세요. <br/> 다른 사람보다 큰 숫자를 입력할수록 좋아요. <br/> 하지만 다른 사람과 중복된 숫자를 입력하면 탈락합니다. <br/> 기회는 한 번이니 신중하게 입력해주세요.";
+        String question = "0 ~ " + randomNum + " 사이의 숫자를 입력하세요. \n 다른 사람보다 큰 숫자를 입력할수록 좋아요. \n 하지만 다른 사람과 중복된 숫자를 입력하면 탈락합니다. \n 기회는 한 번이니 신중하게 입력해주세요.";
         String destination = "/topic/sharing/" + roomId;
 
         try{
