@@ -1,24 +1,14 @@
 package com.wellcom.global.socket;
 
 import com.wellcom.global.auth.jwt.service.JwtService;
-import com.wellcom.global.auth.oauth2.util.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.simp.user.SimpUser;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Component

@@ -89,7 +89,7 @@ export default {
         (frame) => {
           console.log("소켓 연결 성공", frame);
           this.connected = true;
-          
+
           // 연결될 때마다 백에서 Client count++
           this.stompClient.send(
             "/app/connect",
@@ -105,6 +105,18 @@ export default {
           this.stompClient.subscribe(destination, (message) => {
             console.log("메시지 수신", message);
             this.messageToReceived = message.body;
+          });
+
+          const destination2 = `/queue/sharing/${this.id}`; 
+          this.stompClient.subscribe(destination2, (message) => {
+            console.log("메시지 수신", message);
+            const messageIdPrefix = message.headers["message-id"].slice(0, 8);
+            const bodyData = JSON.parse(message.body);
+            for (const key in bodyData) {
+              if (key.startsWith(messageIdPrefix)) {
+                this.messageToReceived = bodyData[key];
+              }
+            }
           });
         },
         (error) => {
