@@ -1,35 +1,32 @@
 package com.wellcom.global.socket;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
-
-import java.io.IOException;
 
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
-
     private final SimpMessageSendingOperations sendingOperations;
 
-    @MessageMapping("/greeting")
-    public void enter(ChatMessage message) {
-//        if (ChatMessage.MessageType.ENTER.equals(message.getType())) {
-            message.setMessage(message.getSender()+"님이 입장하였습니다.");
-//        }
-        sendingOperations.convertAndSend("/topic/greeting/"+message.getRoomId(),message);
-    }
 
+    /*
+    클라이언트가 값을 보내면 들어오는 메소드
+     */
     @MessageMapping("/sendMessage")
-    @SendTo("/greeting")
-    public void messageCheck(@Payload String message){
-        System.out.println("클라이언트로부터 온 메세지: " + message);
-        sendingOperations.convertAndSend("/topic/greeting/",message);
+    public void messageCheck(@Payload GameDataReqDto req, SimpMessageHeaderAccessor accessor) {
+        System.out.println(req);
+        System.out.println(accessor.getSessionId());
+
+        // 클라이언트에게 메시지 전송
+        GameDataResDto res = new GameDataResDto(accessor.getSessionId(), req.getContent(), req.getRoomId());
+//        Message message = new Message(req.getContent() + "을(를) 받았습니다");
+//        sendingOperations.convertAndSend(accessor.getSessionId(), "/topic/sharing/" + req.getRoomId(), message);
+        sendingOperations.convertAndSend("/topic/sharing/" + req.getRoomId(), res);
     }
 }

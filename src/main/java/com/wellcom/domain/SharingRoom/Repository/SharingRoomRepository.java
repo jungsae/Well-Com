@@ -15,4 +15,6 @@ public interface SharingRoomRepository extends JpaRepository<SharingRoom, Long> 
 
     @Query("SELECT COUNT(s) FROM SharingRoom s WHERE s.member.id = :memberId")
     int countByMemberId(@Param("memberId") Long memberId);
+
+    List<SharingRoom> findByDelYn(String delYn);
 }
