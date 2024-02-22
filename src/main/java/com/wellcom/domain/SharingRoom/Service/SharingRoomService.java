@@ -167,5 +167,4 @@ public class SharingRoomService {
         //ItemStatue=DONE 설정
         sharingRoom.getItem().doneItem();
     }
-
 }
