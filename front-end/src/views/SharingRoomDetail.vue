@@ -43,6 +43,9 @@
                 ></v-file-input>
                 <div class="text-right">
                   <v-btn type="submit" color="primary">수정완료</v-btn>
+                  <v-btn @click="goToPage('/sharingHome')" class="custom-btn"
+                    >취소</v-btn
+                  >
                 </div>
               </v-form>
             </v-card-text>
@@ -114,6 +117,9 @@ export default {
     },
   },
   methods: {
+    goToPage(path) {
+      this.$router.push(path);
+    },
     fileUpload(event) {
       this.itemImage = event.target.files[0];
     },

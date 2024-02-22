@@ -61,7 +61,7 @@ export default {
     gameStatus() {
       return this.messageToReceived
         ? "전원 입장 완료!"
-        : "인원이 모두 입장하면 게임이 시작됩니다.";
+        : "제한 인원이 모두 입장하면 게임이 시작됩니다.";
     },
   },
   created() {
