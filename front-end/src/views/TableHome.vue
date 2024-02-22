@@ -10,39 +10,76 @@
           >바로 사용가능한 테이블 보기</v-btn
         >
       </v-row>
+
       <v-row justify="center">
-        <v-col cols="12" sm="3" v-for="table in tableList" :key="table.id">
-          <v-card class="card-image">
-            <v-card-title>테이블 번호: {{ table.deskNum }}</v-card-title>
-            <v-card-subtitle>좌석수: {{ table.seats }}</v-card-subtitle>
-            <div class="image-container">
-              <img
-                :src="table.tableImg"
-                alt="이미지 준비중"
-                style="height: 100%; width: 100%"
-              />
-              <div v-if="table.isUsable === 'N'" class="overlay">사용중</div>
+        <v-col cols="12" sm="3" v-for="table in tableList" :key="table.deskNum">
+          <div
+            class="flip-card"
+            @mouseover="table.flipped = true"
+            @mouseleave="table.flipped = false"
+          >
+            <div
+              class="flip-card-inner"
+              :class="{ 'is-flipped': table.flipped }"
+            >
+              <!-- 카드 전면 -->
+              <div class="flip-card-front">
+                <v-card class="card-image">
+                  <v-card-title>테이블 번호: {{ table.deskNum }}</v-card-title>
+                  <v-card-subtitle>좌석수: {{ table.seats }}</v-card-subtitle>
+                  <div class="image-container">
+                    <img
+                      :src="table.tableImg"
+                      alt="이미지 준비중"
+                      style="height: 100%; width: 100%"
+                    />
+                    <div v-if="table.isUsable === 'N'" class="overlay">
+                      사용중
+                    </div>
+                  </div>
+                </v-card>
+              </div>
+              <!-- 카드 뒷면 -->
+              <div class="flip-card-back">
+                <v-card class="card-image">
+                  <v-card-title>오늘의 예약 정보</v-card-title>
+                  <v-card-text>
+                    <v-row>
+                      <v-col
+                        cols="12"
+                        v-for="reservation in filterReservationsForToday(
+                          table.reservations
+                        )"
+                        :key="reservation.reservationId"
+                      >
+                        {{ reservation.startTime.split("T")[1] }} ~
+                        {{ reservation.endTime.split("T")[1] }}
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-card>
+              </div>
             </div>
-            <v-card-actions class="d-flex justify-center">
-              <v-btn
-                :disabled="table.isUsable == 'N'"
-                color="green"
-                rounded="xs"
-                size="x-large"
-                @click="openImmediateUseDialog(table.id, table.seats)"
-              >
-                바로사용하기
-              </v-btn>
-              <v-btn
-                color="primary"
-                rounded="xs"
-                size="x-large"
-                @click="showReservationModal(table.id, table.seats)"
-              >
-                예약하기
-              </v-btn>
-            </v-card-actions>
-          </v-card>
+          </div>
+          <v-card-actions class="d-flex justify-center">
+            <v-btn
+              :disabled="table.isUsable == 'N'"
+              color="green"
+              rounded="xs"
+              size="x-large"
+              @click="openImmediateUseDialog(table.deskNum, table.seats)"
+            >
+              바로사용하기
+            </v-btn>
+            <v-btn
+              color="primary"
+              rounded="xs"
+              size="x-large"
+              @click="showReservationModal(table.deskNum, table.seats)"
+            >
+              예약하기
+            </v-btn>
+          </v-card-actions>
         </v-col>
       </v-row>
     </v-container>
@@ -81,18 +118,13 @@
               ></v-date-picker>
               <v-row>
                 <v-col cols="12" sm="6">
-                  <v-text-field
-                    v-if="showTimePicker"
-                    label="예약 시작 시간"
-                    :rules="[(v) => !!v || '시간을 선택해주세요']"
-                    v-model="manualTimeInput"
-                    placeholder="예: 15:30"
-                  ></v-text-field>
                   <div v-if="showTimePicker">
                     <input
+                      required
                       type="time"
-                      :rules="[(v) => !!v || '시간을 선택해주세요']"
-                      v-model="selectedTime"
+                      min="09:00"
+                      max="21:50"
+                      v-model="manualTimeInput"
                       @input="updateTime"
                     />
                   </div>
@@ -105,7 +137,6 @@
                     :items="Array.from({ length: 60 }, (_, i) => i + 1)"
                     @input="updateDateTime"
                   >
-                    <template v-slot:append-outer>분</template>
                   </v-select>
                 </v-col>
               </v-row>
@@ -207,17 +238,6 @@ export default {
     },
   },
   methods: {
-    updateDateTime() {
-      if (
-        this.selectedDate &&
-        this.selectedStartTime &&
-        this.selectedDuration
-      ) {
-        const isoDateTime = `${this.selectedDate}T${this.selectedStartTime}:00`;
-        console.log(isoDateTime);
-        console.log(`예약 시간(분): ${this.selectedDuration}`);
-      }
-    },
     showReservationModal(tableId, seats) {
       this.isReservationModalVisible = true;
       this.currentTableId = tableId;
@@ -226,14 +246,14 @@ export default {
     closeReservationModal() {
       this.isReservationModalVisible = false;
       this.showTimePicker = false;
-      this.selectedDate = null;
       this.selectedSeats = null;
-      this.selectedTime = null;
+      this.selectedDate = null;
       this.manualTimeInput = null;
+      this.selectedDuration = null;
     },
-    openImmediateUseDialog(tableId, seats) {
+    openImmediateUseDialog(deskNum, seats) {
       this.isImmediateUseDialogVisible = true;
-      this.currentTableId = tableId;
+      this.currentTableId = deskNum;
       this.maxSeat = seats;
     },
     closeImmediateUseDialog() {
@@ -249,6 +269,7 @@ export default {
       this.tableList = response.data;
       this.tableList = this.tableList.map((table) => ({
         ...table,
+        flipped: false,
         tableImg:
           table.hasTV === "Y"
             ? require("../assets/TvTable.jpg")
@@ -293,11 +314,10 @@ export default {
           reservationData.cntPeople < 1 ||
           reservationData.cntPeople === null
         ) {
-          alert("올바른 값을 입력해주세요");
+          throw new Error("올바른 값을 입력해주세요!");
         } else if (localStorage.getItem("Authorization") == null) {
           console.log(localStorage.getItem("Authorization"));
-          alert("로그인 해주세요");
-          location.reload();
+          throw new Error("로그인 해주세요");
         } else {
           await axios.post(
             `${process.env.VUE_APP_API_BASE_URL}/reservation/now`,
@@ -309,53 +329,53 @@ export default {
           location.reload();
         }
       } catch (error) {
-        if (error.response.status == 404) {
-          alert("로그인 해주세요");
-        } else {
-          alert(error);
-        }
+        alert(error.message);
       }
     },
 
     async reserveTable() {
-      const reservationData = {
-        deskNum: this.currentTableId,
-        cntPeople: this.selectedSeats,
-        startTime: `${this.selectedDate.toISOString()}`,
-        minutes: this.selectedDuration,
-      };
-
-      console.log("선택시간: " + this.selectedDuration);
-      console.log("선택날짜: " + this.selectedDate.getFullYear());
-      console.log(reservationData);
-      // const create_datetime = "2023-03-30T14:37:39.165926";
-      // const date = new Date(create_datetime);
-      // const year = date.getFullYear();
-      // const month = String(date.getMonth() + 1).padStart(2, "0");
-      // const day = String(date.getDate()).padStart(2, "0");
-      // const hours = String(date.getHours()).padStart(2, "0");
-      // const minutes = String(date.getMinutes()).padStart(2, "0");
-
-      // const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}`;
-
-      // // console.log(formattedDate) ===>  2023-03-30 14:37
-
       try {
-        // 유효성검사추가
-        const response = await axios.post(
-          `${process.env.VUE_APP_API_BASE_URL}/reservation/create`,
-          reservationData,
-          this.$token("members/reissue")
-        );
-        console.log(response.data);
-        alert(`예약성공 : 예약번호 ${response.data.result}`);
-        this.closeReservationModal();
-        location.reload();
+        if (
+          this.currentTableId == null ||
+          this.selectedSeats == null ||
+          this.selectedDate == null ||
+          this.selectedDuration == null
+        ) {
+          throw new Error("올바른 값을 입력해주세요!");
+        } else {
+          const reservationData = {
+            deskNum: this.currentTableId,
+            cntPeople: this.selectedSeats,
+            startTime: `${
+              new Date(
+                this.selectedDate.getTime() -
+                  this.selectedDate.getTimezoneOffset() * 60000
+              )
+                .toISOString()
+                .split("T")[0]
+            }T${this.manualTimeInput}:00`,
+            minutes: this.selectedDuration,
+          };
+          const response = await axios.post(
+            `${process.env.VUE_APP_API_BASE_URL}/reservation/create`,
+            reservationData,
+            this.$token("members/reissue")
+          );
+          alert(`예약성공 : 예약번호 ${response.data.result}`);
+          this.closeReservationModal();
+          location.reload();
+        }
       } catch (error) {
         console.log(error);
-        alert("예약실패");
-        this.closeReservationModal();
+        alert(`예약실패: ${error.message}`);
       }
+    },
+
+    filterReservationsForToday(reservations) {
+      return reservations.filter((reservation) => {
+        const reservationDate = reservation.startTime.split("T")[0];
+        return reservationDate === this.today;
+      });
     },
   },
 };
@@ -403,7 +423,40 @@ export default {
   font-size: 35px;
 }
 
-@media (max-width: 693px) {
+.flip-card {
+  perspective: 1000px;
+  width: 100%; /* 부모 컨테이너의 크기에 맞춤 */
+}
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 550px; /* 여기서는 예시로 550px을 사용 */
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flip-card-front {
+  z-index: 2;
+}
+.flip-card-back {
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+.flip-card:hover .flip-card-inner,
+.flip-card-inner.is-flipped {
+  transform: rotateY(180deg);
+}
+
+@media (max-width: 709px) {
   .v-card-title {
     font-size: 15px;
   }
@@ -415,7 +468,7 @@ export default {
   }
   .v-btn,
   .card-image {
-    height: auto;
+    height: 90%;
     margin-bottom: 5px;
     width: 100%;
   }
@@ -423,8 +476,11 @@ export default {
 
 @media (max-width: 600px) {
   .under-600 .v-btn {
-    width: 100%; /* 화면이 좁을 때 버튼을 전체 너비로 확장 */
-    margin-bottom: 8px; /* 버튼 사이의 간격 */
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  .v-card-title {
+    font-size: 25px;
   }
 }
 </style>

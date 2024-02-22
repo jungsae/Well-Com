@@ -1,5 +1,6 @@
 package com.wellcom.domain.Desk;
 
+import com.wellcom.domain.Reservation.Reservation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +12,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Builder
@@ -34,6 +37,8 @@ public class Desk {
     private Status isUsable;
     @Version //Optimistic lock
     private Long version;
+    @OneToMany(mappedBy = "desk")
+    List<Reservation> reservations = new ArrayList<>();
     @CreationTimestamp
     private LocalDateTime createdTime;
     @UpdateTimestamp
