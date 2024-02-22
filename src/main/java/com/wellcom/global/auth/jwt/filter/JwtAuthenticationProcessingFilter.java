@@ -27,7 +27,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
-    private static final String[] NO_CHECK_URLS = {"/login", "/sign-up"};
+    private static final String[] NO_CHECK_URLS = {"/login", "/sign-up", "/send-email"};
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
 
@@ -41,7 +41,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try{
             for(String url : NO_CHECK_URLS){
                 if (request.getRequestURI().equals(url)) {
                     filterChain.doFilter(request, response);
@@ -58,12 +57,6 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 return;
             }
             checkAccessTokenAndAuthentication(request, response, filterChain);
-        } catch(Exception e){
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType("/application/json");
-            response.getWriter().write(ErrorResponseDto.makeMessage(HttpStatus.UNAUTHORIZED, e.getMessage()).toString());
-        }
-
     }
 
     /**
