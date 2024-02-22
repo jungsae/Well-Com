@@ -7,20 +7,20 @@
 
       </v-card-title>
       <v-form v-model="form" @submit.prevent="onSubmit">
-        <v-text-field v-model="email" :readonly="loading" :rules="[required]" class="mb-2" clearable label="Email"
+        <v-text-field v-model="email" :readonly="loading" :rules="user_email_rule" class="mb-2" clearable label="이메일"
           placeholder="encore@wellbeing.com"></v-text-field>
-        <v-text-field v-model="password" :readonly="loading" :rules="[required]" clearable :type="'password'"
-          id="password" class="v-password" label="Password" placeholder="Enter your password"></v-text-field>
+        <v-text-field v-model="password" :readonly="loading" :rules="user_pw_rule" clearable :type="'password'"
+          class="password-input" label="비밀번호" placeholder="Enter your password"></v-text-field>
         <v-btn v-on:click.prevent="signInWithGoogle" dark id="google-connect" class="social-button">
           <v-icon left>mdi mdi-google</v-icon>
           <span class="text">구글 계정으로 로그인</span>
         </v-btn>
         <br />
-        <v-btn :disabled="!form" :loading="loading" block color="blue-accent-2" size="large" type="submit"
+        <v-btn :disabled="!form" :loading="loading" block color="#8197db" size="large" type="submit"
           variant="elevated" style="margin-bottom: 5px;">로그인</v-btn>
       </v-form>
       <div class="text-right">
-        <small>아직 회원이 아니신가요? <a href="#"><b>회원가입</b></a></small>
+        <small>비밀번호를 잊어버리셨나요? <a href="#"><b>비밀번호찾기</b></a></small>
       </div>
     </v-card>
   </v-dialog>
@@ -41,7 +41,15 @@ export default {
   data() {
     return {
       email: "",
+      user_email_rule: [
+        v => !!v || '입력이 비어있습니다.',
+        v => /.+@.+\..+/.test(v) || '유효한 이메일 주소를 입력해주세요.',
+      ],
       password: "",
+      user_pw_rule: [
+        v => !!v || '입력이 비어있습니다.',
+        v => !(v && v.length >= 30) || '비밀번호는 30자 이상 입력할 수 없습니다.',
+      ],
       form: false,
       loading: false,
     }
@@ -57,9 +65,6 @@ export default {
     },
   },
   methods: {
-    required(v) {
-      return !!v || '입력이 비어있습니다.'
-    },
     async onSubmit() {
       if (!this.form) return;
 
@@ -105,20 +110,11 @@ export default {
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
-@font-face {
-  font-family: 'jua';
-  src: url(../../public/font/BMJUA_ttf.ttf);
-}
-
-* {
-  font-family: 'jua', sans-serif;
-}
-
 .v-card--shaped {
   border-radius: 24px;
 }
 
-.v-text-field input {
+.password-input input {
   font-family: sans-serif;
 }
 

@@ -20,7 +20,7 @@ export default {
             localStorage.setItem("role", access_decoded.role);
             localStorage.setItem("expiredTime", access_decoded.exp);
             window.alert('로그인이 성공적으로 이루어졌습니다.');
-            router.push({ path: '/' })
+            history.back();
         } else {
             window.alert('로그인에 실패하였습니다.')
             router.push({ path: '/test-modal' })
