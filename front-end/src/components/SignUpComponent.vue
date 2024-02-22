@@ -2,35 +2,60 @@
   <v-dialog transition="slide-y-transition" v-model="dialog" max-width="450px" class="dialog-container">
     <v-card class="blue-lighten-1 pa-12 rounded-xl">
       <v-card-title class="d-flex justify-between">
-        <span class="headline">로그인</span>
-        <v-btn icon class="ma-0" style="width: 24px; height: 24px;" @click="showRegisterModal()">
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
+        <span class="headline">회원가입</span>
       </v-card-title>
-      <v-form v-model="form" @submit.prevent="onSubmit">
-        <v-text-field v-model="email" :readonly="loading" :rules="[required]" class="mb-2" clearable label="Email"
-          placeholder="encore@wellbeing.com"></v-text-field>
-        <v-text-field v-model="password" :readonly="loading" :rules="[required]" clearable :type="'password'"
-          class="password-input" label="Password" placeholder="Enter your password"></v-text-field>
-        <v-btn v-on:click.prevent="signInWithGoogle" dark id="google-connect" class="social-button">
-          <v-icon left>mdi mdi-google</v-icon>
-          <span class="text">구글 계정으로 로그인</span>
-        </v-btn>
+      <v-form ref="form" lazy-validation @submit.prevent="onSubmit">
+        <v-row>
+          <!-- <v-col cols="12">
+            <v-text-field v-model="email" :readonly="loading" :rules="[required]" class="mb-2" clearable label="Email"
+            placeholder="encore@wellbeing.com"></v-text-field>
+          </v-col> -->
+          <v-col cols="12">
+            <v-text-field
+            v-model="email"
+            :rules="user_email_rule"
+            color="primary"
+            label="이메일"
+            placeholder="Enter your password"
+            variant="underlined"
+          ></v-text-field>
+
+            <v-text-field
+            v-model="password"
+            :rules="user_pw_rule"
+            clearable
+            color="primary"
+            label="비밀번호"
+            :type="'password'"
+            class="password-input"
+            placeholder="Enter your password"
+            maxlength="30"
+            variant="underlined"
+          ></v-text-field>
+          <v-text-field
+          v-model="passwordCheck"
+          :rules="pw_check_rule"
+          clearable
+          color="primary"
+          label="비밀번호 확인"
+          :type="'password'"
+          class="password-input"
+          placeholder="Enter your password"
+          maxlength="30"
+          variant="underlined"
+        ></v-text-field>
+          </v-col>
+        </v-row>
         <br />
-        <v-btn :disabled="!form" :loading="loading" block color="blue-accent-2" size="large" type="submit"
-          variant="elevated" style="margin-bottom: 5px;">로그인</v-btn>
+        <v-btn :disabled="form" block color="#8197db" size="large" type="submit"
+          variant="elevated" style="margin-bottom: 5px;">회원가입</v-btn>
       </v-form>
-      <div class="text-right">
-        <small>비밀번호를 잊어버리셨나요? <a href="#"><b>비밀번호찾기</b></a></small>
-      </div>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
-
 
 export default {
   props: {
@@ -41,10 +66,23 @@ export default {
   },
   data() {
     return {
-      email: "",
-      password: "",
       form: false,
-      loading: false,
+      email: "",
+      user_email_rule: [
+        v => !!v || '이메일은 필수 입력사항입니다.',
+        v => /.+@.+\..+/.test(v) || '유효한 이메일 주소를 입력해주세요.',
+      ],
+      password: "",
+      passwordCheck: "",
+      user_pw_rule: [
+        v => !!v || '비밀번호는 필수 입력사항입니다.',
+        v => !(v && v.length >= 30) || '비밀번호는 30자 이상 입력할 수 없습니다.',
+      ],
+      pw_check_rule: [
+        v => !!v || '비밀번호는 필수 입력사항입니다.',
+        v => !(v && v.length >= 30) || '비밀번호는 30자 이상 입력할 수 없습니다.',
+        v => v === this.password || '비밀번호가 일치하지 않습니다.'
+      ],
     }
   },
   watch: {
@@ -58,58 +96,30 @@ export default {
     },
   },
   methods: {
-    required(v) {
-      return !!v || '입력이 비어있습니다.'
-    },
     async onSubmit() {
-      if (!this.form) return;
-
-      this.loading = true;
-      await this.doLogin();
-      this.loading = false;
-    },
-    async doLogin() {
-      try {
-        const loginData = { email: this.email, password: this.password }
-        const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/login`, loginData);
-        console.log(response);
-        const access_token = response.data.Authorization;
-        const refresh_token = response.data.AuthorizationRefresh;
-        if (access_token && refresh_token) {
-          const access_decoded = jwtDecode(access_token);
-          localStorage.setItem("role", access_decoded.role);
-          localStorage.setItem("expiredTime", access_decoded.exp);
-          localStorage.setItem("Authorization", access_token);
-          localStorage.setItem("AuthorizationRefresh", refresh_token);
-          window.location.reload();
-        } else {
-          console.log("200 OK but not token");
-          alert("Login Failed")
+      const validate = this.$refs.form.validate();
+      const object = Promise.resolve(validate); 
+      object.then(async (value) => {
+        if(value.valid){
+          const params = {
+            email: this.email,
+            password: this.password,
+          }
+          try{
+            await axios.post(`${process.env.VUE_APP_API_BASE_URL}/sign-up`, params);
+            alert("회원가입이 정상적으로 이루어졌습니다.")
+            window.location.reload();
+          } catch(err){
+            alert(err);
+          } 
         }
-      } catch (error) {
-        const error_message = error.response.data.error_message;
-        if (error_message) {
-          console.log(error_message);
-          alert(error_message);
-        } else {
-          console.log(error);
-        }
-      }
+      });
     },
-    signInWithGoogle() {
-      window.location.href = "http://localhost:8080/oauth2/authorize/google?redirect_uri=http://localhost:8081/oauth2/redirect";
-    },
-    showRegisterModal() {
-      // 회원가입 모달창 표시
-      this.$emit('update:dialog', false); // 현재 로그인 모달 닫기
-      this.$emit('showRegister'); // 회원가입 모달창 표시 이벤트 발생
-    }
   }
 };
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
 
 .card-container {
   position: relative;
@@ -128,56 +138,10 @@ export default {
   font-family: sans-serif;
 }
 
-a {
-  color: black;
-  text-decoration-line: none;
-}
-
-a:hover {
-  text-decoration-line: underline;
-}
-
-.social-button:hover {
-  box-shadow: 0 8px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-
 .text {
   margin-left: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
-}
-
-#google-connect {
-  height: 40px;
-  /* 버튼의 높이를 조절합니다. */
-  color: rgb(220, 74, 61);
-  /* 텍스트 색상 */
-  text-transform: uppercase;
-  width: 100%;
-  border-radius: 3px;
-  margin: 10px auto;
-  display: flex;
-  /* 텍스트를 가운데 정렬하기 위해 Flexbox를 사용합니다. */
-  align-items: center;
-  /* 수직 가운데 정렬을 설정합니다. */
-}
-
-#google-connect {
-  background-color: white;
-  /* 기본 배경색 */
-  border: 1px solid rgb(220, 74, 61);
-}
-
-#google-connect:hover {
-  background-color: rgb(220, 74, 61);
-  color: #FFF;
-}
-
-#register-modal-toggle {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
 }
 </style>

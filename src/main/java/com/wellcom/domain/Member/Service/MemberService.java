@@ -30,16 +30,14 @@ public class MemberService {
     private final RecordRepository recordRepository;
 
 
-    public void signUp(MemberSignUpDto memberSignUpDto) throws Exception {
+    public void signUp(MemberSignUpDto memberSignUpDto) throws IllegalArgumentException {
 
         if (memberRepository.findByEmail(memberSignUpDto.getEmail()).isPresent()) {
-            throw new Exception("이미 존재하는 이메일입니다.");
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
-
         Member member = Member.builder()
                 .email(memberSignUpDto.getEmail())
                 .password(memberSignUpDto.getPassword())
-                .nickname(memberSignUpDto.getNickname())
                 .role(Role.USER)
                 .build();
 
