@@ -41,6 +41,7 @@
 | /desk/{deskNum}/delete 	|     DELETE    	|    테이블 삭제   	|  201  	|
 | admin/desk/{deskNum}/update 	|     PATCH    	|    테이블 정보수정   	|  201  	|
 | admin/desk/create 	|     PATCH    	|    테이블 추가   	|  201  	|
+ <br/>
 ### Member
 |   End point   	| HTTP Method 	| Description 	| Status 	|
 |:-------------:	|:-----------:	|:-----------:	|:------:	|
@@ -48,10 +49,12 @@
 | /member/{id}/reservations 	|     GET    	|    테이블 예약 내역 조회   	|  200  	|
 | /member/{id}/detail 	|     GET    	|    맴버 상세 정보   	|  200  	|
 | /member/{id}/update 	|     POST    	|    회원 정보 수정   	|  200  	|
+ <br/>
 ### Desk
 |          End point         	| HTTP Method 	| Description 	| Status 	|
 |:--------------------------:	|:-----------:	|:-----------:	|:------:	|
 |          /desks          	|     GET     	| 테이블 전체 조회 	|  200  	|
+ <br/>
 ### Room
 |                    End point                   	| HTTP Method 	|     Description     	| Status 	|
 |:----------------------------------------------:	|:-----------:	|:-------------------:	|:------:	|
@@ -60,6 +63,7 @@
 |        /user/room/{id}        	|  GET  	| 나눔 방 상세조회 	|  200  	|
 |        /user/room/{id}/update        	|  PATCH  	| 나눔 방 수정 	|  200  	|
 |        /user/room/{id}/delete        	|  DELETE  	| 나눔 방 삭제 	|  200  	|
+ <br/>
 ### Reservation
 |          End point         	| HTTP Method 	| Description 	| Status 	|
 |:--------------------------:	|:-----------:	|:-----------:	|:------:	|
@@ -70,14 +74,20 @@
 <br/><br/>
 
 ## 🎈중점 기술
-✅ OAuth - Google과 KaKao 등 외부 소셜 계정을 기반으로 간단히 회원가입 및 로그인<br/> 
-✅ Scheduler - 예약된 시간에 등록된 작업을 스케줄러가 자동으로 상태처리 및 관리<br/> 
-✅ S3(Simple Storage Service) - 언제 어디서나 데이터를 저장할 수 있도록 해주는 AWS의 저장소. <br/>
-    사용자가 업로드 하는 상품 이미지를 로컬 저장소가 아닌 s3에 저장하면서 관리 및 접근 용이<br/> 
-✅ Web Socket - 하나의 HTTP 접속으로 양방향 메시지를 자유롭게 주고받을 수 있는 프로토콜.<br/> 
-    무료 나눔이 진행될 때 실시간으로 각 클라이언트의 입력 값을 받고, 결과 메시지 리턴<br/> 
-✅ SMTP - 인터넷에서 이메일을 보내기 위해 이용되는 프로토콜<br/> 
-✅ Vuetify - vue 에서 사용할 수 있는 용이한 UI 라이브러리. 다양한 화면 크기에 맞게 반응 
+###✅ OAuth <br/>
+Google과 KaKao 등 외부 소셜 계정을 기반으로 간단히 회원가입 및 로그인<br/> 
+###✅ Scheduler <br/>
+예약된 시간에 등록된 작업을 스케줄러가 자동으로 상태처리 및 관리<br/> 
+###✅ S3(Simple Storage Service) <br/>
+언제 어디서나 데이터를 저장할 수 있도록 해주는 AWS의 저장소. <br/>
+사용자가 업로드 하는 상품 이미지를 로컬 저장소가 아닌 s3에 저장하면서 관리 및 접근 용이<br/> 
+###✅ Web Socket <br/>
+하나의 HTTP 접속으로 양방향 메시지를 자유롭게 주고받을 수 있는 프로토콜.<br/> 
+무료 나눔이 진행될 때 실시간으로 각 클라이언트의 입력 값을 받고, 결과 메시지 리턴<br/> 
+###✅ SMTP <br/>
+인터넷에서 이메일을 보내기 위해 이용되는 프로토콜<br/> 
+###✅ Vuetify <br/>
+vue 에서 사용할 수 있는 용이한 UI 라이브러리. 다양한 화면 크기에 맞게 반응 
 <br/><br/>
 
 ## 🎈프로젝트 시연
