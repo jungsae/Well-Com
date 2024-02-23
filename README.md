@@ -69,7 +69,8 @@
 |          /reservations          	|     GET     	| 예약 전체 조회 	|  200  	|
 
 <br/>
-## 🎈중점 기술
+
+## 🎈중점 기술 <br/>
 ✅ OAuth <br/>
 Google과 KaKao 등 외부 소셜 계정을 기반으로 간단히 회원가입 및 로그인<br/> 
 ✅ Scheduler <br/>
