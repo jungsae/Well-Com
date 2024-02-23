@@ -28,9 +28,7 @@
 ![WellComERD](https://github.com/yujeong-shin/Well-Com/assets/57553339/dd36da92-fc1a-45d2-87d5-bdd5f5e5f611)
 <br/><br/>
 
-## 🎈API 설계
-=======
-## APIs
+## 🎈API 설계 <br/>
 ### Admin
 |   End point   	| HTTP Method 	| Description 	| Status 	|
 |:-------------:	|:-----------:	|:-----------:	|:------:	|
