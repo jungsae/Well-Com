@@ -41,7 +41,6 @@
 | /desk/{deskNum}/delete 	|     DELETE    	|    테이블 삭제   	|  201  	|
 | admin/desk/{deskNum}/update 	|     PATCH    	|    테이블 정보수정   	|  201  	|
 | admin/desk/create 	|     PATCH    	|    테이블 추가   	|  201  	|
- <br/>
 ### Member
 |   End point   	| HTTP Method 	| Description 	| Status 	|
 |:-------------:	|:-----------:	|:-----------:	|:------:	|
@@ -49,12 +48,10 @@
 | /member/{id}/reservations 	|     GET    	|    테이블 예약 내역 조회   	|  200  	|
 | /member/{id}/detail 	|     GET    	|    맴버 상세 정보   	|  200  	|
 | /member/{id}/update 	|     POST    	|    회원 정보 수정   	|  200  	|
- <br/>
 ### Desk
 |          End point         	| HTTP Method 	| Description 	| Status 	|
 |:--------------------------:	|:-----------:	|:-----------:	|:------:	|
 |          /desks          	|     GET     	| 테이블 전체 조회 	|  200  	|
- <br/>
 ### Room
 |                    End point                   	| HTTP Method 	|     Description     	| Status 	|
 |:----------------------------------------------:	|:-----------:	|:-------------------:	|:------:	|
@@ -63,7 +60,6 @@
 |        /user/room/{id}        	|  GET  	| 나눔 방 상세조회 	|  200  	|
 |        /user/room/{id}/update        	|  PATCH  	| 나눔 방 수정 	|  200  	|
 |        /user/room/{id}/delete        	|  DELETE  	| 나눔 방 삭제 	|  200  	|
- <br/>
 ### Reservation
 |          End point         	| HTTP Method 	| Description 	| Status 	|
 |:--------------------------:	|:-----------:	|:-----------:	|:------:	|
