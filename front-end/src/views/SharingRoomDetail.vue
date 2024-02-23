@@ -36,12 +36,6 @@
                   :counter="itemNameCounter"
                   maxlength="20"
                 ></v-text-field>
-                <!-- <p v-if="itemImagePath">{{ itemImagePath.split("_").pop() }}</p>
-                <v-file-input
-                  v-model="itemImage"
-                  label="상품 이미지"
-                  @change="fileUpload"
-                ></v-file-input> -->
                 <v-file-input
                   v-model="itemImage"
                   :label="

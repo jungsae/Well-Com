@@ -36,6 +36,7 @@
 <style>
 .message-box {
   border: none;
+  text-align: center;
   font-size: 1.2em;
   margin-top: 50px;
   margin-bottom: 20px;
@@ -66,6 +67,12 @@ export default {
   },
   created() {
     this.connect();
+  },
+  beforeRouteLeave(to, from, next) {
+    // 라우트를 벗어나기 전에 웹소켓 연결 해제
+    // 게임 입장 후 뒤로가기 누를 경우 disconnect
+    this.disconnect();
+    next();
   },
   methods: {
     connect() {
@@ -107,7 +114,7 @@ export default {
             this.messageToReceived = message.body;
           });
 
-          const destination2 = `/queue/sharing/${this.id}`; 
+          const destination2 = `/queue/sharing/${this.id}`;
           this.stompClient.subscribe(destination2, (message) => {
             console.log("메시지 수신", message);
             const messageIdPrefix = message.headers["message-id"].slice(0, 8);
