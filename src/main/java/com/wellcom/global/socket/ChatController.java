@@ -63,9 +63,14 @@ public class ChatController {
         roomData.add(new UserGameData(sessionId, Integer.parseInt(req.getContent())));
         sessionData.put(roomId, roomData);
 
-        int limitPeople = sharingRoomService.findByIdForGame(roomId).getCntPeople();
-        // 모든 Client가 숫자를 입력하면 처리
-        if (roomData.size() == limitPeople) {
+//        int limitPeople = sharingRoomService.findByIdForGame(roomId).getCntPeople();
+//        // 모든 Client가 숫자를 입력하면 처리
+//        if (roomData.size() == limitPeople) {
+//            processRoomData(req.getRoomId(), roomData);
+//        }
+        int currentPeople = countMap.get(roomId);
+        // 현재 참여 중인 Client가 숫자를 입력하면 처리
+        if (roomData.size() == currentPeople) {
             processRoomData(req.getRoomId(), roomData);
         }
     }

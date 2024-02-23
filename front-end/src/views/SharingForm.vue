@@ -3,8 +3,10 @@
     <v-container class="v-container">
       <v-row justify="center">
         <v-col cols="12" md="6">
-          <v-card>
-            <v-card-title class="text-center">나눔 글쓰기</v-card-title>
+          <v-card class="d-flex flex-column justify-content-center">
+            <v-card-title class="custom-title d-flex" style="margin-top: 20px">
+              <div class="align-self-center mx-auto">나눔 글쓰기</div>
+            </v-card-title>
             <v-card-text>
               <v-form @submit.prevent="roomCreate">
                 <v-text-field
@@ -40,7 +42,11 @@
                   :error="itemNameErrors.length > 0"
                 ></v-text-field>
                 <v-file-input
-                  label="상품 이미지"
+                  :label="
+                    itemImagePath
+                      ? itemImagePath.split('_').pop()
+                      : '상품 이미지'
+                  "
                   v-model="itemImage"
                   accept="image/*"
                   @change="fileUpload"
@@ -126,6 +132,7 @@ export default {
     },
     fileUpload(event) {
       this.itemImage = event.target.files[0];
+      this.itemImagePath = event.target.files[0].name; // 파일명.확장자가 label에 담김
     },
     async roomCreate() {
       try {
