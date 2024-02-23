@@ -17,7 +17,6 @@
                 <v-btn color="green" @click="showEditModal = true">정보 수정하기</v-btn>
               </v-card-title>
             </v-card>
-
             <v-card class="mb-5" outlined>
               <v-card-title>테이블정보</v-card-title>
               <v-card-text>
@@ -33,7 +32,6 @@
                 </v-row>
               </v-card-text>
             </v-card>
-
             <v-card class="mb-5" outlined>
               <v-card-title>나눔 정보</v-card-title>
               <v-card-text>
@@ -53,7 +51,6 @@
                 </v-row>
               </v-card-text>
             </v-card>
-
             <v-card outlined>
               <v-card-title>나눔방 목록</v-card-title>
               <v-card-text>
@@ -71,7 +68,6 @@
                 </v-list>
               </v-card-text>
             </v-card>
-
             <v-dialog v-model="showEditModal" persistent max-width="500px" transition="dialog-transition">
               <v-card>
                 <v-card-title>정보 수정</v-card-title>
@@ -94,12 +90,9 @@
     </v-main>
   </v-app>
 </template>
-
-
 <script>
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-
 export default {
   name: 'MyPage',
   data() {
@@ -118,7 +111,6 @@ export default {
     this.fetchUserInfo();
     this.fetchSharingRooms();
   },
-
   methods: {
   toggleCategory() {
     this.showCategory = !this.showCategory;
@@ -131,30 +123,25 @@ export default {
       this.$router.push('/login');
       return;
     }
-
     try {
       const backendUrl = process.env.VUE_APP_API_BASE_URL;
       const decoded = jwtDecode(token);
       const userEmail = decoded.email;
-
       if (!userEmail) {
         throw new Error("Email cannot be extracted from token.");
       }
-
       const response = await axios.get(`${backendUrl}/member/detailByEmail?email=${encodeURIComponent(userEmail)}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-
-      this.userInfo = response.data.result; 
+      this.userInfo = response.data.result;
       this.editUserInfo.nickName = this.userInfo.nickName;
       this.editUserInfo.email = this.userInfo.email;// 또는 `response.data`로 직접 접근할 수 있습니다.
       } catch (error) {
         console.error('Error fetching user info:', error);
         alert("회원 정보를 불러오는데 실패했습니다.");
       }
-      
     },
     async fetchSharingRooms() {
       const backendUrl = process.env.VUE_APP_API_BASE_URL;
@@ -187,24 +174,19 @@ export default {
 </script>
 <style scoped>
 /* 스타일 부분은 이전에 제공된 것을 기반으로 추가적인 스타일링이 필요할 수 있습니다. */
-
 .grey--text {
   color: #757575 !important;
 }
-
 .grey.darken-4, .white--text {
   background-color: #424242 !important;
   color: white !important;
 }
-
 .white {
   background-color: white !important;
 }
-
 .sidebar-title, .sidebar-subtitle, .user-info {
   font-size: 16px; /* 필요에 따라 조절 */
 }
-
 /* 추가: 카드 내부의 텍스트 정렬을 위한 스타일 */
 .user-info {
   margin-left: 20px; /* 예시로 사용; 실제 필요에 따라 조절 */
