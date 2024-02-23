@@ -1,4 +1,4 @@
-package com.wellcom.global.socket;
+package com.wellcom.global.socket.handler;
 
 import com.wellcom.global.auth.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;

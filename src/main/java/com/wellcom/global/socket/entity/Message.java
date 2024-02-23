@@ -1,4 +1,4 @@
-package com.wellcom.global.socket;
+package com.wellcom.global.socket.entity;
 
 import lombok.Data;
 

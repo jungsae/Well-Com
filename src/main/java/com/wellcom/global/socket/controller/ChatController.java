@@ -1,9 +1,12 @@
-package com.wellcom.global.socket;
+package com.wellcom.global.socket.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wellcom.domain.SharingRoom.Service.SharingRoomService;
 import com.wellcom.global.common.CommonResponse;
+import com.wellcom.global.socket.entity.GameDataReqDto;
+import com.wellcom.global.socket.entity.RoomNumber;
+import com.wellcom.global.socket.entity.UserGameData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
