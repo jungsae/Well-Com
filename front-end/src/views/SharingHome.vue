@@ -88,6 +88,15 @@
 </template>
 
 <style scoped>
+.wrap {
+  background-image: url("../assets/background.jpg");
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  height: 100%;
+}
+</style>
+<style scoped>
 .text-pre-wrap {
   white-space: pre-wrap;
 }
