@@ -23,9 +23,9 @@
               <table>
                 <tbody>
                   <tr>
-                    <th>Select</th>
-                    <th>Nickname</th>
-                    <th>Email</th>
+                    <th>선택</th>
+                    <th>닉네임</th>
+                    <th>이메일</th>
                   </tr>
                   <tr v-for="(item, index) in memberList" :key="index" :class="{ 'selected-row': isSelected(item) }">
                     <td>
@@ -80,9 +80,9 @@
               </div>
               <!-- Member Information Edit and Delete Buttons -->
               <v-card-actions>
-                <v-btn :disabled="selectedMembers.length !== 1" color="primary" @click="editMember">Edit Member Info</v-btn>
-                <v-btn :disabled="selectedMembers.length !== 1" color="error" @click="deleteMember">Delete Member</v-btn>
-                <p v-if="selectedMembers.length !== 1">Please select only one member to edit or delete their information.</p>
+                <v-btn :disabled="selectedMembers.length !== 1" color="primary" @click="editMember">정보수정</v-btn>
+                <v-btn :disabled="selectedMembers.length !== 1" color="error" @click="deleteMember">멤버삭제</v-btn>
+                <p v-if="selectedMembers.length !== 1">삭제 할 회원을 한명만 선택해주세요. </p>
               </v-card-actions>
             </v-card-text>
             <v-card-actions>
@@ -102,14 +102,14 @@
             
             <!-- Table Management Content -->
             <v-card-text>
-              <p>Table management content goes here.</p>
+              <p>실행 할 기능을 아래 항목 중에서 선택해주세요.</p>
             </v-card-text>
             <v-card-actions>
-              <v-btn color="primary" @click="openTableList">View Tables</v-btn>
-              <v-btn color="primary" @click="openAddTableModal">Add New Table</v-btn>
+              <v-btn color="primary" @click="openTableList">테이블보기</v-btn>
+              <v-btn color="primary" @click="openAddTableModal">테이블 생성</v-btn>
 
-              <v-btn color="primary" @click="checkReservationStatus">Check Reservation Status</v-btn>
-              <v-btn color="primary" @click="closeTableModal">Close</v-btn>
+              <v-btn color="primary" @click="checkReservationStatus">예약상태확인</v-btn>
+              <v-btn color="primary" @click="closeTableModal">닫기</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -259,102 +259,71 @@
     </v-dialog>
 
 
+    <!-- Add a new card for 나눔관리 -->
+    <v-col cols="12" md="4" lg="3">
+      <v-card @click="openModal({ title: '나눔관리', description: '공유방 관리 및 상세 조회' })" class="service-card" elevation="12" hover>
+        <v-card-title class="headline text-center">나눔관리</v-card-title>
+        <v-card-text class="body-1 d-flex align-center justify-center">공유방 관리 및 상세 조회</v-card-text>
+      </v-card>
+    </v-col>
+
     <v-dialog v-model="sharingRoomModalOpen" max-width="800px">
+          <v-card>
+            <v-card-title>Sharing Room Management</v-card-title>
+            <v-card-text>
+              <v-list>
+                <v-list-item v-for="(room, index) in sharingRooms" :key="index">
+                  <v-list-item-action>
+                    
+                    <v-checkbox v-model="selectedSharingRooms" :value="room.id"></v-checkbox>
+                  </v-list-item-action>
+                  <v-list-item-content>
+                    <v-divider :key="'divider-' + room.id" v-if="index < sharingRooms.length - 1"></v-divider>
+                    <v-list-item-title>제목 {{ room.title }}</v-list-item-title>
+                    <v-divider :key="'divider-' + room.id" v-if="index < sharingRooms.length - 1"></v-divider>
+                    <v-list-item-title>내용 {{ room.contents }}</v-list-item-title>
+                    <v-divider :key="'divider-' + room.id" v-if="index < sharingRooms.length - 1"></v-divider>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    <!-- Optionally display more room details here -->
+                  </v-list-item-content>
+                </v-list-item>
+                <v-divider :key="'divider-' + room.id" v-if="index < sharingRooms.length - 1"></v-divider>
+              </v-list>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="primary" @click="showSharingRoomDetails">상세조회</v-btn>
+              <v-btn color="primary" @click="sharingRoomModalOpen = false">Close</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="detailsModalOpen" max-width="600px">
   <v-card>
-    <v-card-title>Item Sharing Room Management</v-card-title>
+    <v-card-title class="headline">Sharing Room Details</v-card-title>
     <v-card-text>
-      <v-simple-table>
-        <thead>
-          <tr>
-            <th>Select</th>
-            <th class="text-left">Title</th>
-            <th class="text-left">Contents</th>
-            <th class="text-left">People Count</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(room, index) in sharingRooms" :key="index">
-            <td><v-checkbox v-model="selectedSharingRooms" :value="room.id"></v-checkbox></td>
-            <td>{{ room.title }}</td>
-            <td>{{ room.contents }}</td>
-            <td>{{ room.cntPeople }}</td>
-          </tr>
-        </tbody>
-      </v-simple-table>
+      <div>
+        <p>제목: {{ sharingRoomDetails.title }}</p>
+        <p>내용: {{ sharingRoomDetails.contents }}</p>
+        <p>현재 참여 인원: {{ sharingRoomDetails.curPeople }}</p>
+        <p>최대 인원: {{ sharingRoomDetails.cntPeople }}</p>
+        <p>아이템 이름: {{ sharingRoomDetails.itemName }}</p>
+        <p>아이템 상태: {{ sharingRoomDetails.itemStatus }}</p>
+        <!-- Add more details as needed -->
+      </div>
     </v-card-text>
     <v-card-actions>
-      <v-btn color="primary" @click="showSharingRoomDetails">Details</v-btn>
-      <v-btn color="primary" @click="sharingRoomModalOpen = false">Close</v-btn>
+      <v-btn color="primary" @click="detailsModalOpen = false">Close</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>
 
-<v-dialog v-model="detailsModalOpen" max-width="800px">
-  <v-card>
-    <v-card-title>Sharing Room Details</v-card-title>
-    <v-card-text v-if="sharingRoomDetails">
-      <v-simple-table dense>
-        <template v-slot:default>
-          <thead>
-            <tr>
-              <th class="text-left">Field</th>
-              <th class="text-left">Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Title</td>
-              <td>{{ sharingRoomDetails.title }}</td>
-            </tr>
-            <tr>
-              <td>Contents</td>
-              <td>{{ sharingRoomDetails.contents }}</td>
-            </tr>
-            <tr>
-              <td>People Count</td>
-              <td>{{ sharingRoomDetails.cntPeople }}</td>
-            </tr>
-            <tr>
-              <td>Item Name</td>
-              <td>{{ sharingRoomDetails.itemName }}</td>
-            </tr>
-            <tr>
-              <td>Item Status</td>
-              <td>{{ sharingRoomDetails.itemStatus }}</td>
-            </tr>
-            <tr>
-              <td>Item Image</td>
-              <td><img :src="sharingRoomDetails.itemImagePath" alt="Item Image" height="100"></td>
-            </tr>
-          </tbody>
-        </template>
-      </v-simple-table>
-    </v-card-text>
-    <v-card-text v-else>
-      <p>No details available.</p>
-    </v-card-text>
-    <v-card-actions>
-      <v-btn color="primary" @click="openUpdateModal">Update</v-btn>
-      <v-btn color="error" @click="confirmDelete">Delete</v-btn>
-      <v-btn color="primary" @click="closeDetailsModal">Close</v-btn>
-    </v-card-actions>
-  </v-card>
-</v-dialog>
 
-<v-dialog v-model="updateModalOpen" max-width="500px">
-  <v-card>
-    <v-card-title>Update Sharing Room</v-card-title>
-    <v-card-text>
-      <v-text-field label="Title" v-model="sharingRoomDetails.title"></v-text-field>
-      <v-text-field label="Contents" v-model="sharingRoomDetails.contents"></v-text-field>
-      <!-- Add more fields as needed -->
-    </v-card-text>
-    <v-card-actions>
-      <v-btn color="primary" @click="updateSharingRoom">Save</v-btn>
-      <v-btn color="grey" @click="updateModalOpen = false">Cancel</v-btn>
-    </v-card-actions>
-  </v-card>
-</v-dialog>
 
       </v-container>
     </v-main>
@@ -369,10 +338,10 @@ export default {
   data() {
       return {
           services: [
-          { title: 'Member Management', description: 'Manage member list and details' },
-          { title: 'Table Management', description: 'Set up and manage tables' },
-          { title: 'Item Sharing Room Management', description: 'Manage sharing room list and details' },
-      ],
+          { title: '멤버관리', description: '회원목록 및 상세조회' },
+          { title: '테이블관리', description: '테이블설정 및 상세조회' },
+          
+              ],
       memberModalOpen: false,
       tableModalOpen: false,
       editModalOpen: false, // Added for the edit member modal
@@ -402,36 +371,35 @@ export default {
     searchDeskNum: null, // 사용자 입력을 위한 책상 번호
     searchDate: '', // 사용자 입력을 위한 날짜
     reservations: [], // 예약 목록을 저장할 배열
-    reservationModalOpen: false, // 예약 목록 모달의 표시 상태를 관리
+    reservationModalOpen: false,
 
-    sharingRoomModalOpen: false, // 아이템 공유방 모달의 표시 상태
-    sharingRooms: [], // 아이템 공유방 목록을 저장할 배열
-
-    selectedSharingRooms: [], // Track selected sharing rooms
-    detailsModalOpen: false,
-    sharingRoomDetails: null,
-    };
+    sharingRooms: [], // To store sharing rooms data
+      sharingRoomModalOpen: false, // To control the sharing room modal visibility
+   // 예약 목록 모달의 표시 상태를 관리
+   
+      selectedSharingRooms: [], // IDs of selected sharing rooms, assuming multi-select is possible
+      sharingRoomDetails: {}, // The details of the selected sharing room
+      detailsModalOpen: false,
+  };
   },
       
   methods: {
 
 
-
       closeTableModal() {
     this.tableModalOpen = false;
   },
-
   openModal(service) {
-    this.selectedService = service;
-    if (service.title === 'Member Management') {
-      this.fetchMemberList();
-      this.memberModalOpen = true;
-    } else if (service.title === 'Table Management') {
-      this.tableModalOpen = true;
-    } else if (service.title === 'Item Sharing Room Management') {
-      this.fetchSharingRooms(); // 아이템 공유방 목록을 불러옵니다.
-      this.sharingRoomModalOpen = true; // 아이템 공유방 모달을 엽니다.
-    }
+  this.selectedService = service;
+  if (service.title === '멤버관리') {
+    this.fetchMemberList();
+    this.memberModalOpen = true;
+  } else if (service.title === '테이블관리') {
+    this.tableModalOpen = true;
+  } else if (service.title === '나눔관리') { // Adjusted to match the service title
+    this.fetchSharingRooms();
+    this.sharingRoomModalOpen = true;
+  }
   },
     closeModal() {
       this.memberModalOpen = false;
@@ -593,10 +561,7 @@ updateTable() {
   },
   confirmDelete() {
       console.log("Trying to delete: ",this.selectedTables);
-  if (this.selectedTables.length === 0) {
-    alert("Please select at least one table to delete.");
-    return;
-  }
+
   if (confirm("Are you sure you want to delete the selected table(s)?")) {
     this.selectedTables.forEach(table => {
       this.deleteTable(table.deskNum);
@@ -604,9 +569,17 @@ updateTable() {
   }
 },
 deleteTable(deskNum) {
-  console.log(`Deleting deskNum: ${deskNum}`);
+  if (!confirm("Are you sure you want to delete this table?")) {
+    return;
+  }
+  
+  // 토큰 값을 가져오고, 헤더에 추가
+  const token = localStorage.getItem('Authorization');
+  const headers = { Authorization: `Bearer ${token}` };
+  
   const apiUrl = `${process.env.VUE_APP_API_BASE_URL}/desk/${deskNum}/delete`;
-  axios.delete(apiUrl)
+  
+  axios.delete(apiUrl, { headers }) // headers를 요청과 함께 전송
     .then(() => {
       alert(`Desk number ${deskNum} has been successfully deleted.`);
       this.fetchTables(); // 테이블 목록 새로 고침
@@ -615,8 +588,9 @@ deleteTable(deskNum) {
     .catch(error => {
       console.error('Error deleting table:', error);
       alert("Failed to delete the table. Please check the console for details.");
-    });  
-      },
+    });
+},
+
 closeAddTableModal() {
   this.addTableModalOpen = false;
 },
@@ -659,96 +633,45 @@ fetchReservations() {
       this.reservationModalOpen = true; // 예약 상태 확인 모달을 열기
     },
     fetchSharingRooms() {
-    axios.get(`${process.env.VUE_APP_API_BASE_URL}/rooms`)
-      .then(response => {
-        this.sharingRooms = response.data; // 아이템 공유방 목록을 저장
-      })
-      .catch(error => {
-        console.error('Error fetching sharing rooms:', error);
-      });
-  },
-
-  fetchSharingRoomDetails(id) {
-  const token = localStorage.getItem('Authorization'); // 인증 토큰 가져오기
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-  axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/room/${id}`, { headers })
-    .then(response => {
-      this.sharingRoomDetails = response.data.result; 
-        this.detailsModalOpen = true; // 상세 정보 모달 열기
-      })
-      .catch(error => {
-        console.error('Error fetching sharing room details:', error);
-      });
-  },
-  showSharingRoomDetails() {
-    if (this.selectedSharingRooms.length !== 1) {
-      alert("Please select one sharing room to view details.");
-      return;
-    }
-    const id = this.selectedSharingRooms[0]; // 선택된 방의 ID
-    this.fetchSharingRoomDetails(id);
-  },
-  closeDetailsModal() {
-    this.detailsModalOpen = false; // 상세 정보 모달 닫기
-  },
-  openUpdateModal() {
-    this.updateModalOpen = true;
-  },
-  updateSharingRoom() {
-  // API 엔드포인트 URL 구성
-  const apiUrl = `${process.env.VUE_APP_API_BASE_URL}/user/room/${this.sharingRoomDetails.id}/update`;
-
-  // localStorage에서 토큰 값 가져오기
   const token = localStorage.getItem('Authorization');
-  // 토큰이 있으면 Authorization 헤더에 추가
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-  // axios PATCH 요청, 헤더에 인증 토큰 포함
-  axios.patch(apiUrl, this.sharingRoomDetails, { headers })
-    .then(() => {
-      alert("Sharing Room updated successfully.");
-      // 모달 닫기
-      this.updateModalOpen = false;
-      this.detailsModalOpen = false;
-      // 필요한 경우 목록 새로고침 등의 추가 작업
-      // 예: this.fetchSharingRooms();
+  axios.get(`${process.env.VUE_APP_API_BASE_URL}/admin/rooms`, { headers })
+    .then(response => {
+      // Assuming the response directly contains an array of SharingRoomResDto objects
+      this.sharingRooms = response.data;
+      this.sharingRoomModalOpen = true;
     })
-    .catch(error => {
-      console.error("Error updating sharing room:", error);
-    });
+    .catch(error => console.error('Error fetching sharing rooms:', error));
 },
 
 
-  confirmDeleteSharingRoom() {
-    if (confirm(`Are you sure you want to delete Sharing Room ${this.sharingRoomDetails.id}?`)) {
-      this.deleteSharingRoom();
-    }
-  },
-  deleteSharingRoom() {
-  // API 엔드포인트 URL 구성
-  const apiUrl = `${process.env.VUE_APP_API_BASE_URL}/user/room/${this.sharingRoomDetails.id}/delete`;
+    fetchSharingRoomDetails(id) {
+      const token = localStorage.getItem('Authorization');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      
+      axios.get(`${process.env.VUE_APP_API_BASE_URL}/user/room/${id}`, { headers })
+        .then(response => {
+          // Logic to display sharing room details
+          // This could involve setting data properties and/or opening another modal
+          console.log(response.data.result);
+          this.sharingRoomDetails = response.data.result;
+          this.detailsModalOpen = true; // Example to log the details, replace with actual implementation
+        })
+        .catch(error => console.error('Error fetching sharing room details:', error));
+    },
+    showSharingRoomDetails() {
+      // Ensure that exactly one sharing room is selected
+      if (this.selectedSharingRooms.length !== 1) {
+        alert("Please select one sharing room to view details.");
+        return;
+      }
 
-  // localStorage에서 토큰 값 가져오기
-  const token = localStorage.getItem('Authorization');
-  // 토큰이 있으면 Authorization 헤더에 추가
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-  // axios.delete 요청, config 객체에 헤더 포함
-  axios.delete(apiUrl, { headers })
-    .then(() => {
-      alert(`Sharing Room ${this.sharingRoomDetails.id} deleted successfully.`);
-      // 삭제 후 상세정보 모달 닫기
-      this.detailsModalOpen = false;
-      // 목록 새로고침 등의 추가 작업
-      this.fetchSharingRooms(); // 목록 새로고침
-    })
-    .catch(error => {
-      console.error("Error deleting sharing room:", error);
-      alert("Error deleting sharing room. Please try again.");
-    });
-}
-
+      // Retrieve the ID of the selected sharing room
+      const id = this.selectedSharingRooms[0];
+      // Fetch the details of the selected sharing room
+      this.fetchSharingRoomDetails(id);
+    },
   },
 };
 </script>
