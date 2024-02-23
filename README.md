@@ -1,12 +1,8 @@
-Well-Com ( Well-Being Community )
+#Well-Com ( Well-Being Community )
 
 ![001](https://github.com/yujeong-shin/Well-Com/assets/57553339/1f4dbbd0-200c-4a09-b152-ad101362e918)
 <br/>
 ![002](https://github.com/yujeong-shin/Well-Com/assets/57553339/d6858695-d4c9-4d63-a1cf-b0965e8f38b8)
-<br/>
-![003](https://github.com/yujeong-shin/Well-Com/assets/57553339/a1de7fa1-3ec6-471b-9ffe-caacd920af2c)
-<br/>
-![004](https://github.com/yujeong-shin/Well-Com/assets/57553339/f1a3afea-1eb4-427b-92a0-1fe0f565c648)
 <br/><br/>
 
 ## 🎈프로젝트 관리<br/> 
