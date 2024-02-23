@@ -1,5 +1,7 @@
-package com.wellcom.global.socket;
+package com.wellcom.global.socket.config;
 
+import com.wellcom.global.socket.handler.ChatErrorHandler;
+import com.wellcom.global.socket.handler.ChatPreHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;

@@ -1,4 +1,4 @@
-package com.wellcom.global.socket;
+package com.wellcom.global.socket.handler;
 
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;

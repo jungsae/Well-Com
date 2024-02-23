@@ -101,7 +101,7 @@ export default {
       }
     },
     signInWithGoogle() {
-      window.location.href = `${process.env.VUE_APP_API_BASE_URL}/oauth2/authorize/google?redirect_uri=http://localhost:8081/oauth2/redirect`;
+      window.location.href = `http://localhost:8080/oauth2/authorize/google?redirect_uri=http://localhost:8081/oauth2/redirect`;
     },
   }
 };
