@@ -37,6 +37,10 @@
       @mouseleave="signupHover = false" @click.stop="signUp = true" :elevation="signupHover ? 10 : 2" v-if="!isLogin">
       회원가입
     </v-btn>
+    <v-btn text class="myPage-button custom-myPage-color" @mouseover="myPageHover = true"
+      @mouseleave="myPageHover = false" @click="goToPage('/admin/home')" :elevation="myPageHover ? 10 : 2" v-if="isAdmin">
+      어드민페이지
+    </v-btn>
     <v-btn text class="logout-button custom-logout-color" @mouseover="logoutHover = true"
       @mouseleave="logoutHover = false" @click.prevent="doLogout" :elevation="logoutHover ? 10 : 2" v-if="isLogin">
       로그아웃
@@ -53,15 +57,20 @@ export default {
     loginHover: false,
     signupHover: false,
     logoutHover: false,
+    myPageHover: false,
     drawer: false,
     signIn: false,
     signUp: false,
     isLogin: false,
     userRole: null,
+    isAdmin: false,
   }),
   created() {
     if (localStorage.getItem("Authorization")) {
       this.isLogin = true;
+    }
+    if(localStorage.getItem("role") === "ADMIN") {
+      this.isAdmin = true;
     }
   },
   methods: {
@@ -94,7 +103,8 @@ export default {
 
 .custom-login-color,
 .custom-signup-color,
-.custom-logout-color {
+.custom-logout-color,
+.custom-myPage-color {
   background-color: #8197db;
   color: #ffffff;
   margin-right: 10px;
