@@ -38,8 +38,8 @@
       회원가입
     </v-btn>
     <v-btn text class="myPage-button custom-myPage-color" @mouseover="myPageHover = true"
-      @mouseleave="myPageHover = false" @click="goToPage('/mypage')" :elevation="myPageHover ? 10 : 2" v-if="isLogin">
-      마이페이지
+      @mouseleave="myPageHover = false" @click="goToPage('/admin/home')" :elevation="myPageHover ? 10 : 2" v-if="isAdmin">
+      어드민페이지
     </v-btn>
     <v-btn text class="logout-button custom-logout-color" @mouseover="logoutHover = true"
       @mouseleave="logoutHover = false" @click.prevent="doLogout" :elevation="logoutHover ? 10 : 2" v-if="isLogin">
@@ -63,10 +63,14 @@ export default {
     signUp: false,
     isLogin: false,
     userRole: null,
+    isAdmin: false,
   }),
   created() {
     if (localStorage.getItem("Authorization")) {
       this.isLogin = true;
+    }
+    if(localStorage.getItem("role") === "ADMIN") {
+      this.isAdmin = true;
     }
   },
   methods: {
