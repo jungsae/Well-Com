@@ -7,7 +7,10 @@ Well-Com ( Well-Being Community )
 ![003](https://github.com/yujeong-shin/Well-Com/assets/57553339/a1de7fa1-3ec6-471b-9ffe-caacd920af2c)
 <br/>
 ![004](https://github.com/yujeong-shin/Well-Com/assets/57553339/f1a3afea-1eb4-427b-92a0-1fe0f565c648)
+<br/><br/>
 
+## 🎈프로젝트 관리<br/> 
+[프로젝트 관리 - Trello](https://trello.com/b/XVOEdX9v/well-com)
 <br/><br/>
 
 ## 👯‍♂️팀원<br/> 
