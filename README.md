@@ -89,3 +89,96 @@ vue 에서 사용할 수 있는 용이한 UI 라이브러리. 다양한 화면 �
 
 ## 🎈프로젝트 시연
 
+
+<details>
+<summary>테이블 예약하기</summary>
+<div markdown="1">
+
+![](./Docs/Images/GIF/테이블-예약하기.gif)
+
+</div>
+</details>
+
+<details>
+<summary>테이블 바로 사용하기</summary>
+<div markdown="1">
+
+![](./Docs/Images/GIF/테이블-바로-사용-예약.gif)
+
+</div>
+</details>
+
+<details>
+<summary>테이블 트랜지션(애니메이션)</summary>
+<div markdown="1">
+
+![](./Docs/Images/GIF/테이블-애니메이션-처리.gif)
+- 뒤집은 화면에는 오늘 날짜로 예약된 예약 리스트 표시
+
+</div>
+</details>
+
+<details>
+<summary>반응형 화면</summary>
+<div markdown="1">
+
+![](./Docs/Images/GIF/반응형-자랑.gif)
+
+</div>
+</details>
+
+<details>
+<summary>나눔글 작성</summary>
+<div markdown="1">
+
+![](./Docs/Images/GIF/나눔글-수정.gif)
+
+</div>
+</details>
+
+<details>
+<summary>나눔글 수정</summary>
+<div markdown="1">
+
+![](./Docs/Images/GIF/상품-수정.gif)
+
+</div>
+</details>
+
+<details>
+<summary>나눔글 수정 시 이미지 처리</summary>
+<div markdown="1">
+
+![](./Docs/Images/GIF/상품-수정_이미지-처리_.gif)
+- S3에 이미지를 저장하는 방식이라 이미지가 쌓이지 않도록 기존 이미지 삭제 처리
+
+</div>
+</details>
+
+
+<details>
+<summary>나눔용 게임 시연</summary>
+<div markdown="1">
+
+![](./Docs/Images/GIF/게임-시연.gif)
+
+</div>
+</details>
+
+<details>
+<summary>내부 로그인</summary>
+<div markdown="1">
+
+![](./Docs/Images/GIF/내부-로그인.gif)
+
+</div>
+</details>
+
+<details>
+<summary>소셜 로그인(Google)</summary>
+<div markdown="1">
+
+![](./Docs/Images/GIF/소셜-로그인.gif)
+
+</div>
+</details>
