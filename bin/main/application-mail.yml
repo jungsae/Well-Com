@@ -1,0 +1,16 @@
+mail:
+  smtp:
+    auth: true
+    starttls:
+      required: true
+      enable: true
+    socketFactory:
+      class: javax.net.ssl.SSLSocketFactory
+      fallback: false
+      port: 465
+    port: 465
+
+  #admin 구글 계정
+AdminMail:
+  id: wingk98@gmail.com
+  password: cocr nudf nddd ceiu
