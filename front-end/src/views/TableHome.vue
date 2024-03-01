@@ -366,8 +366,18 @@ export default {
           location.reload();
         }
       } catch (error) {
-        console.log(error);
-        alert(`예약실패: ${error.message}`);
+        let errorMessage = "오류가 발생했습니다.";
+        if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error_message
+        ) {
+          errorMessage = error.response.data.error_message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        console.log(errorMessage);
+        alert(`예약실패: ${errorMessage}`);
       }
     },
 
@@ -425,12 +435,12 @@ export default {
 
 .flip-card {
   perspective: 1000px;
-  width: 100%; /* 부모 컨테이너의 크기에 맞춤 */
+  width: 100%;
 }
 .flip-card-inner {
   position: relative;
   width: 100%;
-  height: 550px; /* 여기서는 예시로 550px을 사용 */
+  height: 550px;
   transition: transform 0.8s;
   transform-style: preserve-3d;
 }
