@@ -43,17 +43,44 @@
               <div class="flip-card-back">
                 <v-card class="card-image">
                   <v-card-title>오늘의 예약 정보</v-card-title>
-                  <v-card-text>
-                    <v-row>
+                  <v-card-text style="max-height: 95%; overflow-y: auto">
+                    <v-row
+                      v-for="reservation in filterReservationsForToday(
+                        table.reservations
+                      )"
+                      :key="reservation.reservationId"
+                    >
                       <v-col
-                        cols="12"
-                        v-for="reservation in filterReservationsForToday(
-                          table.reservations
-                        )"
-                        :key="reservation.reservationId"
+                        cols="3"
+                        v-if="reservation.email == currentUserEmail"
+                        style="
+                          color: darkcyan;
+                          display: flex;
+                          align-items: center;
+                        "
                       >
+                        내 예약
+                      </v-col>
+                      <v-col
+                        cols="3"
+                        v-else
+                        style="display: flex; align-items: center"
+                      >
+                      </v-col>
+                      <v-col cols="6">
                         {{ reservation.startTime.split("T")[1] }} ~
                         {{ reservation.endTime.split("T")[1] }}
+                      </v-col>
+                      <v-col cols="3">
+                        <v-btn
+                          v-if="reservation.email == currentUserEmail"
+                          text
+                          small
+                          color="red"
+                          @click="cancelReservation(reservation.reservationId)"
+                        >
+                          예약취소
+                        </v-btn>
                       </v-col>
                     </v-row>
                   </v-card-text>
@@ -204,6 +231,8 @@
 
 <script>
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+
 export default {
   data() {
     return {
@@ -212,6 +241,7 @@ export default {
       )
         .toISOString()
         .split("T")[0],
+      currentUserEmail: null,
 
       tableList: [],
 
@@ -230,6 +260,10 @@ export default {
     };
   },
   created() {
+    const token = localStorage.getItem("Authorization");
+    if (token) {
+      this.currentUserEmail = jwtDecode(token).email;
+    }
     this.loadTables();
   },
   watch: {
@@ -316,7 +350,6 @@ export default {
         ) {
           throw new Error("올바른 값을 입력해주세요!");
         } else if (localStorage.getItem("Authorization") == null) {
-          console.log(localStorage.getItem("Authorization"));
           throw new Error("로그인 해주세요");
         } else {
           await axios.post(
@@ -329,7 +362,17 @@ export default {
           location.reload();
         }
       } catch (error) {
-        alert(error.message);
+        let errorMessage = "오류가 발생했습니다.";
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error_message
+        ) {
+          errorMessage = error.response.data.error_message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        alert(`예약실패: ${errorMessage}`);
       }
     },
 
@@ -342,6 +385,8 @@ export default {
           this.selectedDuration == null
         ) {
           throw new Error("올바른 값을 입력해주세요!");
+        } else if (localStorage.getItem("Authorization") == null) {
+          throw new Error("로그인 해주세요");
         } else {
           const reservationData = {
             deskNum: this.currentTableId,
@@ -363,29 +408,59 @@ export default {
           );
           alert(`예약성공 : 예약번호 ${response.data.result}`);
           this.closeReservationModal();
-          location.reload();
+          this.loadTables();
         }
       } catch (error) {
         let errorMessage = "오류가 발생했습니다.";
         if (
-            error.response &&
-            error.response.data &&
-            error.response.data.error_message
+          error.response &&
+          error.response.data &&
+          error.response.data.error_message
         ) {
           errorMessage = error.response.data.error_message;
         } else if (error.message) {
           errorMessage = error.message;
         }
-        console.log(errorMessage);
+        alert(`예약실패: ${errorMessage}`);
+      }
+    },
+
+    async cancelReservation(reservationId) {
+      try {
+        if (localStorage.getItem("Authorization") == null) {
+          throw new Error("로그인 해주세요");
+        } else if (confirm("예약을 취소하시겠습니까?")) {
+          await axios.patch(
+            `${process.env.VUE_APP_API_BASE_URL}/reservation/${reservationId}/cancel`,
+            this.$token("members/reissue")
+          );
+          alert("예약이 취소되었습니다!");
+          this.loadTables();
+        }
+      } catch (error) {
+        let errorMessage = "오류가 발생했습니다.";
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error_message
+        ) {
+          errorMessage = error.response.data.error_message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
         alert(`예약실패: ${errorMessage}`);
       }
     },
 
     filterReservationsForToday(reservations) {
-      return reservations.filter((reservation) => {
-        const reservationDate = reservation.startTime.split("T")[0];
-        return reservationDate === this.today;
-      });
+      return reservations
+        .filter((reservation) => {
+          const reservationDate = reservation.startTime.split("T")[0];
+          return reservationDate === this.today;
+        })
+        .sort((a, b) => {
+          return new Date(a.startTime) - new Date(b.startTime);
+        });
     },
   },
 };
@@ -417,6 +492,7 @@ export default {
   display: block;
   object-fit: cover;
   height: 550px;
+  width: 100%;
 }
 
 .overlay {
