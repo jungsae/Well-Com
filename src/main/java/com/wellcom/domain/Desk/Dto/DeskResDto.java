@@ -2,8 +2,6 @@ package com.wellcom.domain.Desk.Dto;
 
 import com.wellcom.domain.Desk.Desk;
 import com.wellcom.domain.Desk.Status;
-import com.wellcom.domain.Member.Member;
-import com.wellcom.domain.Reservation.Dto.ReservationResDto;
 import com.wellcom.domain.Reservation.Reservation;
 import lombok.Builder;
 import lombok.Data;
