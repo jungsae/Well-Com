@@ -2,8 +2,6 @@ package com.wellcom.domain.Desk.Dto;
 
 import com.wellcom.domain.Desk.Desk;
 import com.wellcom.domain.Desk.Status;
-import com.wellcom.domain.Member.Member;
-import com.wellcom.domain.Reservation.Dto.ReservationResDto;
 import com.wellcom.domain.Reservation.Reservation;
 import lombok.Builder;
 import lombok.Data;
@@ -36,7 +34,7 @@ public class DeskResDto {
         List<DeskResReservationDto> reservationResDtos = new ArrayList<>();
 
         for (Reservation reservation: desk.getReservations()){
-            if (reservation.getStatus().toString().equals("WAITING") && reservation.getStartTime().toLocalDate().equals(today)) {
+            if ((reservation.getStatus().toString().equals("WAITING") || reservation.getStatus().toString().equals("USING")) && reservation.getStartTime().toLocalDate().equals(today)) {
                 DeskResDto.DeskResReservationDto dto = new DeskResDto.DeskResReservationDto();
                 dto.setReservationId(reservation.getReservationId());
                 dto.setEmail(reservation.getMember().getEmail());
