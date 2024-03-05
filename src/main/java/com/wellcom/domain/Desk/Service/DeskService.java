@@ -6,6 +6,7 @@ import com.wellcom.domain.Desk.Dto.DeskResDto;
 import com.wellcom.domain.Desk.Dto.DeskUpdateReqDto;
 import com.wellcom.domain.Desk.Repository.DeskRepository;
 import com.wellcom.domain.Desk.Status;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -35,6 +36,7 @@ public class DeskService {
                 .collect(Collectors.toList());
     }
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "findAllDesks", key = "#root.methodName", cacheManager = "cacheManager")
     public List<DeskResDto> findAll() {
         List<Desk> desks = deskRepository.findAllWithReservations();
         return mapDesksToDeskResDtoList(desks);

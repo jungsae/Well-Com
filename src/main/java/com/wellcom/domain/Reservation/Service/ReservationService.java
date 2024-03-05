@@ -9,6 +9,8 @@ import com.wellcom.domain.Reservation.Dto.ReservationResDto;
 import com.wellcom.domain.Reservation.Repository.ReservationRepository;
 import com.wellcom.domain.Reservation.Reservation;
 import com.wellcom.domain.Reservation.Status;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -75,6 +77,7 @@ public class ReservationService {
             return endTime.isBefore(nextReservationStart);
         }
     }
+    @CachePut(cacheNames = "findAllDesks", key = "#root.methodName")
     public Reservation saveInstantUse(ReservationCreateReqDto reservationCreateReqDto) {
         Member member = this.findMemberByEmail();
         Desk desk = findDeskByDeskNum(reservationCreateReqDto.getDeskNum());
@@ -100,6 +103,7 @@ public class ReservationService {
         reservationScheduler.scheduleReservationEnd(reservation);
         return reservationRepository.save(reservation);
     }
+    @CachePut(cacheNames = "findAllDesks", key = "#root.methodName")
     public Reservation saveReservation(ReservationCreateReqDto reservationCreateReqDto) {
         Member member = this.findMemberByEmail();
         Desk desk = this.findDeskByDeskNum(reservationCreateReqDto.getDeskNum());
@@ -130,6 +134,7 @@ public class ReservationService {
         reservationScheduler.scheduleReservationEnd(savedReservation);
         return savedReservation;
     }
+    @CacheEvict(cacheNames = "findAllDesks", key = "#root.methodName")
     public String cancelReservation(String reservationId) {
         Reservation reservation = this.findByReservationIdAndEmail(reservationId);
 
