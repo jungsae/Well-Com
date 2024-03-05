@@ -51,7 +51,8 @@ public class ReservationService {
     }
     private boolean isReservationPossible(int deskNum, LocalDateTime startTime, int durationMinutes) {
         LocalDateTime endTime = startTime.plusMinutes(durationMinutes);
-        List<Reservation> existingReservations = reservationRepository.findActiveReservationsByDeskAndTime(deskNum, LocalDateTime.now());
+        //즉시사용중인 테이블의 시간까지 범위안으로 포함시켜야하기 때문에 LocalDateTime.now()에서 LocalDate.now().atStartOfDay()로 당일 00시부터 검색
+        List<Reservation> existingReservations = reservationRepository.findActiveReservationsByDeskAndTime(deskNum, LocalDate.now().atStartOfDay());
 
         for (Reservation existingReservation : existingReservations) {
             LocalDateTime existingStart = existingReservation.getStartTime();
@@ -89,10 +90,10 @@ public class ReservationService {
                 .member(member)
                 .desk(desk)
                 .status(Status.USING)
-                .startTime(LocalDateTime.now())
+                .startTime(LocalDateTime.now().withSecond(0).withNano(0))
                 .cntPeople(reservationCreateReqDto.getCntPeople())
                 .reservationTime(reservationCreateReqDto.getMinutes())
-                .endTime(endTime)
+                .endTime(endTime.withSecond(0).withNano(0))
                 .build();
 
         desk.updateIsUsable("N");

@@ -36,7 +36,7 @@ public class DeskResDto {
         List<DeskResReservationDto> reservationResDtos = new ArrayList<>();
 
         for (Reservation reservation: desk.getReservations()){
-            if (reservation.getStatus().toString().equals("WAITING") && reservation.getStartTime().toLocalDate().equals(today)) {
+            if ((reservation.getStatus().toString().equals("WAITING") || reservation.getStatus().toString().equals("USING")) && reservation.getStartTime().toLocalDate().equals(today)) {
                 DeskResDto.DeskResReservationDto dto = new DeskResDto.DeskResReservationDto();
                 dto.setReservationId(reservation.getReservationId());
                 dto.setEmail(reservation.getMember().getEmail());
